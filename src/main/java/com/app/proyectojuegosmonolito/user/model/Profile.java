@@ -1,6 +1,5 @@
-package com.app.proyectojuegosmonolito.user;
+package com.app.proyectojuegosmonolito.user.model;
 
-import com.app.proyectojuegosmonolito.user.model.Visibility;
 import jakarta.persistence.*;
 import lombok.*;
 

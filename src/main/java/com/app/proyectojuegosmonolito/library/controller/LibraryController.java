@@ -26,14 +26,14 @@ public class LibraryController {
     }
 
     @PostMapping
-    public ResponseEntity<LibraryResponse> add(@Valid @RequestBody LibraryRequest request) {
-        var library = libraryService.add(request.userId(), request.gameId());
+    public ResponseEntity<LibraryResponse> add(@PathVariable Long userId, @Valid @RequestBody LibraryRequest request) {
+        var library = libraryService.add(userId, request.gameId());
         return ResponseEntity.status(HttpStatus.CREATED).body(libraryMapper.toResponse(library));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remove(@PathVariable Long id) {
-        libraryService.remove(id);
+    public ResponseEntity<Void> remove(@PathVariable Long userId, @PathVariable Long id) {
+        libraryService.remove(id, userId);
         return ResponseEntity.noContent().build();
     }
 }

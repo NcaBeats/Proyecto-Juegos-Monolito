@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.user.service;
 
-import com.app.proyectojuegosmonolito.user.Wallet;
+import com.app.proyectojuegosmonolito.user.model.Wallet;
 import com.app.proyectojuegosmonolito.user.repository.WalletRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,9 @@ public class WalletService {
 
     @Transactional
     public Wallet updateBalance(Long userId, BigDecimal newBalance) {
+        if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Balance cannot be negative");
+        }
         var wallet = findByUserId(userId);
         wallet.update(newBalance);
         return walletRepository.save(wallet);

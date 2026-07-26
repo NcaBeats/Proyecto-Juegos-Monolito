@@ -2,6 +2,7 @@ package com.app.proyectojuegosmonolito.user.controller;
 
 import com.app.proyectojuegosmonolito.user.dto.WalletRequest;
 import com.app.proyectojuegosmonolito.user.dto.WalletResponse;
+import com.app.proyectojuegosmonolito.user.mapper.WalletMapper;
 import com.app.proyectojuegosmonolito.user.service.WalletService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,16 +15,16 @@ import org.springframework.web.bind.annotation.*;
 public class WalletController {
 
     private final WalletService walletService;
+    private final WalletMapper walletMapper;
 
     @GetMapping
     public ResponseEntity<WalletResponse> findByUserId(@PathVariable Long userId) {
-        var wallet = walletService.findByUserId(userId);
-        return ResponseEntity.ok(new WalletResponse(wallet.getUserId(), wallet.getBalance(), wallet.getUpdatedAt()));
+        return ResponseEntity.ok(walletMapper.toResponse(walletService.findByUserId(userId)));
     }
 
     @PutMapping
     public ResponseEntity<WalletResponse> updateBalance(@PathVariable Long userId, @Valid @RequestBody WalletRequest request) {
         var wallet = walletService.updateBalance(userId, request.balance());
-        return ResponseEntity.ok(new WalletResponse(wallet.getUserId(), wallet.getBalance(), wallet.getUpdatedAt()));
+        return ResponseEntity.ok(walletMapper.toResponse(wallet));
     }
 }

@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.user.service;
 
-import com.app.proyectojuegosmonolito.user.Profile;
+import com.app.proyectojuegosmonolito.user.model.Profile;
 import com.app.proyectojuegosmonolito.user.model.Visibility;
 import com.app.proyectojuegosmonolito.user.repository.ProfileRepository;
 import jakarta.persistence.EntityNotFoundException;

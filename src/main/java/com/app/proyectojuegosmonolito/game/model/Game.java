@@ -1,6 +1,5 @@
-package com.app.proyectojuegosmonolito.game;
+package com.app.proyectojuegosmonolito.game.model;
 
-import com.app.proyectojuegosmonolito.game.model.GameState;
 import jakarta.persistence.*;
 import lombok.*;
 

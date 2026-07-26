@@ -1,7 +1,6 @@
-package com.app.proyectojuegosmonolito.purchase;
+package com.app.proyectojuegosmonolito.purchase.model;
 
-import com.app.proyectojuegosmonolito.purchase.model.PurchaseStatus;
-import com.app.proyectojuegosmonolito.user.User;
+import com.app.proyectojuegosmonolito.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 

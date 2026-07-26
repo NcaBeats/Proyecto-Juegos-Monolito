@@ -1,4 +1,4 @@
-package com.app.proyectojuegosmonolito.user;
+package com.app.proyectojuegosmonolito.user.model;
 
 import jakarta.persistence.*;
 import lombok.*;

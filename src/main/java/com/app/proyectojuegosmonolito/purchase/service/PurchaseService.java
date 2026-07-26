@@ -2,8 +2,9 @@ package com.app.proyectojuegosmonolito.purchase.service;
 
 import com.app.proyectojuegosmonolito.game.service.GameService;
 import com.app.proyectojuegosmonolito.library.service.LibraryService;
-import com.app.proyectojuegosmonolito.purchase.Purchase;
-import com.app.proyectojuegosmonolito.purchase.PurchaseItem;
+import com.app.proyectojuegosmonolito.purchase.model.Purchase;
+import com.app.proyectojuegosmonolito.purchase.model.PurchaseItem;
+import com.app.proyectojuegosmonolito.purchase.dto.PurchaseItemRequest;
 import com.app.proyectojuegosmonolito.purchase.model.PurchaseStatus;
 import com.app.proyectojuegosmonolito.purchase.repository.PurchaseRepository;
 import com.app.proyectojuegosmonolito.user.service.UserService;
@@ -30,7 +31,7 @@ public class PurchaseService {
     private final LibraryService libraryService;
 
     @Transactional
-    public Purchase create(Long userId, List<ItemRequest> items) {
+    public Purchase create(Long userId, List<PurchaseItemRequest> items) {
         var user = userService.findById(userId);
         var wallet = walletService.findByUserId(userId);
 
@@ -64,7 +65,7 @@ public class PurchaseService {
             throw new IllegalArgumentException("Insufficient balance");
         }
 
-        walletService.updateBalance(userId, wallet.getBalance().subtract(totalAmount));
+        wallet.setBalance(wallet.getBalance().subtract(totalAmount));
         purchase.setStatus(PurchaseStatus.COMPLETED);
         var saved = purchaseRepository.save(purchase);
 
@@ -82,5 +83,7 @@ public class PurchaseService {
         return purchaseRepository.findAll(pageable);
     }
 
-    public record ItemRequest(Long gameId, Integer quantity) {}
+    public Page<Purchase> findByUserId(Long userId, Pageable pageable) {
+        return purchaseRepository.findByUser_Id(userId, pageable);
+    }
 }

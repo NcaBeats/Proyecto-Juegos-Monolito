@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.user.mapper;
 
-import com.app.proyectojuegosmonolito.user.Profile;
+import com.app.proyectojuegosmonolito.user.model.Profile;
 import com.app.proyectojuegosmonolito.user.dto.ProfileResponse;
 import org.springframework.stereotype.Component;
 

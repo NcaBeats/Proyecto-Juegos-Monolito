@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.purchase.mapper;
 
-import com.app.proyectojuegosmonolito.purchase.Purchase;
+import com.app.proyectojuegosmonolito.purchase.model.Purchase;
 import com.app.proyectojuegosmonolito.purchase.dto.PurchaseItemResponse;
 import com.app.proyectojuegosmonolito.purchase.dto.PurchaseResponse;
 import org.springframework.stereotype.Component;

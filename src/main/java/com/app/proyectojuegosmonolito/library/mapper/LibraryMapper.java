@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.library.mapper;
 
-import com.app.proyectojuegosmonolito.library.Library;
+import com.app.proyectojuegosmonolito.library.model.Library;
 import com.app.proyectojuegosmonolito.library.dto.LibraryResponse;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,5 @@
 package com.app.proyectojuegosmonolito.purchase.controller;
 
-import com.app.proyectojuegosmonolito.purchase.dto.PurchaseItemRequest;
 import com.app.proyectojuegosmonolito.purchase.dto.PurchaseRequest;
 import com.app.proyectojuegosmonolito.purchase.dto.PurchaseResponse;
 import com.app.proyectojuegosmonolito.purchase.mapper.PurchaseMapper;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/purchases")
@@ -28,6 +26,11 @@ public class PurchaseController {
         return ResponseEntity.ok(purchaseService.findAll(pageable).map(purchaseMapper::toResponse));
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<PurchaseResponse>> findByUserId(@PathVariable Long userId, Pageable pageable) {
+        return ResponseEntity.ok(purchaseService.findByUserId(userId, pageable).map(purchaseMapper::toResponse));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PurchaseResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(purchaseMapper.toResponse(purchaseService.findById(id)));
@@ -35,14 +38,7 @@ public class PurchaseController {
 
     @PostMapping
     public ResponseEntity<PurchaseResponse> create(@Valid @RequestBody PurchaseRequest request) {
-        var items = toServiceItems(request.items());
-        var purchase = purchaseService.create(request.userId(), items);
+        var purchase = purchaseService.create(request.userId(), request.items());
         return ResponseEntity.status(HttpStatus.CREATED).body(purchaseMapper.toResponse(purchase));
-    }
-
-    private List<PurchaseService.ItemRequest> toServiceItems(List<PurchaseItemRequest> items) {
-        return items.stream()
-                .map(item -> new PurchaseService.ItemRequest(item.gameId(), item.quantity()))
-                .toList();
     }
 }

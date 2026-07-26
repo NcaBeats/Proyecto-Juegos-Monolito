@@ -1,7 +1,7 @@
-package com.app.proyectojuegosmonolito.library;
+package com.app.proyectojuegosmonolito.library.model;
 
-import com.app.proyectojuegosmonolito.game.Game;
-import com.app.proyectojuegosmonolito.user.User;
+import com.app.proyectojuegosmonolito.game.model.Game;
+import com.app.proyectojuegosmonolito.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 

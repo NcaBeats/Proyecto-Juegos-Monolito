@@ -1,7 +1,7 @@
 package com.app.proyectojuegosmonolito.library.service;
 
 import com.app.proyectojuegosmonolito.game.service.GameService;
-import com.app.proyectojuegosmonolito.library.Library;
+import com.app.proyectojuegosmonolito.library.model.Library;
 import com.app.proyectojuegosmonolito.library.repository.LibraryRepository;
 import com.app.proyectojuegosmonolito.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +24,10 @@ public class LibraryService {
 
     @Transactional
     public Library add(Long userId, Long gameId) {
+        if (isGameOwned(userId, gameId)) {
+            throw new IllegalArgumentException("Game already in library: " + gameId);
+        }
+
         var user = userService.findById(userId);
         var game = gameService.findById(gameId);
 
@@ -39,11 +43,17 @@ public class LibraryService {
         return libraryRepository.findByUser_Id(userId, pageable);
     }
 
+    public boolean isGameOwned(Long userId, Long gameId) {
+        return libraryRepository.existsByUser_IdAndGame_Id(userId, gameId);
+    }
+
     @Transactional
-    public void remove(Long id) {
-        if (!libraryRepository.existsById(id)) {
-            throw new EntityNotFoundException("Library entry not found: " + id);
+    public void remove(Long id, Long userId) {
+        var lib = libraryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Library entry not found: " + id));
+        if (!lib.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("Library entry does not belong to user");
         }
-        libraryRepository.deleteById(id);
+        libraryRepository.delete(lib);
     }
 }

@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.game.mapper;
 
-import com.app.proyectojuegosmonolito.game.Game;
+import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.dto.GameResponse;
 import org.springframework.stereotype.Component;
