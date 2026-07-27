@@ -7,6 +7,7 @@ import com.app.proyectojuegosmonolito.user.model.Visibility;
 import com.app.proyectojuegosmonolito.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.time.Instant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -36,30 +38,42 @@ public class UserService {
                 .balance(BigDecimal.ZERO)
                 .updatedAt(now)
                 .build());
-        return userRepository.save(user);
+        var saved = userRepository.save(user);
+        log.info("Created user: {} (id={})", saved.getUsername(), saved.getId());
+        return saved;
     }
 
     public User findById(Long id) {
+        log.info("Fetching user by id: {}", id);
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + id));
+                .orElseThrow(() -> {
+                    log.warn("User not found: {}", id);
+                    return new EntityNotFoundException("User not found: " + id);
+                });
     }
 
     public Page<User> findAll(Pageable pageable) {
+        log.info("Fetching all users with pageable: {}", pageable);
         return userRepository.findAll(pageable);
     }
 
     @Transactional
     public User update(Long id, String username, String email, String password) {
+        log.info("Updating user {}: username={}", id, username);
         var user = findById(id);
         user.update(username, email, password);
-        return userRepository.save(user);
+        var saved = userRepository.save(user);
+        log.info("Updated user {}", saved.getId());
+        return saved;
     }
 
     @Transactional
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
+            log.warn("Attempted to delete non-existent user: {}", id);
             throw new EntityNotFoundException("User not found: " + id);
         }
         userRepository.deleteById(id);
+        log.info("Deleted user {}", id);
     }
 }
