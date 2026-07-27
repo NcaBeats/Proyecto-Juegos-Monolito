@@ -6,3 +6,9 @@ logging:
   level:
     com.app.proyectojuegosmonolito: DEBUG
     org.hibernate.SQL: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,mappings,loggers

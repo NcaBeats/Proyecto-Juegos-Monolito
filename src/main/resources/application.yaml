@@ -1,6 +1,7 @@
 spring:
   profiles:
     active: dev
+
   application:
     name: ${APP_NAME:myapp}
 
@@ -22,6 +23,12 @@ spring:
     hibernate:
       ddl-auto: none
     open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
 
 server:
   port: 8080
