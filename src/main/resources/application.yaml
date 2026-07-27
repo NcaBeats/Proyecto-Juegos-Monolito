@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev
   application:
     name: ${APP_NAME:myapp}
 
@@ -19,11 +21,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
     open-in-view: false
-  data:
-    rest:
-      basePath: /api/v1
 
 server:
   port: 8080
