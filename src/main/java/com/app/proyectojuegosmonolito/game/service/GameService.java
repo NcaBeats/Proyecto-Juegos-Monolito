@@ -39,6 +39,10 @@ public class GameService {
                 });
     }
 
+    public long count() {
+        return gameRepository.count();
+    }
+
     public Page<Game> findAll(Pageable pageable) {
         log.info("Fetching all games with pageable: {}", pageable);
         return gameRepository.findAll(pageable);
