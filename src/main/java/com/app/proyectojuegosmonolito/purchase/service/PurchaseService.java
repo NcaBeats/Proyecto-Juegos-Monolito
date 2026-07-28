@@ -11,6 +11,7 @@ import com.app.proyectojuegosmonolito.user.service.UserService;
 import com.app.proyectojuegosmonolito.user.service.WalletService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PurchaseService {
@@ -32,6 +34,7 @@ public class PurchaseService {
 
     @Transactional
     public Purchase create(Long userId, List<PurchaseItemRequest> items) {
+        log.info("Creating purchase for user {} with {} items", userId, items.size());
         var user = userService.findById(userId);
         var wallet = walletService.findByUserId(userId);
 
@@ -62,12 +65,14 @@ public class PurchaseService {
         purchase.setTotalAmount(totalAmount);
 
         if (wallet.getBalance().compareTo(totalAmount) < 0) {
+            log.warn("Insufficient balance for user {}: wallet={}, total={}", userId, wallet.getBalance(), totalAmount);
             throw new IllegalArgumentException("Insufficient balance");
         }
 
         wallet.setBalance(wallet.getBalance().subtract(totalAmount));
         purchase.setStatus(PurchaseStatus.COMPLETED);
         var saved = purchaseRepository.save(purchase);
+        log.info("Purchase {} completed for user {}, total={}", saved.getId(), userId, totalAmount);
 
         purchaseItems.forEach(item -> libraryService.add(userId, item.getGame().getId()));
 
@@ -75,15 +80,21 @@ public class PurchaseService {
     }
 
     public Purchase findById(Long id) {
+        log.info("Fetching purchase by id: {}", id);
         return purchaseRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Purchase not found: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Purchase not found: {}", id);
+                    return new EntityNotFoundException("Purchase not found: " + id);
+                });
     }
 
     public Page<Purchase> findAll(Pageable pageable) {
+        log.info("Fetching all purchases with pageable: {}", pageable);
         return purchaseRepository.findAll(pageable);
     }
 
     public Page<Purchase> findByUserId(Long userId, Pageable pageable) {
+        log.info("Fetching purchases for user {} with pageable: {}", userId, pageable);
         return purchaseRepository.findByUser_Id(userId, pageable);
     }
 }
