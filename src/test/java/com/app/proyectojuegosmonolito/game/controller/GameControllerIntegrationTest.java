@@ -1,0 +1,126 @@
+package com.app.proyectojuegosmonolito.game.controller;
+
+import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
+import com.app.proyectojuegosmonolito.game.dto.GameRequest;
+import com.app.proyectojuegosmonolito.game.model.GameState;
+import com.app.proyectojuegosmonolito.game.repository.GameRepository;
+import tools.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ActiveProfiles;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
+import static com.app.proyectojuegosmonolito.game.GameFixtures.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@Import(TestcontainersConfiguration.class)
+@AutoConfigureMockMvc
+@Transactional
+class GameControllerIntegrationTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private GameRepository gameRepository;
+
+    @Test
+    void getById_shouldReturn200() throws Exception {
+        var saved = gameRepository.save(game());
+
+        mockMvc.perform(get("/api/v1/games/{id}", saved.getId()).with(jwt()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(saved.getId()))
+                .andExpect(jsonPath("$.name").value("game"));
+    }
+
+    @Test
+    void getById_whenNotFound_shouldReturn404() throws Exception {
+        mockMvc.perform(get("/api/v1/games/{id}", 999L).with(jwt()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getAll_shouldReturnPage() throws Exception {
+        gameRepository.saveAll(List.of(game("Alpha", BigDecimal.TEN), game("Beta", BigDecimal.TEN), game("Gamma", BigDecimal.TEN)));
+
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("page", "0")
+                        .param("size", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(3));
+    }
+
+    @Test
+    void create_shouldReturn201() throws Exception {
+        mockMvc.perform(post("/api/v1/games")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new GameRequest("Nuevo Juego", new BigDecimal("29.99"), "Descripción",
+                                        GameState.AVAILABLE, LocalDate.of(2026, 12, 1)))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.name").value("Nuevo Juego"));
+    }
+
+    @Test
+    void create_withInvalidBody_shouldReturn400() throws Exception {
+        mockMvc.perform(post("/api/v1/games")
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new GameRequest(null, null, null, null, null))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Validation Error"))
+                .andExpect(jsonPath("$.errors.length()").value(5));
+    }
+
+    @Test
+    void update_shouldReturn200() throws Exception {
+        var saved = gameRepository.save(game());
+
+        mockMvc.perform(put("/api/v1/games/{id}", saved.getId())
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new GameRequest("Actualizado", new BigDecimal("49.99"), "Nueva desc",
+                                        GameState.COMING_SOON, LocalDate.of(2027, 1, 1)))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Actualizado"));
+    }
+
+    @Test
+    void delete_shouldReturn204() throws Exception {
+        var saved = gameRepository.save(game());
+
+        mockMvc.perform(delete("/api/v1/games/{id}", saved.getId())
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void delete_whenNotFound_shouldReturn404() throws Exception {
+        mockMvc.perform(delete("/api/v1/games/{id}", 999L)
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isNotFound());
+    }
+}

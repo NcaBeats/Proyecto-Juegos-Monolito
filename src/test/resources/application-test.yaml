@@ -1,0 +1,4 @@
+app:
+  jwt:
+    secret: ${KEY_JWT_SECRET:test-secret-0123456789abcdefghijklmnopqrstuvwxyz}
+    expiration: ${KEY_JWT_EXPIRATION:3600000}

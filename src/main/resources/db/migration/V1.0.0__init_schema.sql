@@ -37,6 +37,7 @@ CREATE TABLE "public"."user" (
     "email" varchar(100) NOT NULL UNIQUE,
     "password" varchar(255) NOT NULL,
     "created_at" timestamp NOT NULL,
+    "role" varchar(10) NOT NULL DEFAULT 'USER',
     PRIMARY KEY ("id")
 );
 
