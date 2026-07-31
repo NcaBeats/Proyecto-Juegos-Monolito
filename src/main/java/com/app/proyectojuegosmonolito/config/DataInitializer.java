@@ -3,9 +3,10 @@ package com.app.proyectojuegosmonolito.config;
 import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.service.GameService;
-import com.app.proyectojuegosmonolito.user.model.User;
-import com.app.proyectojuegosmonolito.user.service.UserService;
-import com.app.proyectojuegosmonolito.user.service.WalletService;
+import com.app.proyectojuegosmonolito.account.user.model.Role;
+import com.app.proyectojuegosmonolito.account.user.model.User;
+import com.app.proyectojuegosmonolito.account.user.service.UserService;
+import com.app.proyectojuegosmonolito.account.wallet.service.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
@@ -60,6 +61,7 @@ public class DataInitializer implements CommandLineRunner {
                 .username("player1")
                 .email("player1@test.com")
                 .password("pass123")
+                .role(Role.ADMIN)
                 .build());
         walletService.updateBalance(player1.getId(), new BigDecimal("200"));
 

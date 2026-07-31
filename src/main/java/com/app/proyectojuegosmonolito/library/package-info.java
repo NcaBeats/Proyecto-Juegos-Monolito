@@ -1,4 +1,4 @@
-@ApplicationModule(allowedDependencies = {"user :: service", "user :: model", "game :: service", "game :: model"})
+@ApplicationModule(allowedDependencies = {"account :: user-service", "account :: user-model", "game :: service", "game :: model", "security :: service"})
 package com.app.proyectojuegosmonolito.library;
 
 import org.springframework.modulith.ApplicationModule;

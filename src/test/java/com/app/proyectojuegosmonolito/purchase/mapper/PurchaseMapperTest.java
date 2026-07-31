@@ -6,7 +6,7 @@ import com.app.proyectojuegosmonolito.purchase.dto.PurchaseResponse;
 import com.app.proyectojuegosmonolito.purchase.model.Purchase;
 import com.app.proyectojuegosmonolito.purchase.model.PurchaseItem;
 import com.app.proyectojuegosmonolito.purchase.model.PurchaseStatus;
-import com.app.proyectojuegosmonolito.user.model.User;
+import com.app.proyectojuegosmonolito.account.user.model.User;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

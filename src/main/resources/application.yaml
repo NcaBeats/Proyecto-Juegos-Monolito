@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    active: dev
-
   application:
     name: ${APP_NAME:myapp}
 

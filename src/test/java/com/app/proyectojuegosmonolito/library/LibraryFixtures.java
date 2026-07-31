@@ -2,7 +2,7 @@ package com.app.proyectojuegosmonolito.library;
 
 import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.library.model.Library;
-import com.app.proyectojuegosmonolito.user.model.User;
+import com.app.proyectojuegosmonolito.account.user.model.User;
 
 import java.time.Instant;
 
