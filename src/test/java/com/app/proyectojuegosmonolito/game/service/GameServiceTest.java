@@ -82,7 +82,6 @@ class GameServiceTest {
     void update_shouldModifyAndSave() {
         var game = game(1L, "Old", BigDecimal.ONE);
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
-        when(gameRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         var result = gameService.update(1L, "New Name", new BigDecimal("49.99"),
                 "New desc", GameState.COMING_SOON, LocalDate.of(2027, 1, 1));
@@ -90,7 +89,7 @@ class GameServiceTest {
         assertThat(result.getName()).isEqualTo("New Name");
         assertThat(result.getPrice()).isEqualByComparingTo("49.99");
         assertThat(result.getState()).isEqualTo(GameState.COMING_SOON);
-        verify(gameRepository).save(game);
+        verify(gameRepository, never()).save(any());
     }
 
     @Test

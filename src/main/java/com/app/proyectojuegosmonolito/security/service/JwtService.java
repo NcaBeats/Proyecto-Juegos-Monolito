@@ -27,6 +27,7 @@ public class JwtService {
                 .claim("type", "access")
                 .claim("name", user.getUsername())
                 .claim("role", user.getRole().name())
+                .claim("ver", user.getTokenVersion())
                 .issuedAt(now)
                 .expiresAt(now.plusMillis(expiration))
                 .build();

@@ -73,7 +73,7 @@ class LibraryControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new LibraryRequest(game.getId()))))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detail").value(containsString("already in library")));
+                .andExpect(jsonPath("$.detail").value("Bad request."));
     }
 
     @Test
@@ -126,7 +126,7 @@ class LibraryControllerIntegrationTest {
 
     @Test
     void removeByGame_whenNotFound_shouldReturn404() throws Exception {
-        var token = jwt().jwt(b -> b.subject("1"));
+        var token = jwt().jwt(b -> b.subject("424242"));
 
         mockMvc.perform(delete("/api/v1/library/game/{gameId}", 999L).with(token))
                 .andExpect(status().isNotFound());

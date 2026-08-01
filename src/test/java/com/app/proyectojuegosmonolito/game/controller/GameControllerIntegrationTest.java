@@ -123,4 +123,18 @@ class GameControllerIntegrationTest {
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void getById_withNonNumericId_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/games/{id}", "abc").with(jwt()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Bad Request"));
+    }
+
+    @Test
+    void nonexistentRoute_shouldReturn404() throws Exception {
+        mockMvc.perform(get("/api/v1/nonexistent").with(jwt()))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title").value("Not Found"));
+    }
 }

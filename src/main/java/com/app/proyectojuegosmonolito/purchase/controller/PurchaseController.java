@@ -4,7 +4,7 @@ import com.app.proyectojuegosmonolito.purchase.dto.PurchaseRequest;
 import com.app.proyectojuegosmonolito.purchase.dto.PurchaseResponse;
 import com.app.proyectojuegosmonolito.purchase.mapper.PurchaseMapper;
 import com.app.proyectojuegosmonolito.purchase.service.PurchaseService;
-import com.app.proyectojuegosmonolito.security.service.SecurityContext;
+import com.app.proyectojuegosmonolito.SecurityContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,13 +48,15 @@ public class PurchaseController {
         return ResponseEntity.ok(purchaseMapper.toResponse(purchase));
     }
 
-    @Operation(summary = "Create a new purchase", description = "Creates a new purchase, deducts wallet balance, and adds games to library")
+    @Operation(summary = "Create a new purchase", description = "Creates a new purchase, deducts wallet balance, and adds games to library. Idempotent via the Idempotency-Key header: a retry with the same key returns the original purchase without charging again.")
     @ApiResponse(responseCode = "201", description = "Purchase created successfully")
-    @ApiResponse(responseCode = "400", description = "Insufficient balance or invalid request")
+    @ApiResponse(responseCode = "400", description = "Insufficient balance, missing Idempotency-Key, or invalid request")
     @PostMapping
-    public ResponseEntity<PurchaseResponse> create(@Valid @RequestBody PurchaseRequest request) {
+    public ResponseEntity<PurchaseResponse> create(
+            @Valid @RequestBody PurchaseRequest request,
+            @RequestHeader("Idempotency-Key") String idempotencyKey) {
         var userId = securityContext.getCurrentUserId();
-        var purchase = purchaseService.create(userId, request.items());
+        var purchase = purchaseService.create(userId, idempotencyKey, purchaseMapper.toLines(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(purchaseMapper.toResponse(purchase));
     }
 }

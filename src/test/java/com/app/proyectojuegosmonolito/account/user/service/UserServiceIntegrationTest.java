@@ -76,11 +76,7 @@ class UserServiceIntegrationTest {
         var saved = userService.create(user());
         var savedPassword = saved.getPassword();
 
-        var updated = user();
-        updated.setUsername("newuser");
-        updated.setEmail("new@test.com");
-        updated.setPassword("newpass");
-        var result = userService.update(saved.getId(), updated);
+        var result = userService.update(saved.getId(), "newuser", "new@test.com");
 
         assertThat(result.getUsername()).isEqualTo("newuser");
         assertThat(result.getEmail()).isEqualTo("new@test.com");

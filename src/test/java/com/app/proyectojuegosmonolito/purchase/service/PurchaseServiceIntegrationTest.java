@@ -2,7 +2,7 @@ package com.app.proyectojuegosmonolito.purchase.service;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
-import com.app.proyectojuegosmonolito.purchase.dto.PurchaseItemRequest;
+import com.app.proyectojuegosmonolito.purchase.model.PurchaseLine;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.account.wallet.service.WalletService;
 import jakarta.persistence.EntityNotFoundException;
@@ -46,44 +46,60 @@ class PurchaseServiceIntegrationTest {
         var game1 = gameRepository.save(game("Game One", new BigDecimal("29.99")));
         var game2 = gameRepository.save(game("Game Two", new BigDecimal("49.99")));
         var items = List.of(
-                new PurchaseItemRequest(game1.getId(), 1),
-                new PurchaseItemRequest(game2.getId(), 1)
+                new PurchaseLine(game1.getId(), 1),
+                new PurchaseLine(game2.getId(), 1)
         );
 
-        var result = purchaseService.create(user.getId(), items);
+        var result = purchaseService.create(user.getId(), "key-create", items);
 
         assertThat(result.getStatus()).hasToString("COMPLETED");
         assertThat(result.getTotalAmount()).isEqualByComparingTo("79.98");
+        assertThat(result.getIdempotencyKey()).isEqualTo("key-create");
         assertThat(result.getItems()).hasSize(2);
         var wallet = walletService.findByUserId(user.getId());
         assertThat(wallet.getBalance()).isEqualByComparingTo("20.02");
     }
 
     @Test
+    void create_withSameIdempotencyKey_shouldReplayWithoutChargingTwice() {
+        var user = userService.create(user());
+        walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
+        var game = gameRepository.save(game("Game", new BigDecimal("29.99")));
+        var items = List.of(new PurchaseLine(game.getId(), 1));
+
+        var first = purchaseService.create(user.getId(), "replay-key", items);
+        var second = purchaseService.create(user.getId(), "replay-key", items);
+
+        assertThat(second.getId()).isEqualTo(first.getId());
+        var wallet = walletService.findByUserId(user.getId());
+        assertThat(wallet.getBalance()).isEqualByComparingTo("70.01");
+    }
+
+    @Test
     void create_withInsufficientBalance_shouldThrow() {
         var user = userService.create(user());
         var game = gameRepository.save(game("Game", new BigDecimal("50.00")));
-        var items = List.of(new PurchaseItemRequest(game.getId(), 1));
+        var items = List.of(new PurchaseLine(game.getId(), 1));
 
-        assertThatThrownBy(() -> purchaseService.create(user.getId(), items))
+        assertThatThrownBy(() -> purchaseService.create(user.getId(), "key-insufficient", items))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Insufficient balance");
     }
 
     @Test
     void create_withNonExistentUser_shouldThrow() {
-        var items = List.of(new PurchaseItemRequest(1L, 1));
+        var items = List.of(new PurchaseLine(1L, 1));
 
-        assertThatThrownBy(() -> purchaseService.create(999L, items))
+        assertThatThrownBy(() -> purchaseService.create(999L, "key-no-user", items))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
     void create_withNonExistentGame_shouldThrow() {
         var user = userService.create(user());
-        var items = List.of(new PurchaseItemRequest(999L, 1));
+        var items = List.of(new PurchaseLine(999L, 1));
 
-        assertThatThrownBy(() -> purchaseService.create(user.getId(), items))
+        assertThatThrownBy(() -> purchaseService.create(user.getId(), "key-no-game", items))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -92,8 +108,8 @@ class PurchaseServiceIntegrationTest {
         var user = userService.create(user());
         walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
         var game = gameRepository.save(game());
-        var purchase = purchaseService.create(user.getId(),
-                List.of(new PurchaseItemRequest(game.getId(), 1)));
+        var purchase = purchaseService.create(user.getId(), "key-findbyid",
+                List.of(new PurchaseLine(game.getId(), 1)));
 
         var found = purchaseService.findById(purchase.getId());
 
@@ -112,7 +128,7 @@ class PurchaseServiceIntegrationTest {
         var user = userService.create(user());
         walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
         var game = gameRepository.save(game());
-        purchaseService.create(user.getId(), List.of(new PurchaseItemRequest(game.getId(), 1)));
+        purchaseService.create(user.getId(), "key-findall", List.of(new PurchaseLine(game.getId(), 1)));
 
         var page = purchaseService.findAll(PageRequest.of(0, 10));
 
@@ -124,7 +140,7 @@ class PurchaseServiceIntegrationTest {
         var user = userService.create(user());
         walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
         var game = gameRepository.save(game());
-        purchaseService.create(user.getId(), List.of(new PurchaseItemRequest(game.getId(), 1)));
+        purchaseService.create(user.getId(), "key-findbyuserid", List.of(new PurchaseLine(game.getId(), 1)));
 
         var page = purchaseService.findByUserId(user.getId(), PageRequest.of(0, 10));
 

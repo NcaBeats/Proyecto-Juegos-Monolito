@@ -2,8 +2,10 @@ package com.app.proyectojuegosmonolito.purchase.controller;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
+import com.app.proyectojuegosmonolito.library.repository.LibraryRepository;
 import com.app.proyectojuegosmonolito.purchase.dto.PurchaseItemRequest;
 import com.app.proyectojuegosmonolito.purchase.dto.PurchaseRequest;
+import com.app.proyectojuegosmonolito.purchase.repository.PurchaseRepository;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.account.wallet.service.WalletService;
 import tools.jackson.databind.ObjectMapper;
@@ -15,6 +17,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -23,6 +26,7 @@ import java.util.List;
 
 import static com.app.proyectojuegosmonolito.game.GameFixtures.*;
 import static com.app.proyectojuegosmonolito.account.user.UserFixtures.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.hamcrest.Matchers.containsString;
@@ -50,6 +54,12 @@ class PurchaseControllerIntegrationTest {
     @Autowired
     private GameRepository gameRepository;
 
+    @Autowired
+    private PurchaseRepository purchaseRepository;
+
+    @Autowired
+    private LibraryRepository libraryRepository;
+
     @Test
     void create_shouldReturn201() throws Exception {
         var user = userService.create(user());
@@ -58,6 +68,7 @@ class PurchaseControllerIntegrationTest {
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(post("/api/v1/purchases").with(token)
+                        .header("Idempotency-Key", "key-create-201")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new PurchaseRequest(List.of(new PurchaseItemRequest(game.getId(), 1))))))
@@ -67,8 +78,49 @@ class PurchaseControllerIntegrationTest {
     }
 
     @Test
+    void create_withoutIdempotencyKey_shouldReturn400() throws Exception {
+        var user = userService.create(user());
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+
+        mockMvc.perform(post("/api/v1/purchases").with(token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new PurchaseRequest(List.of(new PurchaseItemRequest(1L, 1))))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void create_withSameIdempotencyKey_shouldReturnSamePurchaseAndChargeOnce() throws Exception {
+        var user = userService.create(user());
+        walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
+        var game = gameRepository.save(game("Test Game", new BigDecimal("29.99")));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+
+        var request = post("/api/v1/purchases").with(token)
+                .header("Idempotency-Key", "same-key")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(
+                        new PurchaseRequest(List.of(new PurchaseItemRequest(game.getId(), 1)))));
+
+        var first = mockMvc.perform(request)
+                .andExpect(status().isCreated())
+                .andReturn();
+        var firstId = JsonPath.parse(first.getResponse().getContentAsString()).read("$.id", Long.class);
+
+        var second = mockMvc.perform(request)
+                .andExpect(status().isCreated())
+                .andReturn();
+        var secondId = JsonPath.parse(second.getResponse().getContentAsString()).read("$.id", Long.class);
+
+        assertThat(secondId).isEqualTo(firstId);
+        assertThat(purchaseRepository.count()).isEqualTo(1);
+        assertThat(walletService.findByUserId(user.getId()).getBalance()).isEqualByComparingTo("70.01");
+    }
+
+    @Test
     void create_withInvalidBody_shouldReturn400() throws Exception {
         mockMvc.perform(post("/api/v1/purchases").with(jwt())
+                        .header("Idempotency-Key", "key-invalid-body")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new PurchaseRequest(List.of()))))
                 .andExpect(status().isBadRequest())
@@ -85,6 +137,7 @@ class PurchaseControllerIntegrationTest {
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         var response = mockMvc.perform(post("/api/v1/purchases").with(token)
+                        .header("Idempotency-Key", "key-getbyid")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new PurchaseRequest(List.of(new PurchaseItemRequest(game.getId(), 1))))))
@@ -111,6 +164,7 @@ class PurchaseControllerIntegrationTest {
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(post("/api/v1/purchases").with(token)
+                        .header("Idempotency-Key", "key-getmypurchases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new PurchaseRequest(List.of(new PurchaseItemRequest(game.getId(), 1))))))
@@ -119,5 +173,36 @@ class PurchaseControllerIntegrationTest {
         mockMvc.perform(get("/api/v1/purchases").with(token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements").value(1));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void getMyPurchases_withoutOpenSession_shouldReturn200() throws Exception {
+        var user = userService.create(user());
+        walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
+        var game = gameRepository.save(game());
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+
+        try {
+            mockMvc.perform(post("/api/v1/purchases").with(token)
+                            .header("Idempotency-Key", "key-no-session")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(
+                                    new PurchaseRequest(List.of(new PurchaseItemRequest(game.getId(), 1))))))
+                    .andExpect(status().isCreated());
+
+            mockMvc.perform(get("/api/v1/purchases").with(token))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.page.totalElements").value(1));
+
+            mockMvc.perform(get("/api/v1/purchases").with(token))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content[0].items[0].gameName").value(game.getName()));
+        } finally {
+            purchaseRepository.deleteByUser_Id(user.getId());
+            libraryRepository.deleteByUser_Id(user.getId());
+            gameRepository.delete(game);
+            userService.delete(user.getId());
+        }
     }
 }

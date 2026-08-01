@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
 
 import static com.app.proyectojuegosmonolito.account.user.UserFixtures.*;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -70,5 +71,20 @@ class ProfileControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new ProfilePatchRequest(null, null, null))))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void update_withTooLongNickname_shouldReturn400() throws Exception {
+        var user = userService.create(user());
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var tooLongNickname = "n".repeat(256);
+
+        mockMvc.perform(patch("/api/v1/profile").with(token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new ProfilePatchRequest(tooLongNickname, null, null))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Validation Error"))
+                .andExpect(jsonPath("$.errors[0]").value(containsString("nickname")));
     }
 }

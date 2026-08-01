@@ -36,6 +36,9 @@ public class Purchase {
     @Column(nullable = false)
     private Instant purchasedAt;
 
+    @Column(nullable = false, length = 64)
+    private String idempotencyKey;
+
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<PurchaseItem> items = new ArrayList<>();

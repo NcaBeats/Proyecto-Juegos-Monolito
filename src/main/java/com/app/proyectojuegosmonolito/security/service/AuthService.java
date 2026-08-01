@@ -36,4 +36,9 @@ public class AuthService {
         var token = jwtService.generateAccessToken(saved);
         return new AuthResponse(token, expiration);
     }
+
+    @Transactional
+    public void logout(Long userId) {
+        userService.revokeAllTokens(userId);
+    }
 }

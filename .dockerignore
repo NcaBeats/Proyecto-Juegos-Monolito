@@ -1,0 +1,9 @@
+target/
+.idea/
+.git/
+.gitignore
+.env
+.env.prod
+application-local.yaml
+*.iml
+HELP.md

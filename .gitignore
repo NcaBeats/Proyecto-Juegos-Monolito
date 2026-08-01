@@ -35,3 +35,4 @@ build/
 ### Environment ###
 .env
 .env.prod
+/application-local.yaml

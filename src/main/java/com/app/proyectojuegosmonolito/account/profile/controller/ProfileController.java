@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.account.profile.controller;
 
-import com.app.proyectojuegosmonolito.security.service.SecurityContext;
+import com.app.proyectojuegosmonolito.SecurityContext;
 import com.app.proyectojuegosmonolito.account.profile.dto.ProfilePatchRequest;
 import com.app.proyectojuegosmonolito.account.profile.dto.ProfileResponse;
 import com.app.proyectojuegosmonolito.account.profile.mapper.ProfileMapper;
@@ -8,6 +8,7 @@ import com.app.proyectojuegosmonolito.account.profile.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +44,7 @@ public class ProfileController {
     @ApiResponse(responseCode = "200", description = "Profile updated successfully")
     @ApiResponse(responseCode = "404", description = "Profile not found")
     @PatchMapping
-    public ResponseEntity<ProfileResponse> updateMyProfile(@RequestBody ProfilePatchRequest request) {
+    public ResponseEntity<ProfileResponse> updateMyProfile(@Valid @RequestBody ProfilePatchRequest request) {
         var userId = securityContext.getCurrentUserId();
         var profile = profileService.update(userId, request);
         return ResponseEntity.ok(profileMapper.toResponse(profile));

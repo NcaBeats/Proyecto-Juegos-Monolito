@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.account.user.controller;
 
-import com.app.proyectojuegosmonolito.security.service.SecurityContext;
+import com.app.proyectojuegosmonolito.SecurityContext;
 import com.app.proyectojuegosmonolito.account.user.dto.UserRequestCreate;
 import com.app.proyectojuegosmonolito.account.user.dto.UserResponse;
 import com.app.proyectojuegosmonolito.account.user.dto.UserUpdatePassword;
@@ -36,29 +36,12 @@ public class UserController {
         return ResponseEntity.ok(userService.findAll(pageable).map(userMapper::toResponse));
     }
 
-    @Operation(summary = "Get user by ID", description = "Returns a single user by its ID")
+    @Operation(summary = "Get current user", description = "Returns the authenticated user")
     @ApiResponse(responseCode = "200", description = "User found")
-    @ApiResponse(responseCode = "404", description = "User not found")
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser() {
         var userId = securityContext.getCurrentUserId();
-        if (!userId.equals(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(userMapper.toResponse(userService.findById(id)));
-    }
-
-    @Operation(summary = "Get user by email", description = "Returns a single user by their email")
-    @ApiResponse(responseCode = "200", description = "User found")
-    @ApiResponse(responseCode = "404", description = "User not found")
-    @GetMapping("/email/{email}")
-    public ResponseEntity<UserResponse> findByEmail(@PathVariable String email) {
-        var user = userService.findByEmail(email);
-        var userId = securityContext.getCurrentUserId();
-        if (!userId.equals(user.getId())) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(userMapper.toResponse(user));
+        return ResponseEntity.ok(userMapper.toResponse(userService.findById(userId)));
     }
 
     @Operation(summary = "Create a new user", description = "Creates a new user with auto-generated profile and wallet")
@@ -75,7 +58,7 @@ public class UserController {
     @PutMapping
     public ResponseEntity<UserResponse> update(@Valid @RequestBody UserUpdateRequest request) {
         var id = securityContext.getCurrentUserId();
-        var user = userService.update(id, userMapper.toEntityUpdate(request));
+        var user = userService.update(id, request.username(), request.email());
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 

@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.account.user.service;
 
+import com.app.proyectojuegosmonolito.TokenVersionCache;
 import com.app.proyectojuegosmonolito.account.profile.model.Profile;
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final TokenVersionCache tokenVersionCache;
 
     @Transactional
     public User create(User user) {
@@ -73,16 +76,15 @@ public class UserService {
     }
 
     @Transactional
-    public User update(Long id, User user) {
+    public User update(Long id, String username, String email) {
         var userEntity = userRepository.findById(id).orElseThrow(() -> {
             log.warn("User not found: {}", id);
             return new EntityNotFoundException("User not found: " + id);
         });
-        log.info("Updating user {}: username={}", id, user.getUsername());
-        userEntity.update(user);
-        var saved = userRepository.save(userEntity);
-        log.info("Updated user {}", saved.getId());
-        return saved;
+        log.info("Updating user {}: username={}", id, username.replaceAll("[\\r\\n]", " "));
+        userEntity.update(username, email);
+        log.info("Updated user {}", userEntity.getId());
+        return userEntity;
     }
 
     @Transactional
@@ -95,7 +97,28 @@ public class UserService {
             throw new IllegalArgumentException("Current password is incorrect");
         }
         user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        incrementTokenVersion(user);
+    }
+
+    @Transactional
+    public int revokeAllTokens(Long id) {
+        var user = userRepository.findById(id).orElseThrow(() -> {
+            log.warn("User not found with id: {}", id);
+            return new EntityNotFoundException("User not found with id: " + id);
+        });
+        return incrementTokenVersion(user);
+    }
+
+    public Optional<Integer> getTokenVersion(Long id) {
+        return userRepository.findById(id).map(User::getTokenVersion);
+    }
+
+    private int incrementTokenVersion(User user) {
+        var newVersion = user.getTokenVersion() + 1;
+        user.setTokenVersion(newVersion);
+        log.info("Invalidated tokens for user {}: tokenVersion={}", user.getId(), newVersion);
+        tokenVersionCache.set(user.getId(), newVersion);
+        return newVersion;
     }
 
     @Transactional

@@ -4,7 +4,7 @@ import com.app.proyectojuegosmonolito.library.dto.LibraryRequest;
 import com.app.proyectojuegosmonolito.library.dto.LibraryResponse;
 import com.app.proyectojuegosmonolito.library.mapper.LibraryMapper;
 import com.app.proyectojuegosmonolito.library.service.LibraryService;
-import com.app.proyectojuegosmonolito.security.service.SecurityContext;
+import com.app.proyectojuegosmonolito.SecurityContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

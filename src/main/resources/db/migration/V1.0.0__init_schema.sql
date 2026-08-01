@@ -38,6 +38,7 @@ CREATE TABLE "public"."user" (
     "password" varchar(255) NOT NULL,
     "created_at" timestamp NOT NULL,
     "role" varchar(10) NOT NULL DEFAULT 'USER',
+    "token_version" integer NOT NULL DEFAULT 0,
     PRIMARY KEY ("id")
 );
 
@@ -45,6 +46,7 @@ CREATE TABLE "public"."wallet" (
     "user_id" bigint NOT NULL,
     "balance" numeric(8, 2) NOT NULL,
     "updated_at" timestamp NOT NULL,
+    "version" bigint NOT NULL DEFAULT 0,
     PRIMARY KEY ("user_id")
 );
 
@@ -54,7 +56,9 @@ CREATE TABLE "public"."purchase" (
     "total_amount" numeric(8, 2) NOT NULL,
     "status" varchar(25) NOT NULL,
     "purchased_at" timestamp NOT NULL,
-    PRIMARY KEY ("id")
+    "idempotency_key" varchar(64) NOT NULL,
+    PRIMARY KEY ("id"),
+    UNIQUE ("user_id", "idempotency_key")
 );
 CREATE INDEX "purchase_index_2" ON "public"."purchase" ("user_id");
 
