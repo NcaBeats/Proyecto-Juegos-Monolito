@@ -39,21 +39,13 @@ class UserControllerIntegrationTest {
     private UserRepository userRepository;
 
     @Test
-    void getById_shouldReturn200() throws Exception {
+    void getMe_shouldReturn200() throws Exception {
         var saved = userRepository.save(user());
         var token = jwt().jwt(b -> b.subject(saved.getId().toString()));
 
-        mockMvc.perform(get("/api/v1/users/{id}", saved.getId()).with(token))
+        mockMvc.perform(get("/api/v1/users/me").with(token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("user"));
-    }
-
-    @Test
-    void getById_whenNotOwned_shouldReturn404() throws Exception {
-        var saved = userRepository.save(user());
-
-        mockMvc.perform(get("/api/v1/users/{id}", saved.getId()).with(jwt().jwt(b -> b.subject("999"))))
-                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -72,10 +64,10 @@ class UserControllerIntegrationTest {
 
     @Test
     void create_shouldReturn201() throws Exception {
-        mockMvc.perform(post("/api/v1/users").with(jwt())
+        mockMvc.perform(post("/api/v1/users").with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new UserRequestCreate("newuser", "new@test.com", "pass"))))
+                                new UserRequestCreate("newuser", "new@test.com", "password123"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.username").value("newuser"));
@@ -83,7 +75,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void create_withInvalidBody_shouldReturn400() throws Exception {
-        mockMvc.perform(post("/api/v1/users").with(jwt())
+        mockMvc.perform(post("/api/v1/users").with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new UserRequestCreate(null, null, null))))
                 .andExpect(status().isBadRequest())

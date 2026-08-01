@@ -30,6 +30,10 @@ public class Wallet {
     @Column(nullable = false)
     private Instant updatedAt;
 
+    @Version
+    @Column(nullable = false)
+    private Long version;
+
     public Wallet update(BigDecimal newBalance) {
         this.balance = newBalance;
         this.updatedAt = Instant.now();

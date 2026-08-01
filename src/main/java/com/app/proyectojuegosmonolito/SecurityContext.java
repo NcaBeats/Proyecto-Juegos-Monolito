@@ -1,4 +1,4 @@
-package com.app.proyectojuegosmonolito.security.service;
+package com.app.proyectojuegosmonolito;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

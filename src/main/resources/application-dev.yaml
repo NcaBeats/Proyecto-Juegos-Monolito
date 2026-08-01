@@ -4,7 +4,7 @@ spring:
 
 app:
   jwt:
-    secret: ${KEY_JWT_SECRET:O7E6XGIhr7)k<W>U,,uWrFe;U[)qPeV+&}
+    secret: ${KEY_JWT_SECRET}
     expiration: ${KEY_JWT_EXPIRATION:3600000}
 
 logging:

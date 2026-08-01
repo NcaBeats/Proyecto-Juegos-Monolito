@@ -1,5 +1,7 @@
 package com.app.proyectojuegosmonolito.security.config;
 
+import com.app.proyectojuegosmonolito.TokenVersionCache;
+import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.context.annotation.Bean;
@@ -29,19 +31,27 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            JwtAuthenticationConverter jwtAuthenticationConverter,
+            TokenVersionCache tokenVersionCache,
+            UserService userService) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        .jwtAuthenticationConverter(new TokenVersionValidatingJwtAuthenticationConverter(
+                                jwtAuthenticationConverter, tokenVersionCache, userService))
                 ))
                 .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/games").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/games/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/games/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/wallet").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );

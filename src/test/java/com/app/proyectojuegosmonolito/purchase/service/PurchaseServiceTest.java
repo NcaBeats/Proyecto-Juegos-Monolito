@@ -2,8 +2,8 @@ package com.app.proyectojuegosmonolito.purchase.service;
 
 import com.app.proyectojuegosmonolito.game.service.GameService;
 import com.app.proyectojuegosmonolito.library.service.LibraryService;
-import com.app.proyectojuegosmonolito.purchase.dto.PurchaseItemRequest;
 import com.app.proyectojuegosmonolito.purchase.model.Purchase;
+import com.app.proyectojuegosmonolito.purchase.model.PurchaseLine;
 import com.app.proyectojuegosmonolito.purchase.model.PurchaseStatus;
 import com.app.proyectojuegosmonolito.purchase.repository.PurchaseRepository;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
@@ -59,19 +59,39 @@ class PurchaseServiceTest {
         when(purchaseRepository.save(any(Purchase.class))).thenAnswer(i -> i.getArgument(0));
 
         var items = List.of(
-                new PurchaseItemRequest(1L, 1),
-                new PurchaseItemRequest(2L, 1)
+                new PurchaseLine(1L, 1),
+                new PurchaseLine(2L, 1)
         );
 
-        var result = purchaseService.create(1L, items);
+        var result = purchaseService.create(1L, "key-1", items);
 
         assertThat(result.getStatus()).isEqualTo(PurchaseStatus.COMPLETED);
         assertThat(result.getTotalAmount()).isEqualByComparingTo("79.98");
+        assertThat(result.getIdempotencyKey()).isEqualTo("key-1");
         assertThat(result.getItems()).hasSize(2);
         assertThat(wallet.getBalance()).isEqualByComparingTo("20.02");
         verify(libraryService).add(1L, 1L);
         verify(libraryService).add(1L, 2L);
         verify(purchaseRepository).save(any(Purchase.class));
+    }
+
+    @Test
+    void create_withExistingIdempotencyKey_shouldReplayExistingPurchase() {
+        var existing = Purchase.builder()
+                .id(5L)
+                .totalAmount(BigDecimal.TEN)
+                .status(PurchaseStatus.COMPLETED)
+                .purchasedAt(Instant.now())
+                .build();
+        when(purchaseRepository.findByUser_IdAndIdempotencyKey(1L, "key-1"))
+                .thenReturn(Optional.of(existing));
+
+        var result = purchaseService.create(1L, "key-1", List.of(new PurchaseLine(1L, 1)));
+
+        assertThat(result).isEqualTo(existing);
+        verify(purchaseRepository, never()).save(any());
+        verify(libraryService, never()).add(any(), any());
+        verify(userService, never()).findById(any());
     }
 
     @Test
@@ -84,9 +104,9 @@ class PurchaseServiceTest {
         when(walletService.findByUserId(1L)).thenReturn(wallet);
         when(gameService.findById(1L)).thenReturn(game);
 
-        var items = List.of(new PurchaseItemRequest(1L, 1));
+        var items = List.of(new PurchaseLine(1L, 1));
 
-        assertThatThrownBy(() -> purchaseService.create(1L, items))
+        assertThatThrownBy(() -> purchaseService.create(1L, "key-1", items))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Insufficient balance");
 

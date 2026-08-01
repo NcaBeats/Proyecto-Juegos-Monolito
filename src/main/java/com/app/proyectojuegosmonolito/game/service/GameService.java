@@ -53,9 +53,8 @@ public class GameService {
         log.info("Updating game {}: name={}, price={}", id, name, price);
         var game = findById(id);
         game.update(name, price, description, state, launchDate);
-        var saved = gameRepository.save(game);
-        log.info("Updated game {}", saved.getId());
-        return saved;
+        log.info("Updated game {}", game.getId());
+        return game;
     }
 
     @Transactional

@@ -4,7 +4,7 @@ import com.app.proyectojuegosmonolito.game.service.GameService;
 import com.app.proyectojuegosmonolito.library.service.LibraryService;
 import com.app.proyectojuegosmonolito.purchase.model.Purchase;
 import com.app.proyectojuegosmonolito.purchase.model.PurchaseItem;
-import com.app.proyectojuegosmonolito.purchase.dto.PurchaseItemRequest;
+import com.app.proyectojuegosmonolito.purchase.model.PurchaseLine;
 import com.app.proyectojuegosmonolito.purchase.model.PurchaseStatus;
 import com.app.proyectojuegosmonolito.purchase.repository.PurchaseRepository;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
@@ -33,7 +33,12 @@ public class PurchaseService {
     private final LibraryService libraryService;
 
     @Transactional
-    public Purchase create(Long userId, List<PurchaseItemRequest> items) {
+    public Purchase create(Long userId, String idempotencyKey, List<PurchaseLine> items) {
+        var existing = purchaseRepository.findByUser_IdAndIdempotencyKey(userId, idempotencyKey);
+        if (existing.isPresent()) {
+            log.info("Idempotent replay for user {} key {}: returning existing purchase {}", userId, idempotencyKey, existing.get().getId());
+            return existing.get();
+        }
         log.info("Creating purchase for user {} with {} items", userId, items.size());
         var user = userService.findById(userId);
         var wallet = walletService.findByUserId(userId);
@@ -43,17 +48,18 @@ public class PurchaseService {
                 .status(PurchaseStatus.PENDING)
                 .totalAmount(BigDecimal.ZERO)
                 .purchasedAt(Instant.now())
+                .idempotencyKey(idempotencyKey)
                 .build();
 
-        var purchaseItems = items.stream().map(itemRequest -> {
-            var game = gameService.findById(itemRequest.gameId());
+        var purchaseItems = items.stream().map(line -> {
+            var game = gameService.findById(line.gameId());
             var unitPrice = game.getPrice();
-            var subtotal = unitPrice.multiply(BigDecimal.valueOf(itemRequest.quantity()));
+            var subtotal = unitPrice.multiply(BigDecimal.valueOf(line.quantity()));
             return PurchaseItem.builder()
                     .purchase(purchase)
                     .game(game)
                     .unitPrice(unitPrice)
-                    .quantity(itemRequest.quantity())
+                    .quantity(line.quantity())
                     .subtotal(subtotal)
                     .build();
         }).toList();

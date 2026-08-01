@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.account.wallet.controller;
 
-import com.app.proyectojuegosmonolito.security.service.SecurityContext;
+import com.app.proyectojuegosmonolito.SecurityContext;
 import com.app.proyectojuegosmonolito.account.wallet.dto.WalletDepositRequest;
 import com.app.proyectojuegosmonolito.account.wallet.dto.WalletRequest;
 import com.app.proyectojuegosmonolito.account.wallet.dto.WalletResponse;

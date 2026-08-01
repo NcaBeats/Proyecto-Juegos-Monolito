@@ -36,15 +36,18 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    private int tokenVersion;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Wallet wallet;
 
-    public User update(User user) {
-        this.username = user.getUsername();
-        this.email = user.getEmail();
+    public User update(String username, String email) {
+        this.username = username;
+        this.email = email;
         return this;
     }
 

@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.account.user.service;
 
+import com.app.proyectojuegosmonolito.TokenVersionCache;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import com.app.proyectojuegosmonolito.account.user.repository.UserRepository;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import static com.app.proyectojuegosmonolito.account.user.UserFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +31,9 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private TokenVersionCache tokenVersionCache;
 
     @InjectMocks
     private UserService userService;
@@ -91,17 +96,12 @@ class UserServiceTest {
     void update_shouldModifyAndSave() {
         var user = user(1L, "old", "old@test.com");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
-        var updated = user(1L, "old", "old@test.com");
-        updated.setUsername("newuser");
-        updated.setEmail("new@test.com");
-        updated.setPassword("newpass");
-        var result = userService.update(1L, updated);
+        var result = userService.update(1L, "newuser", "new@test.com");
 
         assertThat(result.getUsername()).isEqualTo("newuser");
         assertThat(result.getEmail()).isEqualTo("new@test.com");
-        verify(userRepository).save(user);
+        verify(userRepository, never()).save(any());
     }
 
     @Test
@@ -122,5 +122,60 @@ class UserServiceTest {
                 .hasMessageContaining("99");
 
         verify(userRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void revokeAllTokens_shouldIncrementVersionAndUpdateCache() {
+        var user = user(1L);
+        user.setTokenVersion(2);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        var newVersion = userService.revokeAllTokens(1L);
+
+        assertThat(newVersion).isEqualTo(3);
+        assertThat(user.getTokenVersion()).isEqualTo(3);
+        verify(tokenVersionCache).set(1L, 3);
+    }
+
+    @Test
+    void revokeAllTokens_whenNotFound_shouldThrow() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.revokeAllTokens(99L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("99");
+
+        verify(tokenVersionCache, never()).set(any(), anyInt());
+    }
+
+    @Test
+    void getTokenVersion_whenFound_shouldReturnVersion() {
+        var user = user(1L);
+        user.setTokenVersion(4);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        assertThat(userService.getTokenVersion(1L)).hasValue(4);
+    }
+
+    @Test
+    void getTokenVersion_whenNotFound_shouldReturnEmpty() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThat(userService.getTokenVersion(99L)).isEmpty();
+    }
+
+    @Test
+    void updatePassword_shouldEncodeAndInvalidateTokens() {
+        var user = user(1L);
+        user.setTokenVersion(1);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("current", "pass123")).thenReturn(true);
+        when(passwordEncoder.encode("newpass")).thenReturn("encoded-new");
+
+        userService.updatePassword(1L, "current", "newpass");
+
+        assertThat(user.getPassword()).isEqualTo("encoded-new");
+        assertThat(user.getTokenVersion()).isEqualTo(2);
+        verify(tokenVersionCache).set(1L, 2);
     }
 }

@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.security.controller;
 
+import com.app.proyectojuegosmonolito.SecurityContext;
 import com.app.proyectojuegosmonolito.security.dto.AuthResponse;
 import com.app.proyectojuegosmonolito.security.dto.LoginRequest;
 import com.app.proyectojuegosmonolito.security.dto.RegisterRequest;
@@ -21,6 +22,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final AuthMapper authMapper;
+    private final SecurityContext securityContext;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -31,5 +33,11 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authService.register(authMapper.toEntity(request)));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        authService.logout(securityContext.getCurrentUserId());
+        return ResponseEntity.noContent().build();
     }
 }
