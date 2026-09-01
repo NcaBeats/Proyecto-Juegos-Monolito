@@ -14,20 +14,17 @@
 ./mvnw test -Dtest=ModulithTests   # Modulith architecture verification (no Docker needed)
 ./mvnw test                 # all tests — REQUIRES Docker Desktop running (Testcontainers)
 ./mvnw test -Dtest=SpecificTest
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,local   # dev server: `dev` (pom) + `local` (DB creds + JWT secret) + auto-starts compose.yaml Postgres
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev   # dev server: DB creds + JWT secret + Cloudinary + auto-starts compose.yaml Postgres
 ./mvnw verify               # includes integration tests
 ./mvnw verify -Pdependency-check   # OWASP dependency-check (downloads NVD, slow; HTML report in target/)
 docker compose up -d        # dev Postgres only (reads .env)
-docker compose -f compose.prod.yaml --env-file .env.prod up -d --build   # prod stack (local/ensayo)
-docker compose -f compose.prod.yaml --env-file .env.prod down
 ```
-- Prod compose is a SEPARATE project (`name: proyecto-juegos-monolito-prod`) — dev `down` never touches it, and vice versa.
+- Deploy to prod is **Render/Railway only** (builds `Dockerfile`, env vars via dashboard / "Add from .env" with `.env.prod`). There is NO `compose.prod.yaml`.
 
 ## Profiles — activated EXTERNALLY (no `spring.profiles.active` in `application.yaml`)
-- **dev** — via the `spring-boot-maven-plugin` `<profiles>` in `pom.xml`, so it ONLY applies to `./mvnw spring-boot:run`. Running the main class from IntelliJ requires `SPRING_PROFILES_ACTIVE=dev,local` env var in the Run Configuration.
-- **local** — NOT in the pom. `./application-local.yaml` (project root, **gitignored**) supplies ALL local dev config for the app: `spring.datasource.*` (real DB creds) + `spring.application.name` + `app.jwt.secret`. Activate with `-Dspring-boot.run.profiles=dev,local` or `SPRING_PROFILES_ACTIVE=dev,local`. If `local` is missing, `${KEY_JWT_SECRET}` in `application-dev.yaml` is unresolved → boot fails (fail-closed, no shared secret). `.env` stays reserved for Docker Compose (Postgres) — it is NOT read by the app; the DB creds it holds are intentionally duplicated in `application-local.yaml` so the host-run app is self-contained.
+- **dev** — via the `spring-boot-maven-plugin` `<profiles>` in `pom.xml`, so it ONLY applies to `./mvnw spring-boot:run`. Running the main class from IntelliJ requires `SPRING_PROFILES_ACTIVE=dev` env var in the Run Configuration. `application-dev.yaml` supplies ALL local dev config: `spring.datasource.*` (DB creds + defaults) + `spring.application.name` + `app.jwt.secret` + `app.cloudinary.url`. All values have env-var overrides with safe defaults — app boots out-of-the-box after clone + `docker compose up -d`.
 - **test** — via `@ActiveProfiles("test")` on all 14 `@SpringBootTest` classes; `src/test/resources/application-test.yaml` supplies JWT defaults. `app.jwt.secret` must be ≥256 bits for HS256, else `KeyLengthException`. The 4 `@DataJpaTest` classes have NO profile (they don't load `@Component`, so they don't need it).
-- **prod** — via `SPRING_PROFILES_ACTIVE=prod` env var (set by `compose.prod.yaml` / Render / Railway). `application-prod.yaml` has NO defaults for `KEY_JWT_SECRET`/`KEY_JWT_EXPIRATION` → app won't boot without them.
+- **prod** — via `SPRING_PROFILES_ACTIVE=prod` env var (set by Render / Railway). `application-prod.yaml` has NO defaults for `KEY_JWT_SECRET`/`KEY_JWT_EXPIRATION` → app won't boot without them.
 - `DataInitializer` (`config/`) is `@Profile("dev")`: seeds Minecraft/Stardew/Elden Ring + player1 (ADMIN, $200), player2 ($50), broke_player. Prod starts with an EMPTY DB and NO ADMIN (promote one via SQL).
 
 ## Auth & Security
@@ -51,7 +48,7 @@ anyRequest                        → authenticated (any role)
 ### Token revocation (M2 — token versioned, no DB per request)
 - Tokens carry claim `ver` = `user.tokenVersion` (`JwtService.generateAccessToken`). `POST /api/v1/auth/logout` and `PUT /api/v1/users/password` both call `UserService` to bump `token_version` in DB **and** in `TokenVersionCache` (base package, `ConcurrentHashMap` + TTL `app.jwt.token-version-cache-ttl:60000`) → all previously issued tokens for that user become invalid immediately.
 - `TokenVersionValidatingJwtAuthenticationConverter` (wraps the role converter) compares `ver` vs cached version on every authenticated request: in-memory lookup only (no DB). On cache-miss it loads the version from DB once and caches; missing `ver` claim / unknown user → treated as version 0 (preserves prior stateless contract). Mismatch → `BadCredentialsException` → 401.
-- **Single-instance only**: the cache is in-JVM. `compose.prod.yaml` / Render run 1 replica → OK. If scaled to N replicas, swap `TokenVersionCache` for Redis (version is already in DB; the swap is localized).
+- **Single-instance only**: the cache is in-JVM. Render / Railway run 1 replica → OK. If scaled to N replicas, swap `TokenVersionCache` for Redis (version is already in DB; the swap is localized).
 
 ### Security hardening (OWASP Top 10 audit — 2026-08)
 Implemented:
@@ -84,9 +81,9 @@ Known debt (explicitly deferred, not urgent):
 - `ModulithTests` (root test package) enforces module boundaries via `ApplicationModules.verify()` — run it before the full suite; named interfaces require a `@NamedInterface("...")` in the sub-package's `package-info.java` (e.g. `account :: wallet-model`)
 
 ## Database
-- Dev: `.env` (gitignored) with `DB_NAME`, `DB_USER`, `DB_PASSWORD` (read by Compose to create the Postgres container); the app reads the SAME creds from `application-local.yaml` (duplicated on purpose — the host-run app does not read `.env`)
+- Dev: `.env` (gitignored) with `DB_NAME`, `DB_USER`, `DB_PASSWORD` (read by Compose to create the Postgres container); the app reads the SAME creds from `application-dev.yaml` (duplicated on purpose — the host-run app does not read `.env`)
 - `compose.yaml`: Postgres only, host port 5432, volume `postgres-data`
-- `compose.prod.yaml`: `app` + `postgres` (postgres NOT exposed to host); needs `--env-file .env.prod` (5 vars: `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `KEY_JWT_SECRET`, `KEY_JWT_EXPIRATION`); `.env.prod` gitignored
+- Prod DB runs on Render/Railway only. `.env.prod` (gitignored) holds the 6 Render env vars (`SPRING_PROFILES_ACTIVE`, `KEY_JWT_SECRET`, `KEY_JWT_EXPIRATION`, `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`) and is imported into the Web Service with Render's "Add from .env"
 - Tables: `user` (has `role varchar(10)` + `token_version integer`), `profile`, `wallet` (has `version bigint` for optimistic locking), `game`, `library`, `purchase` (has `idempotency_key` + `UNIQUE (user_id, idempotency_key)`), `purchase_item`
 - **Migrations**: ALL schema lives in a single file `V1.0.0__init_schema.sql` (wallet `version` and user `token_version` are columns inside the CREATE TABLEs). If an existing dev DB already applied an older split (`V1.1.0`), Flyway's checksum will fail → reset with `docker compose down -v`
 

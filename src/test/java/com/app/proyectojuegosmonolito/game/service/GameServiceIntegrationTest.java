@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -73,11 +74,22 @@ class GameServiceIntegrationTest {
     }
 
     @Test
+    void findDiscounted_shouldReturnDiscountedGames() {
+        gameRepository.save(game("Full Price", BigDecimal.TEN));
+        gameRepository.save(gameWithDiscount("Discounted", BigDecimal.TEN, 50));
+
+        var page = gameService.findDiscounted(PageRequest.of(0, 10));
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getContent().get(0).getName()).isEqualTo("Discounted");
+    }
+
+    @Test
     void update_shouldModifyAndSave() {
         var saved = gameRepository.save(game());
 
         var result = gameService.update(saved.getId(), "Nuevo nombre",
-                BigDecimal.TEN, "desc", GameState.COMING_SOON, LocalDate.now());
+                BigDecimal.TEN, 0, "desc", GameState.COMING_SOON, LocalDate.now(), new ArrayList<>());
 
         assertThat(result.getName()).isEqualTo("Nuevo nombre");
     }

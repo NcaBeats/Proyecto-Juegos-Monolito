@@ -6,17 +6,20 @@ import com.app.proyectojuegosmonolito.game.model.GameState;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class GameFixtures {
 
     public static Game game() {
         return Game.builder()
                 .name("game")
-                .price(BigDecimal.TEN)
+                .originalPrice(BigDecimal.TEN)
+                .discountPercent(0)
                 .description("description")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.now())
                 .createdAt(Instant.now())
+                .categories(new ArrayList<>())
                 .build();
     }
 
@@ -24,34 +27,53 @@ public class GameFixtures {
         return Game.builder()
                 .id(id)
                 .name("game" + id)
-                .price(BigDecimal.TEN)
+                .originalPrice(BigDecimal.TEN)
+                .discountPercent(0)
                 .description("description")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.now())
                 .createdAt(Instant.now())
+                .categories(new ArrayList<>())
                 .build();
     }
 
-    public static Game game(String name, BigDecimal price) {
+    public static Game game(String name, BigDecimal originalPrice) {
         return Game.builder()
                 .name(name)
-                .price(price)
+                .originalPrice(originalPrice)
+                .discountPercent(0)
                 .description("description")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.now())
                 .createdAt(Instant.now())
+                .categories(new ArrayList<>())
                 .build();
     }
 
-    public static Game game(Long id, String name, BigDecimal price) {
+    public static Game game(Long id, String name, BigDecimal originalPrice) {
         return Game.builder()
                 .id(id)
                 .name(name)
-                .price(price)
+                .originalPrice(originalPrice)
+                .discountPercent(0)
                 .description("description")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.now())
                 .createdAt(Instant.now())
+                .categories(new ArrayList<>())
+                .build();
+    }
+
+    public static Game gameWithDiscount(String name, BigDecimal originalPrice, Integer discountPercent) {
+        return Game.builder()
+                .name(name)
+                .originalPrice(originalPrice)
+                .discountPercent(discountPercent)
+                .description("description")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.now())
+                .createdAt(Instant.now())
+                .categories(new ArrayList<>())
                 .build();
     }
 }
