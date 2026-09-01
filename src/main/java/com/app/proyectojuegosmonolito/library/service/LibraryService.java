@@ -3,7 +3,7 @@ package com.app.proyectojuegosmonolito.library.service;
 import com.app.proyectojuegosmonolito.game.service.GameService;
 import com.app.proyectojuegosmonolito.library.model.Library;
 import com.app.proyectojuegosmonolito.library.repository.LibraryRepository;
-import com.app.proyectojuegosmonolito.user.service.UserService;
+import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,18 +56,21 @@ public class LibraryService {
     }
 
     @Transactional
-    public void remove(Long id, Long userId) {
-        log.info("Removing library entry {} for user {}", id, userId);
-        var lib = libraryRepository.findById(id)
+    public void removeByGame(Long userId, Long gameId) {
+        log.info("Removing game {} from user {}'s library", gameId, userId);
+        var lib = libraryRepository.findByUser_IdAndGame_Id(userId, gameId)
                 .orElseThrow(() -> {
-                    log.warn("Library entry not found: {}", id);
-                    return new EntityNotFoundException("Library entry not found: " + id);
+                    log.warn("Game {} not found in library for user {}", gameId, userId);
+                    return new EntityNotFoundException("Game not found in library: " + gameId);
                 });
-        if (!lib.getUser().getId().equals(userId)) {
-            log.warn("User {} attempted to remove library entry {} belonging to user {}", userId, id, lib.getUser().getId());
-            throw new IllegalArgumentException("Library entry does not belong to user");
-        }
         libraryRepository.delete(lib);
-        log.info("Removed library entry {} for user {}", id, userId);
+        log.info("Removed game {} from user {}'s library", gameId, userId);
+    }
+
+    @Transactional
+    public void clear(Long userId) {
+        log.info("Clearing library for user {}", userId);
+        libraryRepository.deleteByUser_Id(userId);
+        log.info("Cleared library for user {}", userId);
     }
 }

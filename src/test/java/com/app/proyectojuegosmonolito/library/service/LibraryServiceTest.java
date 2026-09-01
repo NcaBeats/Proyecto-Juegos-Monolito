@@ -3,7 +3,7 @@ package com.app.proyectojuegosmonolito.library.service;
 import com.app.proyectojuegosmonolito.game.service.GameService;
 import com.app.proyectojuegosmonolito.library.model.Library;
 import com.app.proyectojuegosmonolito.library.repository.LibraryRepository;
-import com.app.proyectojuegosmonolito.user.service.UserService;
+import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import static com.app.proyectojuegosmonolito.game.GameFixtures.*;
 import static com.app.proyectojuegosmonolito.library.LibraryFixtures.*;
-import static com.app.proyectojuegosmonolito.user.UserFixtures.*;
+import static com.app.proyectojuegosmonolito.account.user.UserFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -93,35 +93,32 @@ class LibraryServiceTest {
     }
 
     @Test
-    void remove_whenOwned_shouldDelete() {
-        var lib = library(1L, user(1L), game(1L));
-        when(libraryRepository.findById(1L)).thenReturn(Optional.of(lib));
+    void removeByGame_whenOwned_shouldDelete() {
+        var user = user(1L);
+        var game = game(1L);
+        var lib = library(1L, user, game);
+        when(libraryRepository.findByUser_IdAndGame_Id(1L, 1L)).thenReturn(Optional.of(lib));
 
-        libraryService.remove(1L, 1L);
+        libraryService.removeByGame(1L, 1L);
 
         verify(libraryRepository).delete(lib);
     }
 
     @Test
-    void remove_whenNotOwned_shouldThrow() {
-        var lib = library(1L, user(2L), game(1L));
-        when(libraryRepository.findById(1L)).thenReturn(Optional.of(lib));
+    void removeByGame_whenNotFound_shouldThrow() {
+        when(libraryRepository.findByUser_IdAndGame_Id(1L, 999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> libraryService.remove(1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("not belong");
+        assertThatThrownBy(() -> libraryService.removeByGame(1L, 999L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("999");
 
         verify(libraryRepository, never()).delete(any());
     }
 
     @Test
-    void remove_whenNotFound_shouldThrow() {
-        when(libraryRepository.findById(99L)).thenReturn(Optional.empty());
+    void clear_shouldDeleteAllByUser() {
+        libraryService.clear(1L);
 
-        assertThatThrownBy(() -> libraryService.remove(99L, 1L))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("99");
-
-        verify(libraryRepository, never()).delete(any());
+        verify(libraryRepository).deleteByUser_Id(1L);
     }
 }

@@ -1,12 +1,15 @@
 package com.app.proyectojuegosmonolito.purchase.mapper;
 
 import com.app.proyectojuegosmonolito.game.model.Game;
+import com.app.proyectojuegosmonolito.purchase.dto.PurchaseItemRequest;
 import com.app.proyectojuegosmonolito.purchase.dto.PurchaseItemResponse;
+import com.app.proyectojuegosmonolito.purchase.dto.PurchaseRequest;
 import com.app.proyectojuegosmonolito.purchase.dto.PurchaseResponse;
 import com.app.proyectojuegosmonolito.purchase.model.Purchase;
 import com.app.proyectojuegosmonolito.purchase.model.PurchaseItem;
+import com.app.proyectojuegosmonolito.purchase.model.PurchaseLine;
 import com.app.proyectojuegosmonolito.purchase.model.PurchaseStatus;
-import com.app.proyectojuegosmonolito.user.model.User;
+import com.app.proyectojuegosmonolito.account.user.model.User;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -18,6 +21,21 @@ import static org.assertj.core.api.Assertions.*;
 class PurchaseMapperTest {
 
     private final PurchaseMapper mapper = new PurchaseMapper();
+
+    @Test
+    void toLines_shouldMapEachItemToPurchaseLine() {
+        var request = new PurchaseRequest(List.of(
+                new PurchaseItemRequest(10L, 2),
+                new PurchaseItemRequest(20L, 1)
+        ));
+
+        var result = mapper.toLines(request);
+
+        assertThat(result).containsExactly(
+                new PurchaseLine(10L, 2),
+                new PurchaseLine(20L, 1)
+        );
+    }
 
     @Test
     void toResponse_shouldMapAllFields() {

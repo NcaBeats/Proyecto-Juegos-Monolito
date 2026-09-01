@@ -2,6 +2,12 @@ spring:
   jpa:
     show-sql: false
 
+app:
+  jwt:
+    secret: ${KEY_JWT_SECRET}
+    expiration: ${KEY_JWT_EXPIRATION}
+
+
 logging:
   level:
     com.app.proyectojuegosmonolito: WARN
