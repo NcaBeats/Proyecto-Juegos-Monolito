@@ -93,6 +93,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 7, 7))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149186/jlvjpqerig4jsh4f7ypr.webp")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226686/zw94nyucmyjac8jszexj.webp")
                 .categories(List.of(sports))
                 .build());
 
@@ -104,6 +105,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 8, 12))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149206/xrjf04vgulidbc4lbyf3.avif")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226722/y6bb4iesp3jqbvymtaoe.webp")
                 .categories(List.of(action, adventure, openWorld))
                 .build());
 
@@ -115,6 +117,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2013, 9, 17))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149231/pfmjtit08yk4aoikwfqv.webp")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226489/a1iuiy2siwpbr74n3prx.webp")
                 .categories(List.of(action, adventure, openWorld))
                 .build());
 
@@ -258,6 +261,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 10, 2))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152509/slibpbfpsr8maroiffdi.webp")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226771/ql7cef0v5jpuba26rexg.webp")
                 .categories(List.of(racing, sports))
                 .build());
 
