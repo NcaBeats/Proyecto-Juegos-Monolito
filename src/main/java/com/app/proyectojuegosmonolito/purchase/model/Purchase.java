@@ -1,6 +1,6 @@
 package com.app.proyectojuegosmonolito.purchase.model;
 
-import com.app.proyectojuegosmonolito.user.model.User;
+import com.app.proyectojuegosmonolito.account.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,6 +35,9 @@ public class Purchase {
 
     @Column(nullable = false)
     private Instant purchasedAt;
+
+    @Column(nullable = false, length = 64)
+    private String idempotencyKey;
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

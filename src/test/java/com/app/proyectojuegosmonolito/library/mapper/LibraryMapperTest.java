@@ -3,7 +3,7 @@ package com.app.proyectojuegosmonolito.library.mapper;
 import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.library.dto.LibraryResponse;
 import com.app.proyectojuegosmonolito.library.model.Library;
-import com.app.proyectojuegosmonolito.user.model.User;
+import com.app.proyectojuegosmonolito.account.user.model.User;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

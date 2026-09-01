@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -18,13 +20,15 @@ class GameMapperTest {
 
     @Test
     void toEntity_shouldMapAllFields() {
-        var request = new GameRequest("Test Game", new BigDecimal("29.99"),
-                "Description", GameState.AVAILABLE, LocalDate.of(2026, 6, 15));
+        var request = new GameRequest("Test Game", new BigDecimal("29.99"), 20,
+                "Description", GameState.AVAILABLE, LocalDate.of(2026, 6, 15),
+                List.of("Action", "RPG"));
 
         var result = mapper.toEntity(request);
 
         assertThat(result.getName()).isEqualTo("Test Game");
-        assertThat(result.getPrice()).isEqualByComparingTo("29.99");
+        assertThat(result.getOriginalPrice()).isEqualByComparingTo("29.99");
+        assertThat(result.getDiscountPercent()).isEqualTo(20);
         assertThat(result.getDescription()).isEqualTo("Description");
         assertThat(result.getState()).isEqualTo(GameState.AVAILABLE);
         assertThat(result.getLaunchDate()).isEqualTo(LocalDate.of(2026, 6, 15));
@@ -36,15 +40,24 @@ class GameMapperTest {
     void toResponse_shouldMapAllFields() {
         var createdAt = Instant.parse("2026-01-01T00:00:00Z");
         var game = Game.builder()
-                .id(1L).name("Test Game").price(new BigDecimal("29.99"))
+                .id(1L).name("Test Game").originalPrice(new BigDecimal("29.99"))
+                .discountPercent(25)
                 .description("Description").state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2026, 6, 15)).createdAt(createdAt)
+                .categories(new ArrayList<>())
                 .build();
 
         var result = mapper.toResponse(game);
 
-        assertThat(result).isEqualTo(new GameResponse(1L, "Test Game",
-                new BigDecimal("29.99"), "Description", GameState.AVAILABLE,
-                LocalDate.of(2026, 6, 15), createdAt));
+        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.name()).isEqualTo("Test Game");
+        assertThat(result.originalPrice()).isEqualByComparingTo("29.99");
+        assertThat(result.price()).isEqualByComparingTo("22.49");
+        assertThat(result.discountPercent()).isEqualTo(25);
+        assertThat(result.description()).isEqualTo("Description");
+        assertThat(result.state()).isEqualTo(GameState.AVAILABLE);
+        assertThat(result.launchDate()).isEqualTo(LocalDate.of(2026, 6, 15));
+        assertThat(result.categories()).isEmpty();
+        assertThat(result.createdAt()).isEqualTo(createdAt);
     }
 }
