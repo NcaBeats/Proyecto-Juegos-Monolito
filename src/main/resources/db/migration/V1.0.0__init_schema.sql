@@ -3,13 +3,30 @@ CREATE SCHEMA IF NOT EXISTS "public";
 CREATE TABLE "public"."game" (
     "id" bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
     "name" varchar(50) NOT NULL UNIQUE,
-    "price" numeric(8, 2) NOT NULL,
+    "original_price" numeric(8, 2) NOT NULL,
+    "discount_percent" integer NOT NULL DEFAULT 0,
     "description" text NOT NULL,
     "state" varchar(25) NOT NULL,
     "launch_date" date NOT NULL,
+    "image_url" varchar(500),
     "created_at" timestamp NOT NULL,
     PRIMARY KEY ("id")
 );
+
+CREATE TABLE "public"."category" (
+    "id" bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    "name" varchar(50) NOT NULL UNIQUE,
+    "created_at" timestamp NOT NULL,
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE "public"."game_category" (
+    "game_id" bigint NOT NULL,
+    "category_id" bigint NOT NULL,
+    PRIMARY KEY ("game_id", "category_id")
+);
+ALTER TABLE "public"."game_category" ADD CONSTRAINT "fk_game_category_game_id" FOREIGN KEY ("game_id") REFERENCES "public"."game"("id") ON DELETE CASCADE;
+ALTER TABLE "public"."game_category" ADD CONSTRAINT "fk_game_category_category_id" FOREIGN KEY ("category_id") REFERENCES "public"."category"("id") ON DELETE CASCADE;
 
 CREATE TABLE "public"."library" (
     "id" bigint GENERATED ALWAYS AS IDENTITY NOT NULL,

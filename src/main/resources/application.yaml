@@ -16,6 +16,15 @@ spring:
     problemdetails:
       enabled: true
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+app:
+  cloudinary:
+    url: ${CLOUDINARY_URL:}
+
   jpa:
     hibernate:
       ddl-auto: none
