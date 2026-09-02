@@ -47,17 +47,26 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
+                        // Games: anyone can read, only ADMIN can write
                         .requestMatchers(HttpMethod.GET, "/api/v1/games").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/games/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/games").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/games/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/games/**").hasRole("ADMIN")
+                        // Categories: anyone can read, only ADMIN can write
+                        .requestMatchers(HttpMethod.GET, "/api/v1/categories").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/categories").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/categories/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/categories/**").hasRole("ADMIN")
+                        // Users: ADMIN only for list/create, authenticated for self
                         .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").hasRole("ADMIN")
+                        // Wallet: ADMIN only for funding
                         .requestMatchers(HttpMethod.PUT, "/api/v1/wallet").hasRole("ADMIN")
+                        // Purchases: authenticated users (ADMIN, VENDEDOR, CLIENTE) can read their own
+                        .requestMatchers(HttpMethod.GET, "/api/v1/purchases").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/purchases/**").authenticated()
                         .anyRequest().authenticated()
                 );
         return http.build();

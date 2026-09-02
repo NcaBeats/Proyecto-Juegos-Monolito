@@ -18,7 +18,7 @@ cd Proyecto-Juegos-Monolito
 docker compose up -d
 
 # 3. Compilar y ejecutar la aplicación
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+./mvnw spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
 La app arranca en `http://localhost:8080`.
@@ -29,11 +29,19 @@ El sistema carga automáticamente 24 juegos, 14 categorías y 3 usuarios de prue
 
 ### Usuarios
 
-| Usuario | Contraseña | Rol | Wallet |
-|---------|-----------|-----|--------|
-| `player1` | `pass123` | ADMIN | $200 |
-| `player2` | `pass123` | USER | $50 |
-| `broke_player` | `pass123` | USER | $0 |
+| Email | Contraseña | Rol | Wallet |
+|-------|-----------|-----|--------|
+| `player1@test.com` | `pass123` | ADMIN | $200 |
+| `player2@test.com` | `pass123` | CLIENTE | $50 |
+| `broke@test.com` | `pass123` | CLIENTE | $0 |
+
+### Roles
+
+| Rol | Descripción |
+|-----|-------------|
+| `ADMIN` | Acceso total al sistema |
+| `VENDEDOR` | Visualiza productos y órdenes (solo lectura) |
+| `CLIENTE` | Solo accede a la tienda |
 
 ### Categorías
 
@@ -97,7 +105,7 @@ Action, Adventure, RPG, Shooter, Platformer, Fighting, Open World, Sports, Indie
 
 ### Profiles
 - `GET /api/v1/profile` — Ver perfil
-- `PUT /api/v1/profile` — Actualizar perfil
+- `PATCH /api/v1/profile` — Actualizar perfil
 
 ## Autenticación
 
@@ -112,10 +120,16 @@ Para obtener un token, hacer login:
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username": "player1", "password": "pass123"}'
+  -d '{"email": "player1@test.com", "password": "pass123"}'
 ```
 
-Los endpoints de ADMIN (POST/PUT/DELETE en juegos, usuarios, wallet) requieren el rol `ROLE_ADMIN`.
+### Permisos por rol
+
+| Rol | Acceso |
+|-----|--------|
+| `ADMIN` | CRUD completo en juegos, usuarios, wallet |
+| `VENDEDOR` | Solo lectura de juegos y órdenes |
+| `CLIENTE` | Tienda, compras, perfil propio |
 
 ## Health check
 

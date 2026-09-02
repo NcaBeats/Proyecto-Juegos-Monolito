@@ -30,21 +30,36 @@ public class UserService {
 
     @Transactional
     public User create(User user) {
+        return create(user, null);
+    }
+
+    @Transactional
+    public User create(User user, Profile profile) {
         var now = Instant.now();
         user.setCreatedAt(now);
-        user.setProfile(Profile.builder()
-                .user(user)
-                .nickname(user.getUsername())
-                .visibility(Visibility.PUBLIC)
-                .createdAt(now)
-                .build());
+
+        if (profile != null) {
+            profile.setUser(user);
+            if (profile.getCreatedAt() == null) {
+                profile.setCreatedAt(now);
+            }
+            user.setProfile(profile);
+        } else {
+            user.setProfile(Profile.builder()
+                    .user(user)
+                    .nickname(user.getUsername())
+                    .visibility(Visibility.PUBLIC)
+                    .createdAt(now)
+                    .build());
+        }
+
         user.setWallet(Wallet.builder()
                 .user(user)
                 .balance(BigDecimal.ZERO)
                 .updatedAt(now)
                 .build());
         if (user.getRole() == null) {
-            user.setRole(Role.USER);
+            user.setRole(Role.CLIENTE);
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         var saved = userRepository.save(user);

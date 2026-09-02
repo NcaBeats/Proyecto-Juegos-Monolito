@@ -25,12 +25,12 @@ docker compose up -d        # dev Postgres only (reads .env)
 - **dev** — via the `spring-boot-maven-plugin` `<profiles>` in `pom.xml`, so it ONLY applies to `./mvnw spring-boot:run`. Running the main class from IntelliJ requires `SPRING_PROFILES_ACTIVE=dev` env var in the Run Configuration. `application-dev.yaml` supplies ALL local dev config: `spring.datasource.*` (DB creds + defaults) + `spring.application.name` + `app.jwt.secret` + `app.cloudinary.url`. All values have env-var overrides with safe defaults — app boots out-of-the-box after clone + `docker compose up -d`.
 - **test** — via `@ActiveProfiles("test")` on all 14 `@SpringBootTest` classes; `src/test/resources/application-test.yaml` supplies JWT defaults. `app.jwt.secret` must be ≥256 bits for HS256, else `KeyLengthException`. The 4 `@DataJpaTest` classes have NO profile (they don't load `@Component`, so they don't need it).
 - **prod** — via `SPRING_PROFILES_ACTIVE=prod` env var (set by Render / Railway). `application-prod.yaml` has NO defaults for `KEY_JWT_SECRET`/`KEY_JWT_EXPIRATION` → app won't boot without them.
-- `DataInitializer` (`config/`) is `@Profile("dev")`: seeds Minecraft/Stardew/Elden Ring + player1 (ADMIN, $200), player2 ($50), broke_player. Prod starts with an EMPTY DB and NO ADMIN (promote one via SQL).
+- `DataInitializer` (`config/`) is `@Profile("dev")`: seeds 24 games, 15 categories, player1 (ADMIN, $200), player2 (CLIENTE, $50), broke_player (CLIENTE). All users have full profile data (RUN, name, region, etc.). Prod starts with an EMPTY DB and NO ADMIN (promote one via SQL).
 
 ## Auth & Security
 - JWT via `spring-boot-starter-oauth2-resource-server` (Nimbus) — **no jjwt**
 - HMAC-SHA256: `NimbusJwtEncoder.withSecretKey(secret).algorithm(MacAlgorithm.HS256)`; `@Value("${app.jwt.secret}")`
-- `Role` enum (USER/ADMIN), default USER, assigned in `UserService.create()`
+- `Role` enum (ADMIN/VENTEDOR/CLIENTE), default CLIENTE, assigned in `UserService.create()`
 - `JwtAuthenticationConverter` maps claim `"role"` → `ROLE_<role>`; tokens without claim → `ROLE_null`
 - `server.port: ${PORT:8080}` and `/actuator/health` is `permitAll` (Render/Railway health checks)
 
@@ -78,7 +78,7 @@ Known debt (explicitly deferred, not urgent):
 - `Wallet` uses `@Version` optimistic locking (migration `V1.0.0`) — concurrent stale writes throw `OptimisticLockingFailureException` → mapped to **409 Conflict** in `GlobalExceptionHandler`
 - `GlobalExceptionHandler` (exception/) returns `ProblemDetail` (RFC 9457); `spring.mvc.problemdetails.enabled: true`
 - Cross-module deps in `package-info.java` use Modulith named-interface syntax, e.g. `@ApplicationModule(allowedDependencies = {"account :: user-service", "game :: service", "security :: service"})`
-- `ModulithTests` (root test package) enforces module boundaries via `ApplicationModules.verify()` — run it before the full suite; named interfaces require a `@NamedInterface("...")` in the sub-package's `package-info.java` (e.g. `account :: wallet-model`)
+- `ModulithTests` (root test package) enforces module boundaries via `ApplicationModules.verify()` — run it before the full suite; named interfaces require a `@NamedInterface("...")` in the sub-package's `package-info.java` (e.g. `account :: wallet-model`, `account :: profile-model`)
 
 ## Database
 - Dev: `.env` (gitignored) with `DB_NAME`, `DB_USER`, `DB_PASSWORD` (read by Compose to create the Postgres container); the app reads the SAME creds from `application-dev.yaml` (duplicated on purpose — the host-run app does not read `.env`)

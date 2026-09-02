@@ -1,9 +1,9 @@
 package com.app.proyectojuegosmonolito.security.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import com.app.proyectojuegosmonolito.account.profile.model.ValidEmailDomain;
+import jakarta.validation.constraints.*;
 
 public record LoginRequest(
-        @NotBlank @Email String email,
-        @NotBlank String password )
-{}
+        @NotBlank @Email @Size(max = 100) @ValidEmailDomain String email,
+        @NotBlank @Size(min = 4, max = 10) String password
+) {}

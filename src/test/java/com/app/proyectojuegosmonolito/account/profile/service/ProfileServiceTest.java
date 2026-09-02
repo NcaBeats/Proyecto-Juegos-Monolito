@@ -53,7 +53,7 @@ class ProfileServiceTest {
         when(profileRepository.findById(1L)).thenReturn(Optional.of(profile));
         when(profileRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        var result = profileService.update(1L, new ProfilePatchRequest("newnick", "new bio", Visibility.PRIVATE));
+        var result = profileService.update(1L, new ProfilePatchRequest("newnick", "new bio", Visibility.PRIVATE, null, null, null, null, null, null));
 
         assertThat(result.getNickname()).isEqualTo("newnick");
         assertThat(result.getBio()).isEqualTo("new bio");

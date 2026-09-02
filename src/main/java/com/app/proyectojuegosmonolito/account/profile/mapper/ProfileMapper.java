@@ -14,6 +14,13 @@ public class ProfileMapper {
                 profile.getAvatarImage(),
                 profile.getBio(),
                 profile.getVisibility(),
+                profile.getRun(),
+                profile.getFirstName(),
+                profile.getLastName(),
+                profile.getBirthDate(),
+                profile.getRegion(),
+                profile.getComuna(),
+                profile.getAddress(),
                 profile.getCreatedAt()
         );
     }
