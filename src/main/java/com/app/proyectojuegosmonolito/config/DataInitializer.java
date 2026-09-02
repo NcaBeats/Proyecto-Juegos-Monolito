@@ -9,19 +9,22 @@ import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.account.wallet.service.WalletService;
+import com.app.proyectojuegosmonolito.account.profile.model.Profile;
+import com.app.proyectojuegosmonolito.account.profile.model.Region;
+import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
 @Component
-@Profile("dev")
+@org.springframework.context.annotation.Profile("dev")
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
@@ -93,7 +96,6 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 7, 7))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149186/jlvjpqerig4jsh4f7ypr.webp")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226686/zw94nyucmyjac8jszexj.webp")
                 .categories(List.of(sports))
                 .build());
 
@@ -105,7 +107,6 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 8, 12))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149206/xrjf04vgulidbc4lbyf3.avif")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226722/y6bb4iesp3jqbvymtaoe.webp")
                 .categories(List.of(action, adventure, openWorld))
                 .build());
 
@@ -117,7 +118,6 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2013, 9, 17))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149231/pfmjtit08yk4aoikwfqv.webp")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226489/a1iuiy2siwpbr74n3prx.webp")
                 .categories(List.of(action, adventure, openWorld))
                 .build());
 
@@ -261,7 +261,6 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 10, 2))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152509/slibpbfpsr8maroiffdi.webp")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226771/ql7cef0v5jpuba26rexg.webp")
                 .categories(List.of(racing, sports))
                 .build());
 
@@ -320,26 +319,65 @@ public class DataInitializer implements CommandLineRunner {
                 .categories(List.of(simulation))
                 .build());
 
-        var player1 = userService.create(User.builder()
-                .username("player1")
-                .email("player1@test.com")
-                .password("pass123")
-                .role(Role.ADMIN)
-                .build());
+        // Users with full profile data
+        var now = Instant.now();
+
+        var player1 = userService.create(
+                User.builder()
+                        .username("player1")
+                        .email("player1@test.com")
+                        .password("pass123")
+                        .role(Role.ADMIN)
+                        .build(),
+                Profile.builder()
+                        .run("19011022K")
+                        .firstName("Juan")
+                        .lastName("Pérez")
+                        .birthDate(LocalDate.of(2001, 10, 22))
+                        .region(Region.METROPOLITANA_DE_SANTIAGO)
+                        .comuna("Santiago")
+                        .address("Av. Libertador 1234")
+                        .visibility(Visibility.PUBLIC)
+                        .build()
+        );
         walletService.updateBalance(player1.getId(), new BigDecimal("200"));
 
-        var player2 = userService.create(User.builder()
-                .username("player2")
-                .email("player2@test.com")
-                .password("pass123")
-                .build());
+        var player2 = userService.create(
+                User.builder()
+                        .username("player2")
+                        .email("player2@test.com")
+                        .password("pass123")
+                        .build(),
+                Profile.builder()
+                        .run("18234567K")
+                        .firstName("María")
+                        .lastName("García")
+                        .birthDate(LocalDate.of(1998, 5, 15))
+                        .region(Region.VALPARAISO)
+                        .comuna("Viña del Mar")
+                        .address("Calle Los Olivos 567")
+                        .visibility(Visibility.PUBLIC)
+                        .build()
+        );
         walletService.updateBalance(player2.getId(), new BigDecimal("50"));
 
-        userService.create(User.builder()
-                .username("broke_player")
-                .email("broke@test.com")
-                .password("pass123")
-                .build());
+        userService.create(
+                User.builder()
+                        .username("broke_player")
+                        .email("broke@test.com")
+                        .password("pass123")
+                        .build(),
+                Profile.builder()
+                        .run("20123456K")
+                        .firstName("Carlos")
+                        .lastName("Rodríguez")
+                        .birthDate(LocalDate.of(2005, 3, 10))
+                        .region(Region.BIOBIO)
+                        .comuna("Concepción")
+                        .address("Pasaje Las Flores 890")
+                        .visibility(Visibility.PUBLIC)
+                        .build()
+        );
     }
 
     private Category createCategory(String name) {

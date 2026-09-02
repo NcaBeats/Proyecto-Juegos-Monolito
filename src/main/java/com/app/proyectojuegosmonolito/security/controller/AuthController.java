@@ -4,7 +4,6 @@ import com.app.proyectojuegosmonolito.SecurityContext;
 import com.app.proyectojuegosmonolito.security.dto.AuthResponse;
 import com.app.proyectojuegosmonolito.security.dto.LoginRequest;
 import com.app.proyectojuegosmonolito.security.dto.RegisterRequest;
-import com.app.proyectojuegosmonolito.security.mapper.AuthMapper;
 import com.app.proyectojuegosmonolito.security.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
-    private final AuthMapper authMapper;
     private final SecurityContext securityContext;
 
     @PostMapping("/login")
@@ -32,7 +30,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(authService.register(authMapper.toEntity(request)));
+                .body(authService.register(request));
     }
 
     @PostMapping("/logout")

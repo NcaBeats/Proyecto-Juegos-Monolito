@@ -25,6 +25,6 @@ class ProfileMapperTest {
         var result = mapper.toResponse(profile);
 
         assertThat(result).isEqualTo(new ProfileResponse(1L, "nick", "avatar.png", "bio",
-                Visibility.PUBLIC, createdAt));
+                Visibility.PUBLIC, null, null, null, null, null, null, null, createdAt));
     }
 }

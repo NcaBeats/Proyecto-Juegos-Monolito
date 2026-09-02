@@ -1,12 +1,21 @@
 package com.app.proyectojuegosmonolito.security.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.app.proyectojuegosmonolito.account.profile.model.Region;
+import com.app.proyectojuegosmonolito.account.profile.model.ValidEmailDomain;
+import com.app.proyectojuegosmonolito.account.profile.model.ValidRun;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
 
 public record RegisterRequest(
-        @NotBlank @Size(max = 25) String username,
-        @NotBlank @Email @Size(max = 100) String email,
-        @NotBlank @Size(min = 8, max = 255) String password
+        @NotBlank @Email @Size(max = 100) @ValidEmailDomain String email,
+        @NotBlank @Size(min = 4, max = 10) String password,
+        @NotBlank @ValidRun String run,
+        @NotBlank @Size(max = 50) String firstName,
+        @NotBlank @Size(max = 100) String lastName,
+        LocalDate birthDate,
+        @NotNull Region region,
+        @NotBlank @Size(max = 100) String comuna,
+        @NotBlank @Size(max = 300) String address
 ) {
 }

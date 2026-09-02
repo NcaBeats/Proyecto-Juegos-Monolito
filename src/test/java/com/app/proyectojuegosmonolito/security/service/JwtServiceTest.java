@@ -39,7 +39,7 @@ class JwtServiceTest {
                 .email("user@test.com")
                 .password("encoded")
                 .createdAt(Instant.now())
-                .role(Role.USER)
+                .role(Role.CLIENTE)
                 .tokenVersion(3)
                 .build();
 
@@ -48,7 +48,7 @@ class JwtServiceTest {
 
         assertThat(jwt.getSubject()).isEqualTo("1");
         assertThat(jwt.getClaimAsString("ver")).isEqualTo("3");
-        assertThat(jwt.getClaimAsString("role")).isEqualTo("USER");
+        assertThat(jwt.getClaimAsString("role")).isEqualTo("CLIENTE");
     }
 
     private void setExpiration(long millis) {

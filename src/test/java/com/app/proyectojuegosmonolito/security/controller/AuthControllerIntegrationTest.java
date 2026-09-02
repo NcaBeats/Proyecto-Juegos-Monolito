@@ -1,6 +1,7 @@
 package com.app.proyectojuegosmonolito.security.controller;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
+import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.user.repository.UserRepository;
@@ -93,7 +94,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("newuser", "new@test.com", "password123"))))
+                                new RegisterRequest("new@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, "Santiago", "Test 123"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").isNotEmpty());
     }
@@ -112,7 +113,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(put("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("newuser", "new@test.com", "password123"))))
+                                new RegisterRequest("new@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, "Santiago", "Test 123"))))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.title").value("Method Not Allowed"));
     }
@@ -150,7 +151,7 @@ class AuthControllerIntegrationTest {
         MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("revokeduser", "revoked@test.com", "password123"))))
+                                new RegisterRequest("revoked@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, "Santiago", "Test 123"))))
                 .andExpect(status().isCreated())
                 .andReturn();
         return objectMapper.readTree(result.getResponse().getContentAsString()).get("token").asText();
@@ -161,7 +162,7 @@ class AuthControllerIntegrationTest {
                 .username(username)
                 .email(email)
                 .password(passwordEncoder.encode(rawPassword))
-                .role(Role.USER)
+                .role(Role.CLIENTE)
                 .createdAt(Instant.now())
                 .build());
     }
