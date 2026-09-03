@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: proyecto_juegos_monolito
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${DB_NAME:proyecto_juegos}
+    username: ${DB_USER:nico}
+    password: ${DB_PASSWORD:Empanada5678}
+  jpa:
+    show-sql: true
+
+app:
+  jwt:
+    secret: ${KEY_JWT_SECRET:Uo4MkxmgYVdBK+6mYtjYYpI8k4fpSUihZ8FNhpiSmZ4xyb59cUYKLdW94eKtkoRe}
+    expiration: ${KEY_JWT_EXPIRATION:3600000}
+  cloudinary:
+    url: ${CLOUDINARY_URL:cloudinary://312127544695893:sbCqVOP04vt4hJrmryY0ojeEOPs@tpjbimjw}
+
+logging:
+  level:
+    com.app.proyectojuegosmonolito: DEBUG
+    org.hibernate.SQL: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,mappings,loggers

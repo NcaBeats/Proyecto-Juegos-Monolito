@@ -1,0 +1,21 @@
+spring:
+  jpa:
+    show-sql: false
+
+app:
+  jwt:
+    secret: ${KEY_JWT_SECRET}
+    expiration: ${KEY_JWT_EXPIRATION}
+
+
+logging:
+  level:
+    com.app.proyectojuegosmonolito: WARN
+
+springdoc:
+    api-docs:
+      enabled: false
+    swagger-ui:
+      enabled: false
+server:
+  shutdown: graceful
