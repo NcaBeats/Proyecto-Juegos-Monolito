@@ -329,13 +329,13 @@ public class DataInitializer implements CommandLineRunner {
 
         var player1 = userService.create(
                 User.builder()
-                        .email("player1@test.com")
+                        .email("player1@gmail.com")
                         .password("pass123")
                         .role(Role.ADMIN)
                         .build(),
                 Profile.builder()
                         .nickname("player1")
-                        .run("19011022K")
+                        .run("190110222")
                         .firstName("Juan")
                         .lastName("Pérez")
                         .birthDate(LocalDate.of(2001, 10, 22))
@@ -349,12 +349,12 @@ public class DataInitializer implements CommandLineRunner {
 
         var player2 = userService.create(
                 User.builder()
-                        .email("player2@test.com")
+                        .email("player2@gmail.com")
                         .password("pass123")
                         .build(),
                 Profile.builder()
                         .nickname("player2")
-                        .run("18234567K")
+                        .run("182345679")
                         .firstName("María")
                         .lastName("García")
                         .birthDate(LocalDate.of(1998, 5, 15))
@@ -368,12 +368,12 @@ public class DataInitializer implements CommandLineRunner {
 
         userService.create(
                 User.builder()
-                        .email("broke@test.com")
+                        .email("broke@gmail.com")
                         .password("pass123")
                         .build(),
                 Profile.builder()
                         .nickname("broke_player")
-                        .run("20123456K")
+                        .run("201234565")
                         .firstName("Carlos")
                         .lastName("Rodríguez")
                         .birthDate(LocalDate.of(2005, 3, 10))
