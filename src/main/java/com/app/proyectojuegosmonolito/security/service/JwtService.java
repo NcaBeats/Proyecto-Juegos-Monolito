@@ -25,7 +25,7 @@ public class JwtService {
                 .issuer("proyecto-juegos")
                 .subject(user.getId().toString())
                 .claim("type", "access")
-                .claim("name", user.getUsername())
+                .claim("name", user.getEmail())
                 .claim("role", user.getRole().name())
                 .claim("ver", user.getTokenVersion())
                 .issuedAt(now)

@@ -45,13 +45,13 @@ class UserControllerIntegrationTest {
 
         mockMvc.perform(get("/api/v1/users/me").with(token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("user"));
+                .andExpect(jsonPath("$.email").value("user@test.com"));
     }
 
     @Test
     void getAll_shouldReturnPage() throws Exception {
-        userRepository.save(user("alpha", "alpha@test.com"));
-        userRepository.save(user("beta", "beta@test.com"));
+        userRepository.save(user("alpha@test.com"));
+        userRepository.save(user("beta@test.com"));
 
         mockMvc.perform(get("/api/v1/users")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
@@ -67,20 +67,20 @@ class UserControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/users").with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new UserRequestCreate("newuser", "new@test.com", "password123"))))
+                                new UserRequestCreate("new@test.com", "password123"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.username").value("newuser"));
+                .andExpect(jsonPath("$.email").value("new@test.com"));
     }
 
     @Test
     void create_withInvalidBody_shouldReturn400() throws Exception {
         mockMvc.perform(post("/api/v1/users").with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new UserRequestCreate(null, null, null))))
+                        .content(objectMapper.writeValueAsString(new UserRequestCreate(null, null))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Validation Error"))
-                .andExpect(jsonPath("$.errors.length()").value(3));
+                .andExpect(jsonPath("$.errors.length()").value(2));
     }
 
     @Test
@@ -91,9 +91,9 @@ class UserControllerIntegrationTest {
         mockMvc.perform(put("/api/v1/users").with(token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new UserUpdateRequest("updated", "updated@test.com"))))
+                                new UserUpdateRequest("updated@test.com"))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("updated"));
+                .andExpect(jsonPath("$.email").value("updated@test.com"));
     }
 
     @Test

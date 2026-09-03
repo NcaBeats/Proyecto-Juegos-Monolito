@@ -43,7 +43,6 @@ ALTER TABLE "public"."game_category" ADD CONSTRAINT "fk_game_category_category_i
 -- =============================================
 CREATE TABLE "public"."user" (
     "id"            bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
-    "username"      varchar(25) NOT NULL UNIQUE,
     "email"         varchar(100) NOT NULL UNIQUE,
     "password"      varchar(255) NOT NULL,
     "created_at"    timestamp NOT NULL,
@@ -66,7 +65,7 @@ CREATE TABLE "public"."profile" (
     "last_name"     varchar(100) NOT NULL,
     "birth_date"    date,
     "region"        varchar(50) NOT NULL,
-    "comuna"        varchar(100) NOT NULL,
+    "comuna"        varchar(50) NOT NULL,
     "address"       varchar(300) NOT NULL,
     "created_at"    timestamp NOT NULL,
     PRIMARY KEY ("user_id")
@@ -125,6 +124,18 @@ CREATE TABLE "public"."purchase_item" (
     UNIQUE ("purchase_id", "game_id")
 );
 CREATE INDEX "purchase_item_index_2" ON "public"."purchase_item" ("game_id");
+
+-- =============================================
+-- CONTACT
+-- =============================================
+CREATE TABLE "public"."contact" (
+    "id"          bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    "name"        varchar(100) NOT NULL,
+    "email"       varchar(100) NOT NULL,
+    "comment"     text NOT NULL,
+    "created_at"  timestamp NOT NULL,
+    PRIMARY KEY ("id")
+);
 
 -- =============================================
 -- FOREIGN KEYS

@@ -20,9 +20,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 25, unique = true)
-    private String username;
-
     @Column(nullable = false, length = 100, unique = true)
     private String email;
 
@@ -45,8 +42,7 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Wallet wallet;
 
-    public User update(String username, String email) {
-        this.username = username;
+    public User update(String email) {
         this.email = email;
         return this;
     }

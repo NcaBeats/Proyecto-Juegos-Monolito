@@ -58,7 +58,7 @@ public class UserController {
     @PutMapping
     public ResponseEntity<UserResponse> update(@Valid @RequestBody UserUpdateRequest request) {
         var id = securityContext.getCurrentUserId();
-        var user = userService.update(id, request.username(), request.email());
+        var user = userService.update(id, request.email());
         return ResponseEntity.ok(userMapper.toResponse(user));
     }
 

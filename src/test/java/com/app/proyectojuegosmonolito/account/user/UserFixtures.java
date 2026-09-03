@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.account.user;
 
+import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Profile;
 import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.user.model.Role;
@@ -17,7 +18,6 @@ public class UserFixtures {
 
     public static User user() {
         return User.builder()
-                .username("user")
                 .email("user@test.com")
                 .password("pass123")
                 .role(Role.CLIENTE)
@@ -28,7 +28,6 @@ public class UserFixtures {
     public static User user(Long id) {
         return User.builder()
                 .id(id)
-                .username("user" + id)
                 .email("user" + id + "@test.com")
                 .password("pass123")
                 .role(Role.CLIENTE)
@@ -36,10 +35,9 @@ public class UserFixtures {
                 .build();
     }
 
-    public static User user(Long id, String username, String email) {
+    public static User user(Long id, String email) {
         return User.builder()
                 .id(id)
-                .username(username)
                 .email(email)
                 .password("pass123")
                 .role(Role.CLIENTE)
@@ -47,9 +45,8 @@ public class UserFixtures {
                 .build();
     }
 
-    public static User user(String username, String email) {
+    public static User user(String email) {
         return User.builder()
-                .username(username)
                 .email(email)
                 .password("pass123")
                 .role(Role.CLIENTE)
@@ -61,12 +58,12 @@ public class UserFixtures {
         return Profile.builder()
                 .userId(user.getId())
                 .user(user)
-                .nickname(user.getUsername())
+                .nickname(user.getEmail())
                 .run(generateUniqueRun())
                 .firstName("Test")
                 .lastName("User")
                 .region(Region.METROPOLITANA_DE_SANTIAGO)
-                .comuna("Santiago")
+                .comuna(Comuna.SANTIAGO)
                 .address("Calle Test 123")
                 .visibility(Visibility.PUBLIC)
                 .createdAt(Instant.now())
@@ -82,7 +79,7 @@ public class UserFixtures {
                 .firstName("Test")
                 .lastName("User")
                 .region(Region.METROPOLITANA_DE_SANTIAGO)
-                .comuna("Santiago")
+                .comuna(Comuna.SANTIAGO)
                 .address("Calle Test 123")
                 .visibility(visibility)
                 .createdAt(Instant.now())

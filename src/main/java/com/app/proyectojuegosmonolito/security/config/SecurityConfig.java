@@ -67,6 +67,9 @@ public class SecurityConfig {
                         // Purchases: authenticated users (ADMIN, VENDEDOR, CLIENTE) can read their own
                         .requestMatchers(HttpMethod.GET, "/api/v1/purchases").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/purchases/**").authenticated()
+                        // Contacts: public to create, ADMIN only to list
+                        .requestMatchers(HttpMethod.POST, "/api/v1/contacts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/contacts").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
         return http.build();

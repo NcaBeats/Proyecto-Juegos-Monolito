@@ -35,15 +35,15 @@ class UserRepositoryIntegrationTest {
         var found = userRepository.findById(saved.getId());
 
         assertThat(found).isPresent();
-        assertThat(found.get().getUsername()).isEqualTo("user");
+        assertThat(found.get().getEmail()).isEqualTo("user@test.com");
     }
 
     @Test
     void findAllWithPagination() {
         userRepository.saveAll(List.of(
-                user("alpha", "alpha@test.com"),
-                user("beta", "beta@test.com"),
-                user("gamma", "gamma@test.com")
+                user("alpha@test.com"),
+                user("beta@test.com"),
+                user("gamma@test.com")
         ));
 
         var page = userRepository.findAll(PageRequest.of(0, 2));

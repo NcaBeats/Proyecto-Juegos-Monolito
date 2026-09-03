@@ -56,7 +56,6 @@ class WalletControllerIntegrationTest {
     @Test
     void update_shouldReturn200() throws Exception {
         var admin = userService.create(User.builder()
-                .username("admin")
                 .email("admin@test.com")
                 .password("pass123")
                 .role(Role.ADMIN)
@@ -74,7 +73,6 @@ class WalletControllerIntegrationTest {
     @Test
     void update_withNegativeBalance_shouldReturn400() throws Exception {
         var admin = userService.create(User.builder()
-                .username("admin2")
                 .email("admin2@test.com")
                 .password("pass123")
                 .role(Role.ADMIN)

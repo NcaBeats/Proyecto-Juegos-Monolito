@@ -36,7 +36,7 @@ class UserServiceIntegrationTest {
         assertThat(result.getId()).isNotNull();
         assertThat(result.getCreatedAt()).isNotNull();
         assertThat(result.getProfile()).isNotNull();
-        assertThat(result.getProfile().getNickname()).isEqualTo("user");
+        assertThat(result.getProfile().getNickname()).isEqualTo("user@test.com");
         assertThat(result.getProfile().getVisibility()).isEqualTo(Visibility.PUBLIC);
         assertThat(result.getWallet()).isNotNull();
         assertThat(result.getWallet().getBalance()).isEqualByComparingTo("0");
@@ -48,7 +48,7 @@ class UserServiceIntegrationTest {
 
         var result = userService.findById(saved.getId());
 
-        assertThat(result.getUsername()).isEqualTo("user");
+        assertThat(result.getEmail()).isEqualTo("user@test.com");
     }
 
     @Test
@@ -60,9 +60,9 @@ class UserServiceIntegrationTest {
     @Test
     void findAll_shouldReturnPage() {
         userRepository.saveAll(List.of(
-                user("alpha", "alpha@test.com"),
-                user("beta", "beta@test.com"),
-                user("gamma", "gamma@test.com")
+                user("alpha@test.com"),
+                user("beta@test.com"),
+                user("gamma@test.com")
         ));
 
         var page = userService.findAll(PageRequest.of(0, 2));
@@ -76,9 +76,8 @@ class UserServiceIntegrationTest {
         var saved = userService.create(user());
         var savedPassword = saved.getPassword();
 
-        var result = userService.update(saved.getId(), "newuser", "new@test.com");
+        var result = userService.update(saved.getId(), "new@test.com");
 
-        assertThat(result.getUsername()).isEqualTo("newuser");
         assertThat(result.getEmail()).isEqualTo("new@test.com");
         assertThat(result.getPassword()).isEqualTo(savedPassword);
     }

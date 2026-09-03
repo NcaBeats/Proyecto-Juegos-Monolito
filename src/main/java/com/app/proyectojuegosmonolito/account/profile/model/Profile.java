@@ -61,10 +61,9 @@ public class Profile {
     @Column(nullable = false, length = 50)
     private Region region;
 
-    @NotBlank
-    @Size(max = 100)
-    @Column(nullable = false, length = 100)
-    private String comuna;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private Comuna comuna;
 
     @NotBlank
     @Size(max = 300)
@@ -83,7 +82,7 @@ public class Profile {
     }
 
     public Profile updatePersonalInfo(String firstName, String lastName, LocalDate birthDate,
-                                      Region region, String comuna, String address) {
+                                      Region region, Comuna comuna, String address) {
         if (firstName != null) this.firstName = firstName;
         if (lastName != null) this.lastName = lastName;
         if (birthDate != null) this.birthDate = birthDate;

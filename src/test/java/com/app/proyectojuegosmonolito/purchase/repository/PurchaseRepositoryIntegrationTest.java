@@ -61,8 +61,8 @@ class PurchaseRepositoryIntegrationTest {
 
     @Test
     void findAllWithPagination() {
-        var user1 = userRepository.save(user("alpha", "alpha@test.com"));
-        var user2 = userRepository.save(user("beta", "beta@test.com"));
+        var user1 = userRepository.save(user("alpha@test.com"));
+        var user2 = userRepository.save(user("beta@test.com"));
         var game = gameRepository.save(game());
         purchaseRepository.save(purchase(user1, PurchaseStatus.COMPLETED, List.of(item(game, 1))));
         purchaseRepository.save(purchase(user2, PurchaseStatus.COMPLETED, List.of(item(game, 1))));
