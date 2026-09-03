@@ -1,9 +1,10 @@
-package com.app.proyectojuegosmonolito.security.dto;
+package com.app.proyectojuegosmonolito.contact.dto;
 
 import com.app.proyectojuegosmonolito.validation.ValidEmailDomain;
 import jakarta.validation.constraints.*;
 
-public record LoginRequest(
+public record ContactRequest(
+        @NotBlank @Size(max = 100) String name,
         @NotBlank @Email @Size(max = 100) @ValidEmailDomain String email,
-        @NotBlank @Size(min = 4, max = 10) String password
+        @NotBlank @Size(max = 500) String comment
 ) {}

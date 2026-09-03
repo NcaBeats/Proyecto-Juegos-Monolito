@@ -1,4 +1,4 @@
-package com.app.proyectojuegosmonolito.account.profile.model;
+package com.app.proyectojuegosmonolito.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

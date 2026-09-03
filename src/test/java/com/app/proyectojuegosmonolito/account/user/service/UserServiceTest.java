@@ -53,7 +53,7 @@ class UserServiceTest {
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getCreatedAt()).isNotNull();
         assertThat(result.getProfile()).isNotNull();
-        assertThat(result.getProfile().getNickname()).isEqualTo("user");
+        assertThat(result.getProfile().getNickname()).isEqualTo("user@test.com");
         assertThat(result.getProfile().getVisibility()).isEqualTo(Visibility.PUBLIC);
         assertThat(result.getWallet()).isNotNull();
         assertThat(result.getWallet().getBalance()).isEqualByComparingTo("0");
@@ -94,12 +94,11 @@ class UserServiceTest {
 
     @Test
     void update_shouldModifyAndSave() {
-        var user = user(1L, "old", "old@test.com");
+        var user = user(1L, "old@test.com");
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        var result = userService.update(1L, "newuser", "new@test.com");
+        var result = userService.update(1L, "new@test.com");
 
-        assertThat(result.getUsername()).isEqualTo("newuser");
         assertThat(result.getEmail()).isEqualTo("new@test.com");
         verify(userRepository, never()).save(any());
     }

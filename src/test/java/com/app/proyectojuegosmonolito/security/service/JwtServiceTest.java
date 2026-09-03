@@ -35,7 +35,6 @@ class JwtServiceTest {
     void generateAccessToken_shouldIncludeVersionClaim() {
         var user = User.builder()
                 .id(1L)
-                .username("user")
                 .email("user@test.com")
                 .password("encoded")
                 .createdAt(Instant.now())

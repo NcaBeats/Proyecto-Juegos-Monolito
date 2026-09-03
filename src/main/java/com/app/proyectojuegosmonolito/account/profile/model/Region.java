@@ -1,5 +1,8 @@
 package com.app.proyectojuegosmonolito.account.profile.model;
 
+import lombok.Getter;
+
+@Getter
 public enum Region {
     ARICA_Y_PARINACOTA("Arica y Parinacota"),
     TARAPACA("Tarapacá"),
@@ -24,7 +27,4 @@ public enum Region {
         this.displayName = displayName;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
 }

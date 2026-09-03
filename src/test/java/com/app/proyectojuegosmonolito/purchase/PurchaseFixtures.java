@@ -31,7 +31,7 @@ public class PurchaseFixtures {
                 .totalAmount(totalAmount)
                 .status(status)
                 .purchasedAt(Instant.now())
-                .idempotencyKey("fixture-key-" + user.getUsername() + "-" + Instant.now().toEpochMilli())
+                .idempotencyKey("fixture-key-" + user.getEmail() + "-" + Instant.now().toEpochMilli())
                 .items(items)
                 .build();
         items.forEach(item -> item.setPurchase(purchase));

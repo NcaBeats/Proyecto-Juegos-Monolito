@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.account.profile.dto;
 
+import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import java.time.Instant;
@@ -16,7 +17,7 @@ public record ProfileResponse(
         String lastName,
         LocalDate birthDate,
         Region region,
-        String comuna,
+        Comuna comuna,
         String address,
         Instant createdAt
 ) {}

@@ -47,7 +47,7 @@ public class UserService {
         } else {
             user.setProfile(Profile.builder()
                     .user(user)
-                    .nickname(user.getUsername())
+                    .nickname(user.getEmail())
                     .visibility(Visibility.PUBLIC)
                     .createdAt(now)
                     .build());
@@ -63,7 +63,7 @@ public class UserService {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         var saved = userRepository.save(user);
-        log.info("Created user: {} (id={})", saved.getUsername(), saved.getId());
+        log.info("Created user: {} (id={})", saved.getEmail(), saved.getId());
         return saved;
     }
 
@@ -91,13 +91,13 @@ public class UserService {
     }
 
     @Transactional
-    public User update(Long id, String username, String email) {
+    public User update(Long id, String email) {
         var userEntity = userRepository.findById(id).orElseThrow(() -> {
             log.warn("User not found: {}", id);
             return new EntityNotFoundException("User not found: " + id);
         });
-        log.info("Updating user {}: username={}", id, username.replaceAll("[\\r\\n]", " "));
-        userEntity.update(username, email);
+        log.info("Updating user {}: email={}", id, email.replaceAll("[\\r\\n]", " "));
+        userEntity.update(email);
         log.info("Updated user {}", userEntity.getId());
         return userEntity;
     }

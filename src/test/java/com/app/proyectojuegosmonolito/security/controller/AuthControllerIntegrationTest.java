@@ -1,6 +1,7 @@
 package com.app.proyectojuegosmonolito.security.controller;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
+import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
@@ -47,7 +48,7 @@ class AuthControllerIntegrationTest {
 
     @Test
     void login_withValidCredentials_shouldReturn200AndToken() throws Exception {
-        saveUser("authuser", "authuser@test.com", "pass123");
+        saveUser("authuser@test.com", "pass123");
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -60,7 +61,7 @@ class AuthControllerIntegrationTest {
 
     @Test
     void login_withInvalidPassword_shouldReturn401() throws Exception {
-        saveUser("authuser", "authuser@test.com", "pass123");
+        saveUser("authuser@test.com", "pass123");
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,7 +95,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("new@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, "Santiago", "Test 123"))))
+                                new RegisterRequest("new@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").isNotEmpty());
     }
@@ -103,7 +104,7 @@ class AuthControllerIntegrationTest {
     void register_withMalformedJson_shouldReturn400() throws Exception {
         mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\": \"newuser\""))
+                        .content("{\"email\": \"new@test.com\""))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Bad Request"));
     }
@@ -113,7 +114,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(put("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("new@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, "Santiago", "Test 123"))))
+                                new RegisterRequest("new@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.title").value("Method Not Allowed"));
     }
@@ -151,15 +152,14 @@ class AuthControllerIntegrationTest {
         MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("revoked@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, "Santiago", "Test 123"))))
+                                new RegisterRequest("revoked@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
                 .andExpect(status().isCreated())
                 .andReturn();
         return objectMapper.readTree(result.getResponse().getContentAsString()).get("token").asText();
     }
 
-    private void saveUser(String username, String email, String rawPassword) {
+    private void saveUser(String email, String rawPassword) {
         userRepository.save(User.builder()
-                .username(username)
                 .email(email)
                 .password(passwordEncoder.encode(rawPassword))
                 .role(Role.CLIENTE)

@@ -10,7 +10,6 @@ public class UserMapper {
 
     public User toEntityCreate(UserRequestCreate request) {
         return User.builder()
-                .username(request.username())
                 .email(request.email())
                 .password(request.password())
                 .build();
@@ -19,8 +18,8 @@ public class UserMapper {
     public UserResponse toResponse(User user) {
         return new UserResponse(
                 user.getId(),
-                user.getUsername(),
                 user.getEmail(),
+                user.getRole(),
                 user.getCreatedAt()
         );
     }

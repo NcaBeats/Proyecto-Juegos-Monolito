@@ -4,24 +4,42 @@ Backend Spring Boot de una tienda de videojuegos con arquitectura modular (Sprin
 
 ## Requisitos
 
-- **Docker Desktop** (para la base de datos PostgreSQL)
-- **Java 25** (JDK 25+)
+- **Docker Desktop** (único requisito para la opción Docker)
+- **Java 25** (solo si NO usás Docker)
 
 ## Cómo levantar el proyecto
+
+### Opción 1: Solo Docker (recomendada para evaluación)
 
 ```bash
 # 1. Clonar el repositorio
 git clone <url-del-repositorio>
 cd Proyecto-Juegos-Monolito
 
-# 2. Levantar PostgreSQL
+# 2. Levantar todo (Postgres + App)
 docker compose up -d
+
+# 3. Ver logs
+docker compose logs -f app
+```
+
+La app arranca en `http://localhost:8080`. **No necesita Java instalado.**
+
+### Opción 2: Docker + Java en PC (desarrollo)
+
+```bash
+# 1. Clonar el repositorio
+git clone <url-del-repositorio>
+cd Proyecto-Juegos-Monolito
+
+# 2. Levantar solo PostgreSQL
+docker compose up -d postgres
 
 # 3. Compilar y ejecutar la aplicación
 ./mvnw spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
-La app arranca en `http://localhost:8080`.
+La app arranca en `http://localhost:8080`. **Necesita Java 25 en la PC.**
 
 ## Datos de prueba
 

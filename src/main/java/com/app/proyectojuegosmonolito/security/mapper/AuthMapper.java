@@ -14,7 +14,6 @@ public class AuthMapper {
 
     public User toEntity(RegisterRequest request) {
         return User.builder()
-                .username(request.email())
                 .email(request.email())
                 .password(request.password())
                 .build();

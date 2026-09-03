@@ -9,6 +9,7 @@ import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.account.wallet.service.WalletService;
+import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Profile;
 import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
@@ -96,6 +97,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 7, 7))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149186/jlvjpqerig4jsh4f7ypr.webp")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226686/zw94nyucmyjac8jszexj.webp")
                 .categories(List.of(sports))
                 .build());
 
@@ -107,6 +109,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 8, 12))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149206/xrjf04vgulidbc4lbyf3.avif")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226722/y6bb4iesp3jqbvymtaoe.webp")
                 .categories(List.of(action, adventure, openWorld))
                 .build());
 
@@ -118,6 +121,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2013, 9, 17))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149231/pfmjtit08yk4aoikwfqv.webp")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226489/a1iuiy2siwpbr74n3prx.webp")
                 .categories(List.of(action, adventure, openWorld))
                 .build());
 
@@ -261,6 +265,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 10, 2))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152509/slibpbfpsr8maroiffdi.webp")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226771/ql7cef0v5jpuba26rexg.webp")
                 .categories(List.of(racing, sports))
                 .build());
 
@@ -324,18 +329,18 @@ public class DataInitializer implements CommandLineRunner {
 
         var player1 = userService.create(
                 User.builder()
-                        .username("player1")
                         .email("player1@test.com")
                         .password("pass123")
                         .role(Role.ADMIN)
                         .build(),
                 Profile.builder()
+                        .nickname("player1")
                         .run("19011022K")
                         .firstName("Juan")
                         .lastName("Pérez")
                         .birthDate(LocalDate.of(2001, 10, 22))
                         .region(Region.METROPOLITANA_DE_SANTIAGO)
-                        .comuna("Santiago")
+                        .comuna(Comuna.SANTIAGO)
                         .address("Av. Libertador 1234")
                         .visibility(Visibility.PUBLIC)
                         .build()
@@ -344,17 +349,17 @@ public class DataInitializer implements CommandLineRunner {
 
         var player2 = userService.create(
                 User.builder()
-                        .username("player2")
                         .email("player2@test.com")
                         .password("pass123")
                         .build(),
                 Profile.builder()
+                        .nickname("player2")
                         .run("18234567K")
                         .firstName("María")
                         .lastName("García")
                         .birthDate(LocalDate.of(1998, 5, 15))
                         .region(Region.VALPARAISO)
-                        .comuna("Viña del Mar")
+                        .comuna(Comuna.VIÑA_DEL_MAR)
                         .address("Calle Los Olivos 567")
                         .visibility(Visibility.PUBLIC)
                         .build()
@@ -363,17 +368,17 @@ public class DataInitializer implements CommandLineRunner {
 
         userService.create(
                 User.builder()
-                        .username("broke_player")
                         .email("broke@test.com")
                         .password("pass123")
                         .build(),
                 Profile.builder()
+                        .nickname("broke_player")
                         .run("20123456K")
                         .firstName("Carlos")
                         .lastName("Rodríguez")
                         .birthDate(LocalDate.of(2005, 3, 10))
                         .region(Region.BIOBIO)
-                        .comuna("Concepción")
+                        .comuna(Comuna.CONCEPCION)
                         .address("Pasaje Las Flores 890")
                         .visibility(Visibility.PUBLIC)
                         .build()
