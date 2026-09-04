@@ -47,6 +47,12 @@ public class Game {
     @Column(name = "banner_url", length = 500)
     private String bannerUrl;
 
+    @Column(name = "minimum_specs", columnDefinition = "TEXT")
+    private String minimumSpecs;
+
+    @Column(name = "recommended_specs", columnDefinition = "TEXT")
+    private String recommendedSpecs;
+
     @Column(nullable = false)
     private Instant createdAt;
 
@@ -73,7 +79,7 @@ public class Game {
         return originalPrice.multiply(multiplier).setScale(2, java.math.RoundingMode.HALF_UP);
     }
 
-    public Game update(String name, BigDecimal originalPrice, Integer discountPercent, String description, GameState state, LocalDate launchDate, List<Category> categories, String imageUrl, String bannerUrl) {
+    public Game update(String name, BigDecimal originalPrice, Integer discountPercent, String description, GameState state, LocalDate launchDate, List<Category> categories, String imageUrl, String bannerUrl, String minimumSpecs, String recommendedSpecs) {
         this.name = name;
         this.originalPrice = originalPrice;
         this.discountPercent = discountPercent;
@@ -83,6 +89,8 @@ public class Game {
         this.categories = categories;
         this.imageUrl = imageUrl;
         this.bannerUrl = bannerUrl;
+        this.minimumSpecs = minimumSpecs;
+        this.recommendedSpecs = recommendedSpecs;
         return this;
     }
 }

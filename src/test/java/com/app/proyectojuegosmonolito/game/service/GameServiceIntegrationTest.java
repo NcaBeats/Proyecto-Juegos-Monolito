@@ -89,7 +89,8 @@ class GameServiceIntegrationTest {
         var saved = gameRepository.save(game());
 
         var result = gameService.update(saved.getId(), "Nuevo nombre",
-                BigDecimal.TEN, 0, "desc", GameState.COMING_SOON, LocalDate.now(), new ArrayList<>());
+                BigDecimal.TEN, 0, "desc", GameState.COMING_SOON, LocalDate.now(), new ArrayList<>(),
+                "min specs", "rec specs");
 
         assertThat(result.getName()).isEqualTo("Nuevo nombre");
     }

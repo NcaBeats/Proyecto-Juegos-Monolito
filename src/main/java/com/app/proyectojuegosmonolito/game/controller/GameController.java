@@ -34,10 +34,19 @@ public class GameController {
     private final CategoryService categoryService;
     private final ImageService imageService;
 
-    @Operation(summary = "Get all games", description = "Returns a paginated list of all games")
+    @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category or name")
     @ApiResponse(responseCode = "200", description = "List of games retrieved successfully")
     @GetMapping
-    public ResponseEntity<Page<GameResponse>> findAll(@ParameterObject Pageable pageable) {
+    public ResponseEntity<Page<GameResponse>> findAll(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String name,
+            @ParameterObject Pageable pageable) {
+        if (name != null && !name.isBlank()) {
+            return ResponseEntity.ok(gameService.findByName(name, pageable).map(gameMapper::toResponse));
+        }
+        if (category != null && !category.isBlank()) {
+            return ResponseEntity.ok(gameService.findByCategory(category, pageable).map(gameMapper::toResponse));
+        }
         return ResponseEntity.ok(gameService.findAll(pageable).map(gameMapper::toResponse));
     }
 
@@ -81,7 +90,8 @@ public class GameController {
     public ResponseEntity<GameResponse> update(@PathVariable Long id, @Valid @RequestBody GameRequest request) {
         var categories = resolveCategories(request.categoryNames());
         var game = gameService.update(id, request.name(), request.originalPrice(), request.discountPercent(),
-                request.description(), request.state(), request.launchDate(), categories);
+                request.description(), request.state(), request.launchDate(), categories,
+                request.minimumSpecs(), request.recommendedSpecs());
         return ResponseEntity.ok(gameMapper.toResponse(game));
     }
 

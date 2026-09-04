@@ -22,7 +22,7 @@ class GameMapperTest {
     void toEntity_shouldMapAllFields() {
         var request = new GameRequest("Test Game", new BigDecimal("29.99"), 20,
                 "Description", GameState.AVAILABLE, LocalDate.of(2026, 6, 15),
-                List.of("Action", "RPG"));
+                List.of("Action", "RPG"), "min specs", "rec specs");
 
         var result = mapper.toEntity(request);
 
@@ -32,6 +32,8 @@ class GameMapperTest {
         assertThat(result.getDescription()).isEqualTo("Description");
         assertThat(result.getState()).isEqualTo(GameState.AVAILABLE);
         assertThat(result.getLaunchDate()).isEqualTo(LocalDate.of(2026, 6, 15));
+        assertThat(result.getMinimumSpecs()).isEqualTo("min specs");
+        assertThat(result.getRecommendedSpecs()).isEqualTo("rec specs");
         assertThat(result.getId()).isNull();
         assertThat(result.getCreatedAt()).isNull();
     }
@@ -44,6 +46,7 @@ class GameMapperTest {
                 .discountPercent(25)
                 .description("Description").state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2026, 6, 15)).createdAt(createdAt)
+                .minimumSpecs("min specs").recommendedSpecs("rec specs")
                 .categories(new ArrayList<>())
                 .build();
 
@@ -58,6 +61,8 @@ class GameMapperTest {
         assertThat(result.state()).isEqualTo(GameState.AVAILABLE);
         assertThat(result.launchDate()).isEqualTo(LocalDate.of(2026, 6, 15));
         assertThat(result.categories()).isEmpty();
+        assertThat(result.minimumSpecs()).isEqualTo("min specs");
+        assertThat(result.recommendedSpecs()).isEqualTo("rec specs");
         assertThat(result.createdAt()).isEqualTo(createdAt);
     }
 }

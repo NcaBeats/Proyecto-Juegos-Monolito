@@ -17,6 +17,8 @@ public class GameMapper {
                 .description(request.description())
                 .state(request.state())
                 .launchDate(request.launchDate())
+                .minimumSpecs(request.minimumSpecs())
+                .recommendedSpecs(request.recommendedSpecs())
                 .build();
     }
 
@@ -36,6 +38,8 @@ public class GameMapper {
                 categoryResponses,
                 game.getImageUrl(),
                 game.getBannerUrl(),
+                game.getMinimumSpecs(),
+                game.getRecommendedSpecs(),
                 game.getCreatedAt()
         );
     }

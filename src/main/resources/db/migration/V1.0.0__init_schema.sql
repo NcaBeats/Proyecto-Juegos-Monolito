@@ -13,6 +13,8 @@ CREATE TABLE "public"."game" (
     "launch_date"       date NOT NULL,
     "image_url"         varchar(500),
     "banner_url"        varchar(500),
+    "minimum_specs"     text,
+    "recommended_specs" text,
     "created_at"        timestamp NOT NULL,
     PRIMARY KEY ("id")
 );

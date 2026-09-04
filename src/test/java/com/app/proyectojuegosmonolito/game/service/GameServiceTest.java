@@ -99,13 +99,16 @@ class GameServiceTest {
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
 
         var result = gameService.update(1L, "New Name", new BigDecimal("49.99"), 10,
-                "New desc", GameState.COMING_SOON, LocalDate.of(2027, 1, 1), new ArrayList<>());
+                "New desc", GameState.COMING_SOON, LocalDate.of(2027, 1, 1), new ArrayList<>(),
+                "min specs", "rec specs");
 
         assertThat(result.getName()).isEqualTo("New Name");
         assertThat(result.getOriginalPrice()).isEqualByComparingTo("49.99");
         assertThat(result.getDiscountPercent()).isEqualTo(10);
         assertThat(result.getPrice()).isEqualByComparingTo("44.99");
         assertThat(result.getState()).isEqualTo(GameState.COMING_SOON);
+        assertThat(result.getMinimumSpecs()).isEqualTo("min specs");
+        assertThat(result.getRecommendedSpecs()).isEqualTo("rec specs");
         verify(gameRepository, never()).save(any());
     }
 
