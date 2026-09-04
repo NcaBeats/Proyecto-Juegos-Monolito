@@ -19,5 +19,7 @@ public record GameResponse(
     List<CategoryResponse> categories,
     String imageUrl,
     String bannerUrl,
+    String minimumSpecs,
+    String recommendedSpecs,
     Instant createdAt
 ) {}

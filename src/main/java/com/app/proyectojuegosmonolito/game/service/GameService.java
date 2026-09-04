@@ -64,11 +64,23 @@ public class GameService {
         return gameRepository.findByBannerUrlIsNotNull(pageable);
     }
 
+    @Transactional(readOnly = true)
+    public Page<Game> findByCategory(String categoryName, Pageable pageable) {
+        log.info("Fetching games by category '{}' with pageable: {}", categoryName, pageable);
+        return gameRepository.findByCategories_Name(categoryName, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Game> findByName(String name, Pageable pageable) {
+        log.info("Fetching games by name '{}' with pageable: {}", name, pageable);
+        return gameRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+
     @Transactional
-    public Game update(Long id, String name, BigDecimal originalPrice, Integer discountPercent, String description, GameState state, LocalDate launchDate, List<Category> categories) {
+    public Game update(Long id, String name, BigDecimal originalPrice, Integer discountPercent, String description, GameState state, LocalDate launchDate, List<Category> categories, String minimumSpecs, String recommendedSpecs) {
         log.info("Updating game {}: name={}, originalPrice={}, discountPercent={}", id, name, originalPrice, discountPercent);
         var game = findById(id);
-        game.update(name, originalPrice, discountPercent, description, state, launchDate, categories, game.getImageUrl(), game.getBannerUrl());
+        game.update(name, originalPrice, discountPercent, description, state, launchDate, categories, game.getImageUrl(), game.getBannerUrl(), minimumSpecs, recommendedSpecs);
         log.info("Updated game {}", game.getId());
         return game;
     }
@@ -79,7 +91,8 @@ public class GameService {
         var game = findById(id);
         game.update(game.getName(), game.getOriginalPrice(), game.getDiscountPercent(),
                 game.getDescription(), game.getState(), game.getLaunchDate(),
-                game.getCategories(), imageUrl, game.getBannerUrl());
+                game.getCategories(), imageUrl, game.getBannerUrl(),
+                game.getMinimumSpecs(), game.getRecommendedSpecs());
         log.info("Updated image for game {}", game.getId());
         return game;
     }
@@ -90,7 +103,8 @@ public class GameService {
         var game = findById(id);
         game.update(game.getName(), game.getOriginalPrice(), game.getDiscountPercent(),
                 game.getDescription(), game.getState(), game.getLaunchDate(),
-                game.getCategories(), game.getImageUrl(), bannerUrl);
+                game.getCategories(), game.getImageUrl(), bannerUrl,
+                game.getMinimumSpecs(), game.getRecommendedSpecs());
         log.info("Updated banner for game {}", game.getId());
         return game;
     }

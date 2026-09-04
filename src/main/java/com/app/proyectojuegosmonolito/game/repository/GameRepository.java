@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GameRepository extends JpaRepository<Game, Long> {
     Page<Game> findByDiscountPercentGreaterThan(Integer discountPercent, Pageable pageable);
     Page<Game> findByBannerUrlIsNotNull(Pageable pageable);
+    Page<Game> findByCategories_Name(String categoryName, Pageable pageable);
+    Page<Game> findByNameContainingIgnoreCase(String name, Pageable pageable);
 }

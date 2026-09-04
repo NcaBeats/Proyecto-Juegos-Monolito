@@ -92,7 +92,7 @@ class GameControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new GameRequest("Nuevo Juego", new BigDecimal("29.99"), 10, "Descripción",
-                                        GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action")))))
+                                        GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action"), null, null))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.name").value("Nuevo Juego"))
@@ -106,7 +106,7 @@ class GameControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/games")
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new GameRequest(null, null, null, null, null, null, null))))
+                        .content(objectMapper.writeValueAsString(new GameRequest(null, null, null, null, null, null, null, null, null))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Validation Error"))
                 .andExpect(jsonPath("$.errors.length()").value(7));
@@ -121,7 +121,7 @@ class GameControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new GameRequest("Actualizado", new BigDecimal("49.99"), 20, "Nueva desc",
-                                        GameState.COMING_SOON, LocalDate.of(2027, 1, 1), List.of()))))
+                                        GameState.COMING_SOON, LocalDate.of(2027, 1, 1), List.of(), null, null))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Actualizado"));
     }
