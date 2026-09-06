@@ -65,20 +65,35 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/categories").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/categories/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/categories/**").hasRole("ADMIN")
-                        // Users: ADMIN only for list/create, authenticated for self
+                        // Users: ADMIN for list/create/get-by-id/update, authenticated for self-only endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/password").authenticated()
+                        // Profile: ADMIN can edit any user's profile, users can edit their own
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/profile/{userId}").hasRole("ADMIN")
                         // Wallet: ADMIN only for funding
                         .requestMatchers(HttpMethod.PUT, "/api/v1/wallet").hasRole("ADMIN")
-                        // Purchases: authenticated users (ADMIN, VENDEDOR, CLIENTE) can read their own
-                        .requestMatchers(HttpMethod.GET, "/api/v1/purchases").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/purchases/**").authenticated()
-                        // Library: authenticated users can read/manage their own
-                        .requestMatchers("/api/v1/library").authenticated()
-                        .requestMatchers("/api/v1/library/**").authenticated()
+                        // Purchases: only ADMIN and CLIENTE (VENDEDOR cannot buy nor see orders)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/purchases").hasAnyRole("ADMIN", "CLIENTE")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/purchases").hasAnyRole("ADMIN", "CLIENTE")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/purchases/**").hasAnyRole("ADMIN", "CLIENTE")
+                        // Library: only ADMIN and CLIENTE (VENDEDOR has no library)
+                        .requestMatchers("/api/v1/library").hasAnyRole("ADMIN", "CLIENTE")
+                        .requestMatchers("/api/v1/library/**").hasAnyRole("ADMIN", "CLIENTE")
+                        // Blogs: anyone can read, only ADMIN can write/delete
+                        .requestMatchers(HttpMethod.GET, "/api/v1/blogs").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/blogs").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/blogs/**").hasRole("ADMIN")
                         // Contacts: public to create, ADMIN only to list
                         .requestMatchers(HttpMethod.POST, "/api/v1/contacts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/contacts").hasRole("ADMIN")
+                        // Staff management: ADMIN and VENDEDOR (vendors only see their own catalog/orders)
+                        .requestMatchers("/api/v1/manage/**").hasAnyRole("ADMIN", "VENDEDOR")
                         .anyRequest().authenticated()
                 );
         return http.build();

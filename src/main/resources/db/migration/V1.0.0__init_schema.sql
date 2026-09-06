@@ -16,6 +16,7 @@ CREATE TABLE "public"."game" (
     "minimum_specs"     text,
     "recommended_specs" text,
     "created_at"        timestamp NOT NULL,
+    "seller_id"         bigint,
     PRIMARY KEY ("id")
 );
 
@@ -140,6 +141,21 @@ CREATE TABLE "public"."contact" (
 );
 
 -- =============================================
+-- BLOG
+-- =============================================
+CREATE TABLE "public"."blog" (
+    "id"            bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    "title"         varchar(200) NOT NULL,
+    "excerpt"       varchar(500) NOT NULL,
+    "content"       text NOT NULL,
+    "cover_image"   varchar(500),
+    "category"      varchar(50),
+    "published_at"  timestamp NOT NULL,
+    "created_at"    timestamp NOT NULL,
+    PRIMARY KEY ("id")
+);
+
+-- =============================================
 -- FOREIGN KEYS
 -- =============================================
 ALTER TABLE "public"."library"           ADD CONSTRAINT "fk_library_user_id_user_id"             FOREIGN KEY ("user_id")     REFERENCES "public"."user"("id");
@@ -149,3 +165,6 @@ ALTER TABLE "public"."library"           ADD CONSTRAINT "fk_library_game_id_game
 ALTER TABLE "public"."purchase"          ADD CONSTRAINT "fk_purchase_user_id_user_id"            FOREIGN KEY ("user_id")     REFERENCES "public"."user"("id");
 ALTER TABLE "public"."purchase_item"     ADD CONSTRAINT "fk_purchase_item_purchase_id_purchase_id" FOREIGN KEY ("purchase_id") REFERENCES "public"."purchase"("id");
 ALTER TABLE "public"."purchase_item"     ADD CONSTRAINT "fk_purchase_item_game_id_game_id"       FOREIGN KEY ("game_id")     REFERENCES "public"."game"("id");
+ALTER TABLE "public"."game"              ADD CONSTRAINT "fk_game_seller_id_user_id"             FOREIGN KEY ("seller_id")   REFERENCES "public"."user"("id");
+
+CREATE INDEX "game_index_seller_id" ON "public"."game" ("seller_id");

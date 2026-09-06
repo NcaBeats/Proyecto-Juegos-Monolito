@@ -13,6 +13,8 @@ import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Profile;
 import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
+import com.app.proyectojuegosmonolito.blog.model.Blog;
+import com.app.proyectojuegosmonolito.blog.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
@@ -33,14 +35,18 @@ public class DataInitializer implements CommandLineRunner {
     private final CategoryService categoryService;
     private final UserService userService;
     private final WalletService walletService;
+    private final BlogService blogService;
 
     @Override
     @Transactional
     public void run(String @NonNull ... args) {
-        if (gameService.count() > 0) {
-            return;
+        if (gameService.count() == 0) {
+            seedCatalog();
         }
+        seedVendors();
+    }
 
+    private void seedCatalog() {
         var action = createCategory("Action");
         var adventure = createCategory("Adventure");
         var rpg = createCategory("RPG");
@@ -540,6 +546,57 @@ public class DataInitializer implements CommandLineRunner {
                 .categories(List.of(simulation))
                 .build());
 
+        var blogsNow = Instant.now();
+
+        blogService.create(Blog.builder()
+                .title("Game Awards 2025: The Best Games of the Year")
+                .excerpt("A look back at the winners of the Game Awards 2025, from Game of the Year to the best technical achievements. Discover which titles took home the most prestigious awards of the year.")
+                .content("The Game Awards 2025 ceremony brought together the best of the gaming industry in a night full of surprises and well-deserved recognition. From blockbuster hits to indie gems, this year showcased the incredible diversity of interactive entertainment.\n\n"
+                        + "Game of the Year went to a title that captured players' hearts with its breathtaking world-building and innovative gameplay mechanics. The winner set a new standard for narrative depth and visual fidelity, proving that single-player experiences remain at the core of the medium.\n\n"
+                        + "Best Narrative was awarded to a story-driven masterpiece that pushed the boundaries of interactive storytelling. With branching narratives that genuinely respond to player choices, the winning title demonstrated how games can rival the best films and novels in emotional depth.\n\n"
+                        + "Best Art Direction recognized a visually stunning title that created a world unlike anything seen before. Every frame looked like a moving painting, with lighting and color palettes that set new industry standards.\n\n"
+                        + "Best Sound Design honored a game where audio played a central role in the experience. From orchestral scores to ambient soundscapes, the winning title proved that sound is not just an accessory but a fundamental storytelling tool.\n\n"
+                        + "Best Performance celebrated an actor who brought their character to life with nuance and authenticity. The performance moved players to tears and laughter in equal measure.\n\n"
+                        + "Other notable winners include Best RPG for an epic adventure with hundreds of hours of content, Best Action for a tight and responsive combat system, and Best Indie for a small team that punched well above its weight.\n\n"
+                        + "These awards reflect an industry in great health, with diverse voices and bold creative visions finding success. As we look forward to 2026, the future of gaming has never looked brighter.")
+                .coverImage("https://res.cloudinary.com/tpjbimjw/image/upload/v1788569184/the-game-awards-portada-26.webp")
+                .category("Events")
+                .publishedAt(blogsNow)
+                .createdAt(blogsNow)
+                .build());
+
+        blogService.create(Blog.builder()
+                .title("The Best Video Game Development Studios")
+                .excerpt("An analysis of the studios that are defining the video game industry, from Japanese giants to indie developers revolutionizing the medium with fresh ideas.")
+                .content("Behind every great game is a great studio. While blockbuster titles often get the spotlight, the developers who pour years of work into their craft deserve recognition too. Here is a look at some of the most influential studios shaping gaming today.\n\n"
+                        + "FromSoftware has redefined what players expect from challenging games. With the Souls series and Elden Ring, the studio proved that difficulty and accessibility can coexist through thoughtful design. Their interconnected worlds, cryptic lore, and unforgiving combat have inspired an entire genre of soulslike games.\n\n"
+                        + "CD Projekt Red demonstrated that RPGs can be both commercially successful and artistically ambitious. The Witcher 3 set a new standard for open-world storytelling, and Cyberpunk 2077, despite its troubled launch, evolved into one of the most immersive RPG experiences available.\n\n"
+                        + "Santa Monica Studio proved that single-player narrative adventures still have a massive audience. God of War Ragnarok delivered a moving father-son story wrapped in visceral combat, proving that blockbuster games can be both commercially and critically successful.\n\n"
+                        + "Naughty Dog continues to push the boundaries of interactive storytelling and technical achievement. Their ability to craft cinematic experiences with realistic characters and nuanced performances has set the bar for narrative-driven games.\n\n"
+                        + "Supergiant Games demonstrates that small teams can create masterpieces. With titles like Bastion, Transistor, Pyre, and Hades, the studio has consistently delivered innovative gameplay, stunning art direction, and unforgettable music. Their work is a testament to the power of focused creative vision.\n\n"
+                        + "These studios share common traits: a clear creative vision, respect for their audience, willingness to take risks, and talented teams that have grown together over many years. The future of gaming depends on continuing to support and nurture such studios, both large and small.")
+                .coverImage("https://res.cloudinary.com/tpjbimjw/image/upload/v1788570664/TOP_COMPANIES.avif")
+                .category("Industry")
+                .publishedAt(blogsNow)
+                .createdAt(blogsNow)
+                .build());
+
+        blogService.create(Blog.builder()
+                .title("Upcoming Gaming Events in 2026")
+                .excerpt("A complete calendar of the most important gaming events in 2026: GDC, Gamescom, Tokyo Game Show, and the new dates on the calendar. Plan your year around these must-attend shows.")
+                .content("2026 is shaping up to be a packed year for gaming events, with major conferences, expos, and showcases spread across the globe. Whether you are a developer, journalist, or just a passionate fan, here is everything you need to know to plan your year.\n\n"
+                        + "GDC (Game Developers Conference) kicks off the year in March in San Francisco. This is the premier event for game developers, featuring technical talks, workshops, and the prestigious Game Developers Choice Awards. Expect deep dives into the latest game development techniques and networking opportunities with industry leaders.\n\n"
+                        + "Following the cancellation of E3, the gaming calendar has shifted. New events have emerged to fill the void, including Summer Game Fest and various publisher-led showcases. These digital and hybrid events have proven that big announcements no longer require a single central expo.\n\n"
+                        + "Gamescom remains the biggest European gaming event, held in August in Cologne, Germany. With hundreds of thousands of attendees, it is the place to see hands-on demos of upcoming games, attend developer panels, and experience the latest hardware. The opening night live event always delivers major reveals.\n\n"
+                        + "Tokyo Game Show in September is the premier Asian gaming event, held in Chiba, Japan. It offers a unique look at Japanese game development, with a heavy focus on mobile, arcade, and console titles. The cosplay culture at TGS is unmatched anywhere else in the world.\n\n"
+                        + "Brazil Game Show in October has grown to become the largest gaming event in the Americas. Held in São Paulo, BGS attracts hundreds of thousands of passionate Brazilian gamers and features a mix of AAA titles, indie games, and esports tournaments.\n\n"
+                        + "Beyond these major events, there are countless indie showcases, digital events, and publisher-specific streams throughout the year. The gaming calendar is more distributed than ever, giving players a constant stream of news and demos to look forward to.")
+                .coverImage("https://res.cloudinary.com/tpjbimjw/image/upload/v1788570962/313b58c9bda10bce760bd3c3f6dc635e1d90eeeb.webp")
+                .category("Events")
+                .publishedAt(blogsNow)
+                .createdAt(blogsNow)
+                .build());
+
         // Users with full profile data
         var now = Instant.now();
 
@@ -599,6 +656,111 @@ public class DataInitializer implements CommandLineRunner {
                         .visibility(Visibility.PUBLIC)
                         .build()
         );
+    }
+
+    private void seedVendors() {
+        var rockstar = findOrCreateVendor(
+                "rockstar@gmail.com", "rockstar", "211111236",
+                "Rockstar", "Games");
+        var ubisoft = findOrCreateVendor(
+                "ubisoft@gmail.com", "ubisoft", "212345679",
+                "Ubisoft", "Entertainment");
+        var cdProjektRed = findOrCreateVendor(
+                "cdprojektred@gmail.com", "cdprojekt_red", "205556789",
+                "CD Projekt", "Red");
+        var ea = findOrCreateVendor(
+                "ea@gmail.com", "ea", "204001234",
+                "Electronic", "Arts");
+        var sony = findOrCreateVendor(
+                "sony@gmail.com", "sony", "203449276",
+                "Sony Interactive", "Entertainment");
+        var microsoft = findOrCreateVendor(
+                "microsoft@gmail.com", "microsoft", "202007865",
+                "Xbox Game", "Studios");
+        var activision = findOrCreateVendor(
+                "activision@gmail.com", "activision", "201456789",
+                "Activision", "Publishing");
+        var capcom = findOrCreateVendor(
+                "capcom@gmail.com", "capcom", "200889123",
+                "Capcom", "Entertainment");
+        var bandaiNamco = findOrCreateVendor(
+                "bandainamco@gmail.com", "bandai_namco", "199445632",
+                "Bandai Namco", "Entertainment");
+        var twok = findOrCreateVendor(
+                "2kgames@gmail.com", "twok_games", "198678901",
+                "2K", "Games");
+        var warnerBros = findOrCreateVendor(
+                "warnerbros@gmail.com", "warner_bros", "197234567",
+                "Warner Bros.", "Games");
+        var konami = findOrCreateVendor(
+                "konami@gmail.com", "konami", "196345678",
+                "Konami", "Digital Entertainment");
+        var epicGames = findOrCreateVendor(
+                "epicgames@gmail.com", "epic_games", "195678345",
+                "Epic", "Games");
+        var concernedApe = findOrCreateVendor(
+                "concernedape@gmail.com", "concerned_ape", "194456780",
+                "Concerned", "Ape");
+        var teamCherry = findOrCreateVendor(
+                "teamcherry@gmail.com", "team_cherry", "193567894",
+                "Team", "Cherry");
+        var scsSoftware = findOrCreateVendor(
+                "scs@gmail.com", "scs_software", "192345671",
+                "SCS", "Software");
+
+        assignSeller("Grand Theft Auto V", rockstar);
+        assignSeller("Red Dead Redemption 2", rockstar);
+        assignSeller("Assassin's Creed Shadows", ubisoft);
+        assignSeller("Cyberpunk 2077", cdProjektRed);
+        assignSeller("The Witcher 3", cdProjektRed);
+        assignSeller("Battlefield 1", ea);
+        assignSeller("The Sims 4", ea);
+        assignSeller("Spider-Man Remastered", sony);
+        assignSeller("God of War Ragnarök", sony);
+        assignSeller("Minecraft", microsoft);
+        assignSeller("Halo Infinite", microsoft);
+        assignSeller("Forza Horizon 4", microsoft);
+        assignSeller("Call of Duty: Modern Warfare III", activision);
+        assignSeller("Sekiro: Shadows Die Twice", activision);
+        assignSeller("Resident Evil 4", capcom);
+        assignSeller("Elden Ring", bandaiNamco);
+        assignSeller("Dragon Ball FighterZ", bandaiNamco);
+        assignSeller("Civilization VI", twok);
+        assignSeller("Mortal Kombat 11", warnerBros);
+        assignSeller("Silent Hill 2", konami);
+        assignSeller("Rocket League", epicGames);
+        assignSeller("Stardew Valley", concernedApe);
+        assignSeller("Hollow Knight: Silksong", teamCherry);
+        assignSeller("Euro Truck Simulator 2", scsSoftware);
+    }
+
+    private User findOrCreateVendor(String email, String nickname, String run, String firstName, String lastName) {
+        var existing = userService.findOptionalByEmail(email);
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+        return userService.create(
+                User.builder()
+                        .email(email)
+                        .password("pass123")
+                        .role(Role.VENDEDOR)
+                        .build(),
+                Profile.builder()
+                        .nickname(nickname)
+                        .run(run)
+                        .firstName(firstName)
+                        .lastName(lastName)
+                        .birthDate(LocalDate.of(1990, 1, 1))
+                        .region(Region.METROPOLITANA_DE_SANTIAGO)
+                        .comuna(Comuna.SANTIAGO)
+                        .address("Av. Vendedores 1234")
+                        .visibility(Visibility.PUBLIC)
+                        .build()
+        );
+    }
+
+    private void assignSeller(String gameName, User seller) {
+        gameService.findByName(gameName).ifPresent(game -> gameService.assignSeller(game.getId(), seller));
     }
 
     private Category createCategory(String name) {

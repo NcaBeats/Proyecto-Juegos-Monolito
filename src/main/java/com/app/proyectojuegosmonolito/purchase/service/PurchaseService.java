@@ -103,4 +103,15 @@ public class PurchaseService {
         log.info("Fetching purchases for user {} with pageable: {}", userId, pageable);
         return purchaseRepository.findByUser_Id(userId, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Page<Purchase> findBySellerId(Long sellerId, Pageable pageable) {
+        log.info("Fetching purchases containing games of seller {} with pageable: {}", sellerId, pageable);
+        return purchaseRepository.findBySeller_Id(sellerId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isSellerOrder(Long purchaseId, Long sellerId) {
+        return purchaseRepository.existsByPurchaseIdAndGameSellerId(purchaseId, sellerId);
+    }
 }

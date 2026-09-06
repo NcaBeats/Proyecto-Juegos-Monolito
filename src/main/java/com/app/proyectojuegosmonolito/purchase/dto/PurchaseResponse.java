@@ -8,6 +8,7 @@ import java.util.List;
 public record PurchaseResponse(
     Long id,
     Long userId,
+    String buyerEmail,
     BigDecimal totalAmount,
     PurchaseStatus status,
     Instant purchasedAt,

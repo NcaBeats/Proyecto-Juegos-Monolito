@@ -22,6 +22,7 @@ public class PurchaseMapper {
         return new PurchaseResponse(
                 purchase.getId(),
                 purchase.getUser().getId(),
+                purchase.getUser().getEmail(),
                 purchase.getTotalAmount(),
                 purchase.getStatus(),
                 purchase.getPurchasedAt(),

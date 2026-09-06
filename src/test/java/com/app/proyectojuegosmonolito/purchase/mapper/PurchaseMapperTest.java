@@ -56,7 +56,7 @@ class PurchaseMapperTest {
 
         var result = mapper.toResponse(purchase);
 
-        assertThat(result).isEqualTo(new PurchaseResponse(1L, 1L,
+        assertThat(result).isEqualTo(new PurchaseResponse(1L, 1L, null,
                 new BigDecimal("59.98"), PurchaseStatus.COMPLETED, purchasedAt,
                 List.of(new PurchaseItemResponse(100L, 10L, "Test Game",
                         new BigDecimal("29.99"), 2, new BigDecimal("59.98")))));

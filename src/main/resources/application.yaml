@@ -21,6 +21,9 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
 
+  jackson:
+    find-and-add-modules: true
+
 app:
   cloudinary:
     url: ${CLOUDINARY_URL:}

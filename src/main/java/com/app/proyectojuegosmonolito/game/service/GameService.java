@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.game.service;
 
+import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.game.model.Category;
 import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.game.model.GameState;
@@ -74,6 +75,45 @@ public class GameService {
     public Page<Game> findByName(String name, Pageable pageable) {
         log.info("Fetching games by name '{}' with pageable: {}", name, pageable);
         return gameRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.Optional<Game> findByName(String name) {
+        log.info("Fetching game by exact name '{}'", name);
+        return gameRepository.findByName(name);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Game> findBySeller(Long sellerId, String name, Pageable pageable) {
+        if (name != null && !name.isBlank()) {
+            log.info("Fetching games of seller {} by name '{}' with pageable: {}", sellerId, name, pageable);
+            return gameRepository.findBySeller_IdAndNameContainingIgnoreCase(sellerId, name, pageable);
+        }
+        log.info("Fetching games of seller {} with pageable: {}", sellerId, pageable);
+        return gameRepository.findBySeller_Id(sellerId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isSellerOfGame(Long gameId, Long sellerId) {
+        return gameRepository.existsByIdAndSeller_Id(gameId, sellerId);
+    }
+
+    @Transactional
+    public Game assignSeller(Long gameId, User seller) {
+        var game = findById(gameId);
+        game.setSeller(seller);
+        log.info("Assigned seller {} to game {} (id={})", seller.getId(), game.getName(), game.getId());
+        return game;
+    }
+
+    @Transactional(readOnly = true)
+    public long countByState(GameState state) {
+        return gameRepository.countByState(state);
+    }
+
+    @Transactional(readOnly = true)
+    public java.math.BigDecimal sumDiscountedPriceByState(GameState state) {
+        return gameRepository.sumDiscountedPriceByState(state);
     }
 
     @Transactional

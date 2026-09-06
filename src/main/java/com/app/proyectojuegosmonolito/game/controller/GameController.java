@@ -2,8 +2,10 @@ package com.app.proyectojuegosmonolito.game.controller;
 
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.dto.GameResponse;
+import com.app.proyectojuegosmonolito.game.dto.GameStatsResponse;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
 import com.app.proyectojuegosmonolito.game.model.Category;
+import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.service.CategoryService;
 import com.app.proyectojuegosmonolito.game.service.GameService;
 import com.app.proyectojuegosmonolito.game.service.ImageService;
@@ -62,6 +64,17 @@ public class GameController {
     @GetMapping("/banners")
     public ResponseEntity<Page<GameResponse>> findBanners(@ParameterObject Pageable pageable) {
         return ResponseEntity.ok(gameService.findBannerGames(pageable).map(gameMapper::toResponse));
+    }
+
+    @Operation(summary = "Get game stats", description = "Returns counts and catalog value for all or a given game state")
+    @ApiResponse(responseCode = "200", description = "Stats retrieved successfully")
+    @GetMapping("/stats")
+    public ResponseEntity<GameStatsResponse> stats(
+            @RequestParam(defaultValue = "AVAILABLE") GameState state) {
+        var total = gameService.count();
+        var active = gameService.countByState(state);
+        var catalogValue = gameService.sumDiscountedPriceByState(state);
+        return ResponseEntity.ok(new GameStatsResponse(total, active, catalogValue));
     }
 
     @Operation(summary = "Get game by ID", description = "Returns a single game by its ID")

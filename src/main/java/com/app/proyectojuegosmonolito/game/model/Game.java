@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.game.model;
 
+import com.app.proyectojuegosmonolito.account.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -64,6 +65,10 @@ public class Game {
     )
     @Builder.Default
     private List<Category> categories = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private User seller;
 
     @Transient
     public BigDecimal getPrice() {
