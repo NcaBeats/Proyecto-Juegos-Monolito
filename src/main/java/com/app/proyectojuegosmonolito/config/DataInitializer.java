@@ -52,16 +52,11 @@ public class DataInitializer implements CommandLineRunner {
         var adventure = createCategory("Adventure");
         var rpg = createCategory("RPG");
         var shooter = createCategory("Shooter");
-        var platformer = createCategory("Platformer");
         var fighting = createCategory("Fighting");
         var openWorld = createCategory("Open World");
-        var sports = createCategory("Sports");
-        var indie = createCategory("Indie");
-        var stealth = createCategory("Stealth");
         var horror = createCategory("Horror");
         var simulation = createCategory("Simulation");
         var racing = createCategory("Racing");
-        var strategy = createCategory("Strategy");
 
         gameService.create(Game.builder()
                 .name("Minecraft")
@@ -82,7 +77,7 @@ public class DataInitializer implements CommandLineRunner {
                         {"os": "Windows 10", "processor": "Intel Core i3-3210 o AMD A8-7600", "memory": "4 GB RAM", "graphics": "Intel HD Graphics 4000 o AMD Radeon R5", "storage": "1 GB disponible", "additional": "Internet requerido para multijugador"}""")
                 .recommendedSpecs("""
                         {"os": "Windows 10", "processor": "Intel Core i5-4690 o AMD A10-7800", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce 700 Series o AMD Radeon Rx 200 Series", "storage": "4 GB disponible"}""")
-                .categories(List.of(indie, adventure))
+                .categories(List.of(openWorld, adventure))
                 .build());
 
         gameService.create(Game.builder()
@@ -104,7 +99,7 @@ public class DataInitializer implements CommandLineRunner {
                         {"os": "Windows 7/8/10", "processor": "2 GHz", "memory": "2 GB RAM", "graphics": "256 MB de VRAM compatible", "storage": "500 MB disponible", "additional": "Compatibilidad con gamepad opcional"}""")
                 .recommendedSpecs("""
                         {"os": "Windows 10", "processor": "Dual Core a 2.5 GHz", "memory": "4 GB RAM", "graphics": "1 GB de VRAM compatible", "storage": "1 GB disponible"}""")
-                .categories(List.of(indie, rpg))
+                .categories(List.of(rpg))
                 .build());
 
         gameService.create(Game.builder()
@@ -148,7 +143,7 @@ public class DataInitializer implements CommandLineRunner {
                         {"os": "Windows 10", "processor": "Intel Core i5-750 o AMD Phenom II x4 945", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 460 o AMD Radeon HD 6850", "storage": "20 GB disponible"}""")
                 .recommendedSpecs("""
                         {"os": "Windows 10", "processor": "Intel Core i5-4460 o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 760 o AMD Radeon R9 270X", "storage": "20 GB disponible"}""")
-                .categories(List.of(sports))
+                .categories(List.of(racing))
                 .build());
 
         gameService.create(Game.builder()
@@ -234,7 +229,7 @@ public class DataInitializer implements CommandLineRunner {
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-8700K o AMD Ryzen 5 3600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1070 8GB o AMD RX 5700 XT 8GB", "storage": "100 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
                         {"os": "Windows 11 de 64 bits", "processor": "Intel Core i5-11600K o AMD Ryzen 5 5600X", "memory": "16 GB RAM", "graphics": "NVIDIA RTX 2070 8GB o AMD RX 6700 XT 12GB", "storage": "100 GB SSD NVMe disponible", "directX": "Version 12"}""")
-                .categories(List.of(action, adventure, rpg, stealth))
+                .categories(List.of(action, adventure, rpg))
                 .build());
 
         gameService.create(Game.builder()
@@ -339,7 +334,7 @@ public class DataInitializer implements CommandLineRunner {
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Duo E5200", "memory": "4 GB RAM", "graphics": "GeForce 9800GTX+ (1GB) o equivalente", "storage": "5 GB disponible"}""")
                 .recommendedSpecs("""
                         {"os": "Windows 10/11 de 64 bits", "processor": "Intel Core i5-2300 o AMD FX-6350", "memory": "8 GB RAM", "graphics": "GeForce GTX 660 o AMD Radeon HD 7850", "storage": "5 GB disponible"}""")
-                .categories(List.of(indie, platformer, adventure))
+                .categories(List.of(adventure))
                 .build());
 
         gameService.create(Game.builder()
@@ -466,7 +461,7 @@ public class DataInitializer implements CommandLineRunner {
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i3-4170 o Intel Core i5 750", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 650 Ti o AMD Radeon R7 250X", "storage": "80 GB disponible"}""")
                 .recommendedSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-3820 3.6 GHz o Intel Core i5-8400 2.8 GHz", "memory": "12 GB RAM", "graphics": "NVIDIA GTX 1060 3GB o AMD RX 470", "storage": "80 GB disponible"}""")
-                .categories(List.of(racing, sports))
+                .categories(List.of(racing))
                 .build());
 
         gameService.create(Game.builder()
@@ -487,7 +482,7 @@ public class DataInitializer implements CommandLineRunner {
                         {"os": "Windows 7/8/10/11 de 64 bits", "processor": "Intel Core i3 2.4 Ghz o AMD equivalente", "memory": "4 GB RAM", "graphics": "512 MB ATI 4850 o mejor, 1 GB NVidia 460 o mejor, Intel HD 4000 integrada o mejor", "storage": "17 GB disponible"}""")
                 .recommendedSpecs("""
                         {"os": "Windows 7/8/10/11 de 64 bits", "processor": "Intel Core i5 2.7 Ghz o AMD equivalente", "memory": "8 GB RAM", "graphics": "2 GB ATI 7970 o mejor, 2 GB NVidia 770 o mejor", "storage": "17 GB SSD disponible"}""")
-                .categories(List.of(strategy))
+                .categories(List.of(rpg))
                 .build());
 
         gameService.create(Game.builder()
@@ -529,7 +524,7 @@ public class DataInitializer implements CommandLineRunner {
                         {"os": "Windows 7/8/10/11 de 64 bits", "processor": "Intel Core i5-6400 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 660 2GB o AMD Radeon R9 270X 2GB", "storage": "12 GB disponible"}""")
                 .recommendedSpecs("""
                         {"os": "Windows 10/11 de 64 bits", "processor": "Intel Core i5-9600K o AMD Ryzen 5 3600", "memory": "12 GB RAM", "graphics": "NVIDIA GeForce GTX 1060 6GB o AMD Radeon RX 590", "storage": "12 GB SSD disponible"}""")
-                .categories(List.of(simulation, indie))
+                .categories(List.of(simulation))
                 .build());
 
         gameService.create(Game.builder()
@@ -572,6 +567,406 @@ public class DataInitializer implements CommandLineRunner {
                 .recommendedSpecs("""
                         {"os": "Windows 10/11 de 64 bits", "processor": "Intel Core i5-3470 o AMD FX-8350", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 650 o AMD Radeon HD 7770", "storage": "25 GB SSD disponible"}""")
                 .categories(List.of(simulation))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("EA SPORTS WRC")
+                .originalPrice(new BigDecimal("49.99")) // VERIFICAR precio actual
+                .discountPercent(0)
+                .description("""
+                WRC 24 es el videojuego oficial del Campeonato Mundial de Rally FIA, desarrollado por KT Racing (no confundir con "EA Sports WRC" de Codemasters, título distinto de 2023). Ofrece físicas de conducción realistas sobre superficies variadas, un editor de eventos, modo carrera y compatibilidad con la temporada 2024 del WRC.
+ 
+                Incluye vehículos oficiales de las categorías Rally1, Rally2 y clásicos, junto con localizaciones reales de las etapas del campeonato.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2024, 9, 13)) // VERIFICAR
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751965/egs-easportswrc-codemasters-editions-s2-1200x1600-52af98c1afa8.jpg") // pendiente: subir asset propio
+                .videoUrl("/uploads/games/wrc-24/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751870/691eab9e41e3822072608b1b1cc1710ee95af7ae6cc77a8b.avif")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-4460 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 960 o AMD Radeon R9 380", "storage": "80 GB disponible", "directX": "Version 12"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "Intel Core i7-6700 o AMD Ryzen 5 2600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1660 Ti o AMD RX 590", "storage": "80 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(racing, simulation))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Apex Legends")
+                .originalPrice(new BigDecimal("0.00"))
+                .discountPercent(0)
+                .description("""
+                Apex Legends es un battle royale gratuito en primera persona desarrollado por Respawn Entertainment, ambientado en el universo de Titanfall. Equipos de tres jugadores (Leyendas) con habilidades únicas compiten por ser los últimos en pie en mapas cada vez más reducidos.
+ 
+                Se financia mediante pases de batalla y cosméticos, y recibe actualizaciones de contenido por temporadas.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2019, 2, 4))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752100/MV5BM2Q5YmMzM2ItNzY2OS00OWQ3LTkzMzMtYzJiYTE4NDVjODgzXkEyXkFqcGc._V1_.jpg")
+                .videoUrl("/uploads/games/apex-legends/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749032/16x9_ApexLegends_image1600w.jpg")
+                .minimumSpecs("""
+                {"os": "Windows 7 de 64 bits", "processor": "Intel Core i3-6300 o AMD FX-4350", "memory": "6 GB RAM", "graphics": "NVIDIA GeForce GT 640 o AMD Radeon HD 7730", "storage": "56 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5 3570K o AMD Ryzen 5 1600", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 970 o AMD Radeon R9 290", "storage": "56 GB disponible", "directX": "Version 11"}""")
+                .categories(List.of(action))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Assetto Corsa")
+                .originalPrice(new BigDecimal("29.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                Assetto Corsa es un simulador de carreras desarrollado por Kunos Simulazioni, reconocido por la precisión de su motor de físicas y su fuerte comunidad de mods (coches, circuitos y mejoras gráficas).
+ 
+                Soporta volantes de fuerza retroalimentada y realidad virtual, con circuitos y vehículos con licencia oficial.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2014, 12, 19))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752041/9667231.jpg")
+                .videoUrl("/uploads/games/assetto-corsa/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750903/assetto_corsa-wallpaper-1600x900.jpg")
+                .minimumSpecs("""
+                {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel i3 2.4 GHz o equivalente", "memory": "4 GB RAM", "graphics": "NVIDIA GTX 460 / ATI 5850 (1GB VRAM)", "storage": "15 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel i5 3.0 GHz o superior", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 970 / AMD R9 290 (2GB VRAM)", "storage": "15 GB disponible", "directX": "Version 11"}""")
+                .categories(List.of(racing, simulation))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Counter-Strike 2")
+                .originalPrice(new BigDecimal("0.00"))
+                .discountPercent(0)
+                .description("""
+                Counter-Strike 2 es la evolución de CS:GO sobre el motor Source 2, desarrollado por Valve. Mantiene el clásico enfrentamiento 5v5 entre Terroristas y Antiterroristas, con física de humo dinámica, iluminación mejorada y tickrate por subserie mejorado.
+ 
+                Es gratuito y sostiene su modelo económico con el mercado de skins e ítems cosméticos.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2023, 9, 27))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752142/Cs2_boxart.webp")
+                .videoUrl("/uploads/games/cs2/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788748925/1329760.jpg")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "4 núcleos, 2.4 GHz", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 o AMD RX 580 (compatible con DirectX 11)", "storage": "85 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "6 núcleos, 3.0 GHz", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1660 Super o superior", "storage": "85 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(action,shooter))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Dead by Daylight")
+                .originalPrice(new BigDecimal("19.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                Dead by Daylight es un multijugador asimétrico de terror desarrollado por Behaviour Interactive: cuatro Supervivientes intentan reparar generadores y escapar mientras un Asesino, controlado por otro jugador, intenta cazarlos.
+ 
+                Cuenta con colaboraciones de franquicias de terror icónicas (Halloween, Saw, Alien, Stranger Things, entre otras) como contenido adicional.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2016, 6, 14))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752190/840_560.jpg")
+                .videoUrl("/uploads/games/dead-by-daylight/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750068/fe28c7ebca96e110b3dd09bfe34d11c8ac72577e25c55a435d56c34dc59aa00d.avif")
+                .minimumSpecs("""
+                {"os": "Windows 7 de 64 bits", "processor": "Intel Core i3-4340 o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 o AMD Radeon HD 7850", "storage": "50 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-4460 o AMD Ryzen 5 1400", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 970 o AMD Radeon RX 570", "storage": "50 GB SSD disponible", "directX": "Version 11"}""")
+                .categories(List.of(action, horror))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Doom Eternal")
+                .originalPrice(new BigDecimal("39.99"))
+                .discountPercent(0)
+                .description("""
+                Doom Eternal, desarrollado por id Software, continúa la historia del Doom Slayer en una campaña frenética contra las fuerzas del infierno en la Tierra. Sobre el motor id Tech 7, combina movilidad vertical, gestión de recursos en combate y un ritmo de acción exigente.
+ 
+                Incluye modo multijugador Battlemode y expansiones narrativas como The Ancient Gods.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2020, 3, 20))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752221/b4Q1XWYaTdJLUvRuALuqr0wP.avif")
+                .videoUrl("/uploads/games/doom-eternal/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788748785/2ei5g6azyf331.jpg")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-6600K o AMD Ryzen 5 1600", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1050 Ti o AMD RX 470", "storage": "50 GB disponible", "directX": "Version 12"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-6700K o AMD Ryzen 7 1800X", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1080 o AMD RX Vega 56", "storage": "50 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(action,shooter))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("F1 25")
+                .originalPrice(new BigDecimal("69.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                F1 25, desarrollado por Codemasters/EA Sports, es la simulación oficial de la Fórmula 1 de esa temporada: escuderías, pilotos, calendario y reglamento actualizados, junto con el modo narrativo "Braking Point".
+ 
+                Incluye modo Carrera profesional, My Team y multijugador online con physics ajustadas cada temporada.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2025, 5, 30)) // VERIFICAR
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752256/73fc6fb9bad1b2e74180c166f0c7af9d3940e0d6a6e01525.avif")
+                .videoUrl("/uploads/games/f1-25/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751232/ca36c3ae7641a273ff3f00e63732fb76e2850c57f577d6eb.avif")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i3-2130 o AMD FX-4300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1050 Ti o AMD RX 470", "storage": "100 GB disponible", "directX": "Version 12"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "Intel i7-9700K o AMD Ryzen 5 3600", "memory": "16 GB RAM", "graphics": "NVIDIA RTX 3060 Ti o AMD RX 6700 XT", "storage": "100 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(racing, simulation))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Forza Motorsport")
+                .originalPrice(new BigDecimal("59.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                Forza Motorsport (2023), desarrollado por Turn 10 Studios, es el reinicio de la saga de simulación de carreras en circuito para Xbox y PC, con un sistema dinámico de clima y desgaste de neumáticos, y ray tracing en pista.
+ 
+                Ofrece Builder's Cup como modo carrera principal y multijugador competitivo.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2023, 10, 10))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752368/59410829-50f6-4324-b2b3-3ec31c5879c9.jpg")
+                .videoUrl("/uploads/games/forza-motorsport/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751677/official-forza-motorsport-cover-art-v0-plobg1au622b1.webp")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i5-8400 o AMD Ryzen 5 1600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1060 6GB o AMD RX 590", "storage": "150 GB disponible (SSD requerido)", "directX": "Version 12"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "Intel i5-11600K o AMD Ryzen 5 5600X", "memory": "16 GB RAM", "graphics": "NVIDIA RTX 2070 Super o AMD RX 6700 XT", "storage": "150 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(racing, simulation))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Hades")
+                .originalPrice(new BigDecimal("24.99"))
+                .discountPercent(0)
+                .description("""
+                Hades, desarrollado por Supergiant Games, es un roguelike de acción en el que Zagreus, hijo de Hades, intenta escapar del Inframundo griego combatiendo con armas variadas y bendiciones de los dioses del Olimpo.
+ 
+                Combina narrativa profunda —que avanza en cada intento— con combate ágil y una dirección de arte muy reconocida.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2020, 9, 17))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752440/Hades_Pack_Art.webp")
+                .videoUrl("/uploads/games/hades/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788748485/2560x1440-2560x1440-5e710b93049cbd2125cf0261dcfbf943.jpg")
+                .minimumSpecs("""
+                {"os": "Windows 7 de 64 bits", "processor": "Dual Core 2.4 GHz", "memory": "4 GB RAM", "graphics": "512 MB VRAM", "storage": "10 GB disponible", "directX": "Version 10"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Quad Core 2.4 GHz", "memory": "8 GB RAM", "graphics": "1 GB VRAM", "storage": "10 GB SSD disponible", "directX": "Version 11"}""")
+                .categories(List.of(action))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Injustice 2")
+                .originalPrice(new BigDecimal("19.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                Injustice 2, desarrollado por NetherRealm Studios, es un juego de lucha con el elenco de DC Comics (Batman, Superman, Wonder Woman, entre otros), con un sistema de equipamiento que modifica estadísticas y apariencia de los personajes.
+ 
+                Incluye una campaña cinemática extensa y modos competitivos online.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2017, 11, 14))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752517/MV5BZWI5ZDhjMmItMGZiZi00M2VlLTgxMmMtNDIzZDg0Njk2NmE3XkEyXkFqcGc._V1_.jpg")
+                .videoUrl("/uploads/games/injustice-2/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749497/4becd989-efd6-4bf2-8b59-4f7f143da7bcInjustice_2_cover.webp")
+                .minimumSpecs("""
+                {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i5-750 o AMD Phenom II X4 965", "memory": "4 GB RAM", "graphics": "NVIDIA GTX 650 Ti o AMD Radeon HD 7850", "storage": "40 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i7-3770 o AMD FX-8350", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 960 o AMD Radeon R9 290", "storage": "40 GB disponible", "directX": "Version 11"}""")
+                .categories(List.of(fighting, action))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Microsoft Flight Simulator")
+                .originalPrice(new BigDecimal("69.99")) // VERIFICAR (2024 tiene ediciones distintas)
+                .discountPercent(0)
+                .description("""
+                Microsoft Flight Simulator, desarrollado por Asobo Studio, es un simulador de vuelo civil que recrea el planeta completo mediante datos satelitales, mapas en tiempo real e inteligencia artificial para generar el terreno.
+ 
+                Incluye una amplia flota de aeronaves con cabinas detalladas y condiciones meteorológicas en vivo.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2020, 8, 18))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752564/apps.1351.14377492558798445.319163e9-0c55-4be6-a4bb-aa431ab21aa6.jpg")
+                .videoUrl("/uploads/games/flight/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750490/82f3c320b574b55348aafb3bd5eced07ca4835a1590302cf.avif")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i5-4460 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 770 o AMD Radeon RX 570", "storage": "150 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "Intel i5-8400 o AMD Ryzen 5 3600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 970 o AMD Radeon RX 590", "storage": "150 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(simulation))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Mortal Kombat 1")
+                .originalPrice(new BigDecimal("69.99"))
+                .discountPercent(0)
+                .description("""
+                Mortal Kombat 1, desarrollado por NetherRealm Studios, reinicia la cronología de la franquicia tras los eventos de MK11, con un nuevo sistema de Kameo Fighters que permite invocar a un segundo personaje durante los combates.
+ 
+                Mantiene la violencia gráfica característica de la saga con Fatalities y un modo historia cinemático.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2023, 9, 19))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752598/MK1_portada.webp")
+                .videoUrl("/uploads/games/mk1/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749603/Mortal_kombat_1_primera_imagen.webp")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i5-2500K o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 950 o AMD RX 470", "storage": "120 GB disponible", "directX": "Version 12"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "Intel i7-7700K o AMD Ryzen 5 3600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1070 o AMD RX 5700", "storage": "120 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(fighting, action))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Mortal Kombat X")
+                .originalPrice(new BigDecimal("19.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                Mortal Kombat X, desarrollado por NetherRealm Studios, introdujo variaciones de personaje (tres estilos de juego por luchador) y un salto notable en la brutalidad visual de sus Fatalities respecto a entregas anteriores.
+ 
+                Su modo historia continúa la trama tras Mortal Kombat 9, con saltos temporales de 20 años.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2015, 4, 14))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752638/Mortal_Kombat_X_Cover_Art.webp")
+                .videoUrl("/uploads/games/mk10/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749806/mkx-logo-630x381.png")
+                .minimumSpecs("""
+                {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i5-750 o AMD Phenom II X4 965", "memory": "3 GB RAM", "graphics": "NVIDIA GTX 460 o AMD Radeon HD 5850", "storage": "35 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i7-3770 o AMD FX-8350", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 o AMD Radeon HD 7950", "storage": "35 GB disponible", "directX": "Version 11"}""")
+                .categories(List.of(fighting, action))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Need for Speed Unbound")
+                .originalPrice(new BigDecimal("59.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                Need for Speed Unbound, desarrollado por Criterion Games, combina carreras callejeras arcade con un estilo visual que mezcla gráficos realistas y efectos de animación tipo grafiti/cómic en los momentos de máxima velocidad.
+ 
+                Su modo carrera se estructura por semanas dentro de un mundo abierto ambientado en Lakeshore, con apuestas de dinero en cada evento.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2022, 12, 2))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752709/apps.31585.14329152328871129.15deab2a-237c-449c-880e-7926330dab80.jpg")
+                .videoUrl("/uploads/games/nfs/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751551/capsule_616x353.jpg")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i5-8400 o AMD Ryzen 5 1600", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1650 o AMD RX 570", "storage": "50 GB disponible", "directX": "Version 12"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "Intel i7-8700K o AMD Ryzen 7 3700X", "memory": "16 GB RAM", "graphics": "NVIDIA RTX 2070 Super o AMD RX 5700 XT", "storage": "50 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(racing, openWorld))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Outlast")
+                .originalPrice(new BigDecimal("19.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                Outlast, desarrollado por Red Barrels, es un survival horror en primera persona sin combate: el jugador, un periodista, debe esconderse, huir y grabar con una cámara de visión nocturna dentro de un psiquiátrico abandonado.
+ 
+                Su enfoque en la indefensión total del protagonista lo convirtió en referente del terror de sigilo moderno.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2013, 9, 4))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752729/EGS_Outlast_RedBarrels_S2_1200x1600-b02ebdfb4bcd3b1d608ab5b87257b3c4.jpg")
+                .videoUrl("/uploads/games/outlast/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750246/EGS_Outlast_RedBarrels_S1_2560x1440-00bcfe36f1adad2b9168add0a137fbc2.jpg")
+                .minimumSpecs("""
+                {"os": "Windows 7 de 64 bits", "processor": "Intel Core 2 Duo E8200 o AMD Athlon 64 X2 6000+", "memory": "4 GB RAM", "graphics": "NVIDIA GTS 450 o AMD Radeon HD 5750", "storage": "5 GB disponible", "directX": "Version 9"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel i5-2400 o AMD FX-4300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 460 o AMD Radeon HD 6870", "storage": "5 GB disponible", "directX": "Version 11"}""")
+                .categories(List.of(horror))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Phasmophobia")
+                .originalPrice(new BigDecimal("13.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                Phasmophobia, desarrollado por Kinetic Games, es un cooperativo de terror de investigación paranormal: hasta cuatro jugadores usan equipo real de cazafantasmas (EMF, cámara térmica, spirit box) para identificar el tipo de entidad que habita cada locación antes de que los ataque.
+ 
+                Su enfoque en el juego de voz en vivo y la tensión ambiental lo hizo muy popular en streaming.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2020, 9, 18))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752761/phasmophobia-5275630.jpg")
+                .videoUrl("/uploads/games/phasmophobia/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749967/unnamed-3_zdr1.1280.webp")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i3 o equivalente", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 970 o equivalente", "storage": "20 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i5 o superior", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1660 o superior", "storage": "20 GB SSD disponible", "directX": "Version 11"}""")
+                .categories(List.of(horror))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("PowerWash Simulator 2")
+                .originalPrice(new BigDecimal("24.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                PowerWash Simulator 2, desarrollado por FuturLab, continúa la fórmula relajante del original: limpiar con hidrolavadora superficies cubiertas de suciedad, ahora con nuevos escenarios, mecánicas de progresión y modo cooperativo mejorado.
+ 
+                Se apoya en una jugabilidad de bajo estrés, sin fallos ni presión de tiempo, con narrativa ambiental ligera.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2025, 1, 1)) // VERIFICAR fecha exacta
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752876/co9tye.webp")
+                .videoUrl("/uploads/games/power2/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750712/050db8610fa9593b531cd2b7d563b5115bbe5431ea3db42962da435f70edb39c.avif")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i3 o equivalente", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 o equivalente", "storage": "15 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "Intel i5 o superior", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1060 o superior", "storage": "15 GB SSD disponible", "directX": "Version 11"}""")
+                .categories(List.of(simulation))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Resident Evil 7: Biohazard")
+                .originalPrice(new BigDecimal("29.99")) // VERIFICAR
+                .discountPercent(0)
+                .description("""
+                Resident Evil 7: Biohazard, desarrollado por Capcom, retoma el terror de supervivencia en primera persona: Ethan Winters busca a su esposa desaparecida en una mansión rural de Luisiana habitada por la perturbadora familia Baker.
+ 
+                Marcó el regreso de la saga a la exploración, gestión de recursos y ambientación opresiva, con soporte completo para realidad virtual.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2017, 1, 24))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752942/resident_evil_7-5898772.jpg")
+                .videoUrl("/uploads/games/re7/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750377/cp7G7TILGKzAzLGb1MMn9hyt.avif")
+                .minimumSpecs("""
+                {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel i5-4460 o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 760 o AMD Radeon R7 260x (2GB VRAM)", "storage": "24 GB disponible", "directX": "Version 11"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel i7-3770 o AMD FX-9590", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 o AMD RX 480 (3GB VRAM)", "storage": "24 GB disponible", "directX": "Version 11"}""")
+                .categories(List.of(horror, action))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Street Fighter 6")
+                .originalPrice(new BigDecimal("59.99"))
+                .discountPercent(0)
+                .description("""
+                Street Fighter 6, desarrollado por Capcom, apuesta por tres modos diferenciados: Fighting Ground (combate clásico), World Tour (campaña de mundo abierto con un avatar personalizado) y Battle Hub (espacio social online).
+ 
+                Introduce el sistema Drive, que gestiona un recurso compartido entre ataques ofensivos y defensivos, ampliando la profundidad estratégica de cada combate.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2023, 6, 2))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788753038/IDaKtZp5aUEU33tThd6r9Qbb_png_293869b7-40b5-493f-ad7d-962e4060925e.webp")
+                .videoUrl("/uploads/games/street-fighter-6/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749324/12d36a4c9bbf43a4babba2f203e1e271ef08de143349e08231dff56fd2bef70e.avif")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i3-4160 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 o AMD RX 570", "storage": "60 GB disponible", "directX": "Version 12"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "Intel i7-3770 o AMD Ryzen 5 3600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1660 Ti o AMD RX 5600 XT", "storage": "60 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(fighting, action))
+                .build());
+
+        gameService.create(Game.builder()
+                .name("Tekken 8")
+                .originalPrice(new BigDecimal("69.99"))
+                .discountPercent(0)
+                .description("""
+                Tekken 8, desarrollado por Bandai Namco, cierra la saga argumental de la familia Mishima con un nuevo sistema de combate llamado Heat, que otorga ventajas ofensivas temporales y fomenta el juego agresivo.
+ 
+                Incluye un extenso modo historia cinemático (Arcade Quest y el modo Historia principal) además de combate competitivo online con rollback netcode.""")
+                .state(GameState.AVAILABLE)
+                .launchDate(LocalDate.of(2024, 1, 26))
+                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788753110/tekken_8-5868007.webp")
+                .videoUrl("/uploads/games/tekken-8/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749144/TEKKEN8_Header_mobile_2.jpg")
+                .minimumSpecs("""
+                {"os": "Windows 10 de 64 bits", "processor": "Intel i5-6600K o AMD Ryzen 5 2600", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 6GB o AMD RX 580", "storage": "90 GB disponible", "directX": "Version 12"}""")
+                .recommendedSpecs("""
+                {"os": "Windows 10/11 de 64 bits", "processor": "Intel i7-8700K o AMD Ryzen 7 3700X", "memory": "16 GB RAM", "graphics": "NVIDIA RTX 2070 Super o AMD RX 5700 XT", "storage": "90 GB SSD disponible", "directX": "Version 12"}""")
+                .categories(List.of(fighting, action))
                 .build());
 
         var blogsNow = Instant.now();
@@ -735,6 +1130,30 @@ public class DataInitializer implements CommandLineRunner {
         var scsSoftware = findOrCreateVendor(
                 "scs@gmail.com", "scs_software", "192345671",
                 "SCS", "Software");
+        var valve = findOrCreateVendor(
+                "valve@gmail.com", "valve", "191234567",
+                "Valve", "Corporation");
+        var bethesda = findOrCreateVendor(
+                "bethesda@gmail.com", "bethesda", "190123456",
+                "Bethesda", "Softworks");
+        var behaviour = findOrCreateVendor(
+                "behaviour@gmail.com", "behaviour", "189876543",
+                "Behaviour", "Interactive");
+        var supergiant = findOrCreateVendor(
+                "supergiant@gmail.com", "supergiant", "188765432",
+                "Supergiant", "Games");
+        var kunos = findOrCreateVendor(
+                "kunos@gmail.com", "kunos", "186543210",
+                "Kunos", "Simulazioni");
+        var redBarrels = findOrCreateVendor(
+                "redbarrels@gmail.com", "red_barrels", "185432109",
+                "Red", "Barrels");
+        var kineticGames = findOrCreateVendor(
+                "kineticgames@gmail.com", "kinetic_games", "184321098",
+                "Kinetic", "Games");
+        var futurlab = findOrCreateVendor(
+                "futurlab@gmail.com", "futurlab", "183210987",
+                "Futur", "Lab");
 
         assignSeller("Grand Theft Auto V", rockstar);
         assignSeller("Red Dead Redemption 2", rockstar);
@@ -760,6 +1179,26 @@ public class DataInitializer implements CommandLineRunner {
         assignSeller("Stardew Valley", concernedApe);
         assignSeller("Hollow Knight: Silksong", teamCherry);
         assignSeller("Euro Truck Simulator 2", scsSoftware);
+        assignSeller("EA SPORTS WRC", ea);
+        assignSeller("Apex Legends", ea);
+        assignSeller("Assetto Corsa", kunos);
+        assignSeller("Counter-Strike 2", valve);
+        assignSeller("Dead by Daylight", behaviour);
+        assignSeller("Doom Eternal", bethesda);
+        assignSeller("F1 25", ea);
+        assignSeller("Forza Motorsport", microsoft);
+        assignSeller("Hades", supergiant);
+        assignSeller("Injustice 2", warnerBros);
+        assignSeller("Microsoft Flight Simulator", microsoft);
+        assignSeller("Mortal Kombat 1", warnerBros);
+        assignSeller("Mortal Kombat X", warnerBros);
+        assignSeller("Need for Speed Unbound", ea);
+        assignSeller("Outlast", redBarrels);
+        assignSeller("Phasmophobia", kineticGames);
+        assignSeller("PowerWash Simulator 2", futurlab);
+        assignSeller("Resident Evil 7: Biohazard", capcom);
+        assignSeller("Street Fighter 6", capcom);
+        assignSeller("Tekken 8", bandaiNamco);
     }
 
     private User findOrCreateVendor(String email, String nickname, String run, String firstName, String lastName) {
@@ -953,6 +1392,109 @@ public class DataInitializer implements CommandLineRunner {
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707438/games/the-sims-4/imagelist/2.jpg",
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707439/games/the-sims-4/imagelist/3.jpg",
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707441/games/the-sims-4/imagelist/4.jpg"));
+
+        seedGallery("WRC 24", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751934/WRC-24-Solberg-Sweden.avif",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751930/4aca15e53943d04fcaef5a50e5055e9961b190cb95c7438e.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751907/egs-easportswrc-codemasters-editions-s1-2560x1440-85c00d204428.jpg"));
+
+        seedGallery("Apex Legends", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749075/Gizmodo-46.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749073/1366_2000.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749055/b49472734809d268553775f142f5da92abd0b15d96bfb824.avif"));
+
+        seedGallery("Assetto Corsa", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750975/99b1f8d4-0de5-463a-a5e9-e6bbc50a9ab0.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750973/Screenshot_hw_drag_camaro_drive_speedway_17-0-123-23-15-53.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750937/vrc-ferrari.webp"));
+
+        seedGallery("Counter-Strike 2", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748977/counter-strike-2-cs2-edpi-calcul.width-1500.format-webp.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748974/counter-strike-2-consejos.avif",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748958/Counter-Strike_2_Sys.width-1000.bgcolor-000.format-webp.webp"));
+
+        seedGallery("Dead by Daylight", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750142/Dead-by-Daylight.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750134/ghost-face-key-art-1920x1080-9503e5d7a31c.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750114/98da8939b48f5be8fdcefe9c904e919a16e59ab9a299c1eb.avif"));
+
+        seedGallery("Doom Eternal", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748834/doom-eternal-for-pc-review_3cma.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748832/DE_Horde_Mode_HERO_1920x870.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748816/requisitos-de-DOOM-Eternal.jpg"));
+
+        seedGallery("F1 25", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751303/oeQPvckcaBiviGAcgu7Hua.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751283/f1-24-gameplay.avif",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751268/New-F1-25-gameplay-video-shows-off-laser-scanned-tracks-and-reverse-layouts.jpg"));
+
+        seedGallery("Forza Motorsport", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751800/ForzaMotorsport_XboxGamesShowcase2023-PressKit-02-16x9_WM_HERO-c683f03b1007573adc75.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751761/ForzaMotorsport_XboxGamesShowcase2023-PressKit-04-16x9_WM-c52b35d08347e817af60.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751715/forza-motorsport-image-9.jpg"));
+
+        seedGallery("Hades", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748546/images.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748544/hades_08_3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748520/the-first-15-minutes-of-hades-gameplay-1080p-60fps_pz25.1280.webp"));
+
+        seedGallery("Injustice 2", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749559/injustice.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749547/Injustice-3-scaled.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749545/Injustice_2__Legendary_Edition_20180828060615.jpg"));
+
+        seedGallery("Microsoft Flight Simulator", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750525/ac528313-6b2f-4db2-81d0-e470f0e6bb22.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750517/microsoft-flight-simulator-cielo-imagen.avif",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750511/microsoft-flight-simulator-2024-update-20-japan.jpg"));
+
+        seedGallery("Mortal Kombat 1", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749671/mortal_kombat_1_liu_kang_sub-zero_6.8.23.jpg.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749674/f6yCNnESMq8yTLZcGbwApS.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749654/mortal-kombat-1-image.jpg"));
+
+        seedGallery("Mortal Kombat X", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749907/wallpapersden.com_mortal-kombat-x-new-game_3840x2160.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749899/mortal-kombat-x-scorpion-inferno-uhd-4k-wallpaper.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749893/MortalKombatX_ShinnokvLK-scaled.jpg"));
+
+        seedGallery("Need for Speed Unbound", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751629/need-for-speed-unbound_98.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751616/4UqqNpJc93HJqGkTh73ZcM.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751582/my-opinion-about-nfs-unbound-v0-d6a5egoeglce1.jpg"));
+
+        seedGallery("Outlast", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750333/outlast-trials-release-date-gameplay-platforms-more.avif",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750330/outlast-1.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750319/x1080.jpg"));
+
+
+        seedGallery("Phasmophobia", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750026/b5b0af81c853e1debf490a06c7e5f998.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750023/phasmophobia-console-trailer-68400ac89d873.avif",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750021/phasmophobia_gameplay.webp"));
+
+        seedGallery("PowerWash Simulator 2", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750778/powerwash-simulator-780x470.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750750/1_tgem3sWI4c2FxZfdYZxDfQ.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750747/powerwash-simulator-2-2-3840x2160-3521e9556744.png"));
+
+        seedGallery("Resident Evil 7: Biohazard", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750460/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750445/image-_2.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750409/resident-evil-7-gameplay-de-8-mi.webp"));
+
+        seedGallery("Street Fighter 6", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749411/alex-llega-a-street-fighter-6-a-principios-de-primavera-cover6960408b584eb.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749395/capcom-street-fighter-6-evo-2024_34vk.1280.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749372/street-fighter-6_ry9y.1920.webp"));
+
+        seedGallery("Tekken 8", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749252/tekken-8-adds-newcomer-azucena-along-with-returning-fighter-raven.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749211/52355865886_ad83c6d20d_h.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749171/Tekken8_Law_Battle.jpg"));
+
+
     }
 
     private void assignBanner(String gameName, String bannerUrl) {
