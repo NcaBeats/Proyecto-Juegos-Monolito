@@ -22,10 +22,11 @@ services:
       - 'PORT=8080'
       - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/proyecto_juegos'
       - 'SPRING_DATASOURCE_USERNAME=nico'
-      - 'SPRING_DATASOURCE_PASSWORD=Empanada5678'
       - 'SPRING_PROFILES_ACTIVE=dev'
       - 'KEY_JWT_SECRET=Uo4MkxmgYVdBK+6mYtjYYpI8k4fpSUihZ8FNhpiSmZ4xyb59cUYKLdW94eKtkoRe'
       - 'CLOUDINARY_URL=cloudinary://312127544695893:sbCqVOP04vt4hJrmryY0ojeEOPs@tpjbimjw'
+    volumes:
+      - './uploads:/app/uploads'
 
 volumes:
   postgres-data:

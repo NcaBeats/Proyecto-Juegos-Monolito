@@ -13,6 +13,7 @@ CREATE TABLE "public"."game" (
     "launch_date"       date NOT NULL,
     "image_url"         varchar(500),
     "banner_url"        varchar(500),
+    "video_url"         varchar(500),
     "minimum_specs"     text,
     "recommended_specs" text,
     "created_at"        timestamp NOT NULL,
@@ -165,6 +166,20 @@ ALTER TABLE "public"."library"           ADD CONSTRAINT "fk_library_game_id_game
 ALTER TABLE "public"."purchase"          ADD CONSTRAINT "fk_purchase_user_id_user_id"            FOREIGN KEY ("user_id")     REFERENCES "public"."user"("id");
 ALTER TABLE "public"."purchase_item"     ADD CONSTRAINT "fk_purchase_item_purchase_id_purchase_id" FOREIGN KEY ("purchase_id") REFERENCES "public"."purchase"("id");
 ALTER TABLE "public"."purchase_item"     ADD CONSTRAINT "fk_purchase_item_game_id_game_id"       FOREIGN KEY ("game_id")     REFERENCES "public"."game"("id");
-ALTER TABLE "public"."game"              ADD CONSTRAINT "fk_game_seller_id_user_id"             FOREIGN KEY ("seller_id")   REFERENCES "public"."user"("id");
+ALTER TABLE "public"."game" ADD CONSTRAINT "fk_game_seller_id_user_id"             FOREIGN KEY ("seller_id")   REFERENCES "public"."user"("id");
 
 CREATE INDEX "game_index_seller_id" ON "public"."game" ("seller_id");
+
+-- =============================================
+-- GAME_IMAGE (gallery)
+-- =============================================
+CREATE TABLE "public"."game_image" (
+    "id"         bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    "game_id"    bigint NOT NULL,
+    "url"        varchar(500) NOT NULL,
+    "position"   int NOT NULL,
+    "created_at" timestamp NOT NULL,
+    PRIMARY KEY ("id")
+);
+ALTER TABLE "public"."game_image" ADD CONSTRAINT "fk_game_image_game_id" FOREIGN KEY ("game_id") REFERENCES "public"."game"("id") ON DELETE CASCADE;
+CREATE INDEX "game_image_index_game_id_position" ON "public"."game_image" ("game_id", "position");

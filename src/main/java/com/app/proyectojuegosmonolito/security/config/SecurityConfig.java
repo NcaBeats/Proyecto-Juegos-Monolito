@@ -59,6 +59,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/games").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/games/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/games/**").hasRole("ADMIN")
+                        // Uploaded files (trailers): public
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         // Categories: anyone can read, only ADMIN can write
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()

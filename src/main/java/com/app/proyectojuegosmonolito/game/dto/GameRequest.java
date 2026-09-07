@@ -16,5 +16,7 @@ public record GameRequest(
     @NotNull LocalDate launchDate,
     @NotNull @NotEmpty List<String> categoryNames,
     String minimumSpecs,
-    String recommendedSpecs
+    String recommendedSpecs,
+    String videoUrl,
+    Long sellerId
 ) {}

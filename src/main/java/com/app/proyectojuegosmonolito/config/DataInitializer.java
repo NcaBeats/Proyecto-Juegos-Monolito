@@ -42,6 +42,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String @NonNull ... args) {
         if (gameService.count() == 0) {
             seedCatalog();
+            seedImages();
         }
         seedVendors();
     }
@@ -75,6 +76,8 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2011, 11, 18))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149050/sjclgg4kv5nvvooh4acf.webp")
+                .videoUrl("/uploads/games/minecraft/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788746076/Banner_Minecraft.avif")
                 .minimumSpecs("""
                         {"os": "Windows 10", "processor": "Intel Core i3-3210 o AMD A8-7600", "memory": "4 GB RAM", "graphics": "Intel HD Graphics 4000 o AMD Radeon R5", "storage": "1 GB disponible", "additional": "Internet requerido para multijugador"}""")
                 .recommendedSpecs("""
@@ -95,6 +98,8 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 2, 26))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149138/wrpzkzlrasq3boe9x2vp.webp")
+                .videoUrl("/uploads/games/stardew-valley/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788746373/stardew-valley_Banner.jpg")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10", "processor": "2 GHz", "memory": "2 GB RAM", "graphics": "256 MB de VRAM compatible", "storage": "500 MB disponible", "additional": "Compatibilidad con gamepad opcional"}""")
                 .recommendedSpecs("""
@@ -115,6 +120,8 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 2, 25))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149161/q5zkmswvhs13xkkrsbcz.webp")
+                .videoUrl("/uploads/games/elden-ring/trailer.mp4")
+                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788707257/games/elden-ring/banner/banner.jpg")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-8400 o AMD Ryzen 3 3300X", "memory": "12 GB RAM", "graphics": "NVIDIA GTX 1060 3GB o AMD RX 580 4GB", "storage": "60 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -135,6 +142,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 7, 7))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149186/jlvjpqerig4jsh4f7ypr.webp")
+                .videoUrl("/uploads/games/rocket-league/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226686/zw94nyucmyjac8jszexj.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10", "processor": "Intel Core i5-750 o AMD Phenom II x4 945", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 460 o AMD Radeon HD 6850", "storage": "20 GB disponible"}""")
@@ -156,6 +164,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 8, 12))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149206/xrjf04vgulidbc4lbyf3.avif")
+                .videoUrl("/uploads/games/spider-man/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226722/y6bb4iesp3jqbvymtaoe.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i3-4160 o AMD ryzen 3 1300X", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 950 o AMD Radeon RX 470", "storage": "75 GB disponible", "directX": "Version 12"}""")
@@ -177,6 +186,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2013, 9, 17))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149231/pfmjtit08yk4aoikwfqv.webp")
+                .videoUrl("/uploads/games/gta-v/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226489/a1iuiy2siwpbr74n3prx.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Quad Q6600 a 2.4 GHz o AMD Phenom 9850", "memory": "4 GB RAM", "graphics": "NVIDIA 9800 GT 1GB o AMD HD 4870 1GB", "storage": "110 GB disponible", "sound": "100% compatible DirectX 10"}""")
@@ -198,6 +208,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 10, 21))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149249/yuuilkytoh575uzxosfd.webp")
+                .videoUrl("/uploads/games/battlefield-1/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5 6600K o AMD FX-6350", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 2GB o AMD Radeon HD 7850 2GB", "storage": "50 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -218,6 +229,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 3, 20))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149264/ixpm2q4qxzrddzuxbbla.webp")
+                .videoUrl("/uploads/games/assassins-creed-shadows/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-8700K o AMD Ryzen 5 3600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1070 8GB o AMD RX 5700 XT 8GB", "storage": "100 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -238,6 +250,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 12, 10))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149286/pzyxwb5xndhfrs9quhlr.webp")
+                .videoUrl("/uploads/games/cyberpunk-2077/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-6700 o AMD Ryzen 5 1600", "memory": "12 GB RAM", "graphics": "NVIDIA GTX 1060 6GB o AMD RX 580 8GB", "storage": "70 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -258,6 +271,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 1, 26))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149302/qir5n5rdwxwanuzd4x4u.webp")
+                .videoUrl("/uploads/games/dragon-ball-fighterz/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i5-3470 o AMD FX-4350", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 650 o AMD Radeon HD 7790", "storage": "6 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -278,6 +292,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2019, 4, 23))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149323/m9njptc1b0tthgombbgy.webp")
+                .videoUrl("/uploads/games/mortal-kombat-11/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/10 de 64 bits", "processor": "Intel Core i5-750 o AMD Phenom II x4 965", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 670 o AMD Radeon HD 7950", "storage": "60 GB disponible"}""")
                 .recommendedSpecs("""
@@ -298,6 +313,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 10, 26))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149472/y2wcocuowgind8c8jgza.avif")
+                .videoUrl("/uploads/games/red-dead-redemption-2/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-2500K o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 770 2GB o AMD Radeon R9 280 3GB", "storage": "150 GB disponible"}""")
                 .recommendedSpecs("""
@@ -318,6 +334,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 7, 17))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149493/kdq0puz7vosdiun1vvkt.webp")
+                .videoUrl("/uploads/games/hollow-knight-silksong/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Duo E5200", "memory": "4 GB RAM", "graphics": "GeForce 9800GTX+ (1GB) o equivalente", "storage": "5 GB disponible"}""")
                 .recommendedSpecs("""
@@ -338,6 +355,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 5, 19))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149509/co60ksh6jnzks1mzhkik.webp")
+                .videoUrl("/uploads/games/the-witcher-3/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel CPU Core i5-2500K 3.3 GHz o AMD CPU Phenom II X4 940", "memory": "6 GB RAM", "graphics": "NVIDIA GPU GeForce GTX 660 o AMD GPU Radeon HD 7870", "storage": "50 GB disponible"}""")
                 .recommendedSpecs("""
@@ -358,6 +376,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 9, 19))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788151900/tcixcrqzkgrrrihoiref.webp")
+                .videoUrl("/uploads/games/god-of-war-ragnarok/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-8400 o AMD Ryzen 5 3600X", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1070 8GB o AMD RX 580 8GB", "storage": "90 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -378,6 +397,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 3, 24))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152018/kqhok1e1hqpwmtkoxpnd.webp")
+                .videoUrl("/uploads/games/resident-evil-4/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "AMD Ryzen 5 3600X o Intel Core i7-8700", "memory": "16 GB RAM", "graphics": "AMD Radeon RX 5700 o NVIDIA GeForce GTX 1070", "storage": "60 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -398,6 +418,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 11, 10))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152199/q9wkj9p7pwkp7mfl2il6.webp")
+                .videoUrl("/uploads/games/call-of-duty-modern-warfare-3/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-6600 o AMD Ryzen 5 1400", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 960 o AMD Radeon RX 470", "storage": "125 GB SSD disponible"}""")
                 .recommendedSpecs("""
@@ -418,6 +439,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2021, 12, 8))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152365/y2ha15uhuawclxfqs17g.webp")
+                .videoUrl("/uploads/games/halo-infinite/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "AMD Ryzen 5 1600 o Intel Core i7-4770", "memory": "8 GB RAM", "graphics": "AMD RX 570 o Nvidia GTX 1050 Ti", "storage": "50 GB disponible"}""")
                 .recommendedSpecs("""
@@ -438,6 +460,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 10, 2))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152509/slibpbfpsr8maroiffdi.webp")
+                .videoUrl("/uploads/games/forza-horizon-4/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226771/ql7cef0v5jpuba26rexg.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i3-4170 o Intel Core i5 750", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 650 Ti o AMD Radeon R7 250X", "storage": "80 GB disponible"}""")
@@ -459,6 +482,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 10, 21))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152670/ulge1bf2tbmcexewxnh2.avif")
+                .videoUrl("/uploads/games/civilization-vi/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10/11 de 64 bits", "processor": "Intel Core i3 2.4 Ghz o AMD equivalente", "memory": "4 GB RAM", "graphics": "512 MB ATI 4850 o mejor, 1 GB NVidia 460 o mejor, Intel HD 4000 integrada o mejor", "storage": "17 GB disponible"}""")
                 .recommendedSpecs("""
@@ -479,6 +503,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 10, 8))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152834/fdzr9lxwibrx1cmdwt8a.webp")
+                .videoUrl("/uploads/games/silent-hill-2/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-8700K o AMD Ryzen 5 3600X", "memory": "16 GB RAM", "graphics": "NVIDIA GeForce RTX 2080 o AMD Radeon RX 6800 XT", "storage": "50 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -499,6 +524,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2012, 10, 18))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152907/q2jmubh8qbjb0jgsih5c.avif")
+                .videoUrl("/uploads/games/euro-truck-simulator-2/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10/11 de 64 bits", "processor": "Intel Core i5-6400 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 660 2GB o AMD Radeon R9 270X 2GB", "storage": "12 GB disponible"}""")
                 .recommendedSpecs("""
@@ -519,6 +545,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2019, 3, 22))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788153006/l2zmofnyufiwvlxerayj.webp")
+                .videoUrl("/uploads/games/sekiro/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7 SP1/8.1/10 de 64 bits", "processor": "Intel Core i3-2100 o AMD FX-6300", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 760 6GB o AMD Radeon HD 7950 3GB", "storage": "25 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -539,6 +566,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2014, 9, 2))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788153094/rbqhx5vnpk1crm3antvw.webp")
+                .videoUrl("/uploads/games/the-sims-4/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Duo E4300 o AMD Athlon 64 X2 4000+", "memory": "2 GB RAM", "graphics": "NVIDIA GeForce 6600 o ATI Radeon X1300", "storage": "25 GB disponible"}""")
                 .recommendedSpecs("""
@@ -765,5 +793,173 @@ public class DataInitializer implements CommandLineRunner {
 
     private Category createCategory(String name) {
         return categoryService.create(Category.builder().name(name).build());
+    }
+
+    private void seedImages() {
+        seedGallery("Minecraft", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707251/games/minecraft/imagelist/1.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707252/games/minecraft/imagelist/2.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707252/games/minecraft/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707253/games/minecraft/imagelist/4.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707251/games/minecraft/banner/banner.png"));
+
+        seedGallery("Stardew Valley", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707255/games/stardew-valley/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707255/games/stardew-valley/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707256/games/stardew-valley/imagelist/3.webp",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707254/games/stardew-valley/banner/banner.webp"));
+
+        seedGallery("Elden Ring", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707266/games/elden-ring/imagelist/1.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707267/games/elden-ring/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707266/games/elden-ring/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707267/games/elden-ring/imagelist/4.jpg"));
+
+        assignBanner("Spider-Man Remastered", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788226722/games/spider-man-remastered/banner/banner.webp");
+        seedGallery("Spider-Man Remastered", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707280/games/spider-man-remastered/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707281/games/spider-man-remastered/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707281/games/spider-man-remastered/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707280/games/spider-man-remastered/imagelist/4.jpg"));
+
+        assignBanner("Grand Theft Auto V", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788226489/games/grand-theft-auto-v/banner/banner.webp");
+        seedGallery("Grand Theft Auto V", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707331/games/grand-theft-auto-v/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707338/games/grand-theft-auto-v/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707338/games/grand-theft-auto-v/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707328/games/grand-theft-auto-v/imagelist/4.jpg"));
+
+        assignBanner("Battlefield 1", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707282/games/battlefield-1/banner/banner.jpg");
+        seedGallery("Battlefield 1", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707282/games/battlefield-1/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707287/games/battlefield-1/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707503/games/battlefield-1/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707288/games/battlefield-1/imagelist/4.jpg"));
+
+        assignBanner("Assassin's Creed Shadows", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707339/games/assassins-creed-shadows/banner/banner.jpg");
+        seedGallery("Assassin's Creed Shadows", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707509/games/assassins-creed-shadows/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707356/games/assassins-creed-shadows/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707357/games/assassins-creed-shadows/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707511/games/assassins-creed-shadows/imagelist/4.jpg"));
+
+        assignBanner("Cyberpunk 2077", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707360/games/cyberpunk-2077/banner/banner.jpg");
+        seedGallery("Cyberpunk 2077", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707512/games/cyberpunk-2077/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707361/games/cyberpunk-2077/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707369/games/cyberpunk-2077/imagelist/3.jpg"));
+
+        assignBanner("Dragon Ball FighterZ", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707289/games/dragon-ball-fighterz/banner/banner.jpg");
+        seedGallery("Dragon Ball FighterZ", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707290/games/dragon-ball-fighterz/imagelist/1.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707290/games/dragon-ball-fighterz/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707292/games/dragon-ball-fighterz/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707503/games/dragon-ball-fighterz/imagelist/4.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707297/games/dragon-ball-fighterz/imagelist/5.jpg"));
+
+        assignBanner("Mortal Kombat 11", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788746772/MK11_BANNER.jpg");
+        seedGallery("Mortal Kombat 11", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707304/games/mortal-kombat-11/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707507/games/mortal-kombat-11/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707307/games/mortal-kombat-11/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707307/games/mortal-kombat-11/imagelist/4.jpg"));
+
+        assignBanner("Red Dead Redemption 2", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707370/games/red-dead-redemption-2/banner/banner.jpg");
+        seedGallery("Red Dead Redemption 2", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707370/games/red-dead-redemption-2/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707373/games/red-dead-redemption-2/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707374/games/red-dead-redemption-2/imagelist/3.jpg"));
+
+        assignBanner("Hollow Knight: Silksong", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707310/games/hollow-knight-silksong/banner/banner.jpg");
+        seedGallery("Hollow Knight: Silksong", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707310/games/hollow-knight-silksong/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707311/games/hollow-knight-silksong/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707312/games/hollow-knight-silksong/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707313/games/hollow-knight-silksong/imagelist/4.jpg"));
+
+        assignBanner("The Witcher 3", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788149509/co60ksh6jnzks1mzhkik.webp");
+        seedGallery("The Witcher 3", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707324/games/the-witcher-3/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707324/games/the-witcher-3/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707325/games/the-witcher-3/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707323/games/the-witcher-3/banner/banner.jpg"));
+
+        assignBanner("God of War Ragnarök", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707374/games/god-of-war-ragnarok/banner/banner.jpg");
+        seedGallery("God of War Ragnarök", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707647/games/god-of-war-ragnarok/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707649/games/god-of-war-ragnarok/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707377/games/god-of-war-ragnarok/imagelist/3.jpg"));
+
+        assignBanner("Resident Evil 4", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707387/games/resident-evil-4/banner/banner.jpg");
+        seedGallery("Resident Evil 4", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707387/games/resident-evil-4/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707388/games/resident-evil-4/imagelist/2.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707389/games/resident-evil-4/imagelist/3.jpg"));
+
+        assignBanner("Call of Duty: Modern Warfare III", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707391/games/call-of-duty-mwiii/banner/banner.jpg");
+        seedGallery("Call of Duty: Modern Warfare III", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707393/games/call-of-duty-mwiii/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707393/games/call-of-duty-mwiii/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707394/games/call-of-duty-mwiii/imagelist/3.jpg"));
+
+        assignBanner("Halo Infinite", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707395/games/halo-infinite/banner/banner.jpg");
+        seedGallery("Halo Infinite", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707396/games/halo-infinite/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707403/games/halo-infinite/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707404/games/halo-infinite/imagelist/3.jpg"));
+
+        assignBanner("Forza Horizon 4", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788226771/ql7cef0v5jpuba26rexg.webp");
+        seedGallery("Forza Horizon 4", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707405/games/forza-horizon-4/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707649/games/forza-horizon-4/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707407/games/forza-horizon-4/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707405/games/forza-horizon-4/banner/banner.jpg"));
+
+        assignBanner("Civilization VI", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788152670/ulge1bf2tbmcexewxnh2.avif");
+        seedGallery("Civilization VI", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707408/games/civilization-vi/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707410/games/civilization-vi/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707410/games/civilization-vi/imagelist/3.png," +
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707407/games/civilization-vi/banner/banner.png"));
+
+        assignBanner("Silent Hill 2", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707420/games/silent-hill-2/banner/banner.jpg");
+        seedGallery("Silent Hill 2", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707420/games/silent-hill-2/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707422/games/silent-hill-2/imagelist/2.png",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707421/games/silent-hill-2/imagelist/3.jpg"));
+
+        assignBanner("Euro Truck Simulator 2", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707422/games/euro-truck-simulator-2/banner/banner.jpg");
+        seedGallery("Euro Truck Simulator 2", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707422/games/euro-truck-simulator-2/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707424/games/euro-truck-simulator-2/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707425/games/euro-truck-simulator-2/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707425/games/euro-truck-simulator-2/imagelist/4.webp"));
+
+        seedGallery("Rocket League", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707327/games/rocket-league/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707508/games/rocket-league/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707328/games/rocket-league/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707326/games/rocket-league/banner/banner.webp"));
+
+        assignBanner("Sekiro: Shadows Die Twice", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707425/games/sekiro-shadows-die-twice/banner/banner.webp");
+        seedGallery("Sekiro: Shadows Die Twice", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707433/games/sekiro-shadows-die-twice/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707433/games/sekiro-shadows-die-twice/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707650/games/sekiro-shadows-die-twice/imagelist/3.jpg"));
+
+        assignBanner("The Sims 4", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707436/games/the-sims-4/banner/banner.jpg");
+        seedGallery("The Sims 4", List.of(
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707437/games/the-sims-4/imagelist/1.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707438/games/the-sims-4/imagelist/2.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707439/games/the-sims-4/imagelist/3.jpg",
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707441/games/the-sims-4/imagelist/4.jpg"));
+    }
+
+    private void assignBanner(String gameName, String bannerUrl) {
+        gameService.findByName(gameName).ifPresent(g -> gameService.assignBanner(g.getId(), bannerUrl));
+    }
+
+    private void seedGallery(String gameName, List<String> urls) {
+        gameService.findByName(gameName).ifPresent(g -> gameService.replaceGallery(g.getId(), urls));
     }
 }

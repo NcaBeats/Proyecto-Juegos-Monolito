@@ -3,6 +3,7 @@ package com.app.proyectojuegosmonolito.game.controller;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.dto.GameResponse;
 import com.app.proyectojuegosmonolito.game.dto.GameStatsResponse;
+import com.app.proyectojuegosmonolito.game.dto.VideoUrlRequest;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
 import com.app.proyectojuegosmonolito.game.model.Category;
 import com.app.proyectojuegosmonolito.game.model.GameState;
@@ -104,7 +105,7 @@ public class GameController {
         var categories = resolveCategories(request.categoryNames());
         var game = gameService.update(id, request.name(), request.originalPrice(), request.discountPercent(),
                 request.description(), request.state(), request.launchDate(), categories,
-                request.minimumSpecs(), request.recommendedSpecs());
+                request.minimumSpecs(), request.recommendedSpecs(), request.videoUrl());
         return ResponseEntity.ok(gameMapper.toResponse(game));
     }
 
@@ -129,6 +130,17 @@ public class GameController {
             @RequestParam("file") MultipartFile file) {
         var bannerUrl = imageService.store(file);
         var game = gameService.updateBannerUrl(id, bannerUrl);
+        return ResponseEntity.ok(gameMapper.toResponse(game));
+    }
+
+    @Operation(summary = "Set game video URL", description = "Sets the video (trailer) URL for the specified game")
+    @ApiResponse(responseCode = "200", description = "Video updated successfully")
+    @ApiResponse(responseCode = "404", description = "Game not found")
+    @PutMapping("/{id}/video")
+    public ResponseEntity<GameResponse> uploadVideo(
+            @PathVariable Long id,
+            @Valid @RequestBody VideoUrlRequest request) {
+        var game = gameService.updateVideoUrl(id, request.videoUrl());
         return ResponseEntity.ok(gameMapper.toResponse(game));
     }
 

@@ -19,6 +19,9 @@ public record GameResponse(
     List<CategoryResponse> categories,
     String imageUrl,
     String bannerUrl,
+    String videoUrl,
+    List<String> galleryUrls,
+    Long sellerId,
     String minimumSpecs,
     String recommendedSpecs,
     Instant createdAt

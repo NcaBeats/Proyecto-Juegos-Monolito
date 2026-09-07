@@ -1,8 +1,10 @@
 package com.app.proyectojuegosmonolito.game.service;
 
+import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.game.model.Category;
 import com.app.proyectojuegosmonolito.game.model.Game;
+import com.app.proyectojuegosmonolito.game.model.GameImage;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -117,10 +120,10 @@ public class GameService {
     }
 
     @Transactional
-    public Game update(Long id, String name, BigDecimal originalPrice, Integer discountPercent, String description, GameState state, LocalDate launchDate, List<Category> categories, String minimumSpecs, String recommendedSpecs) {
+    public Game update(Long id, String name, BigDecimal originalPrice, Integer discountPercent, String description, GameState state, LocalDate launchDate, List<Category> categories, String minimumSpecs, String recommendedSpecs, String videoUrl) {
         log.info("Updating game {}: name={}, originalPrice={}, discountPercent={}", id, name, originalPrice, discountPercent);
         var game = findById(id);
-        game.update(name, originalPrice, discountPercent, description, state, launchDate, categories, game.getImageUrl(), game.getBannerUrl(), minimumSpecs, recommendedSpecs);
+        game.update(name, originalPrice, discountPercent, description, state, launchDate, categories, game.getImageUrl(), game.getBannerUrl(), videoUrl, minimumSpecs, recommendedSpecs);
         log.info("Updated game {}", game.getId());
         return game;
     }
@@ -132,7 +135,7 @@ public class GameService {
         game.update(game.getName(), game.getOriginalPrice(), game.getDiscountPercent(),
                 game.getDescription(), game.getState(), game.getLaunchDate(),
                 game.getCategories(), imageUrl, game.getBannerUrl(),
-                game.getMinimumSpecs(), game.getRecommendedSpecs());
+                game.getVideoUrl(), game.getMinimumSpecs(), game.getRecommendedSpecs());
         log.info("Updated image for game {}", game.getId());
         return game;
     }
@@ -144,8 +147,20 @@ public class GameService {
         game.update(game.getName(), game.getOriginalPrice(), game.getDiscountPercent(),
                 game.getDescription(), game.getState(), game.getLaunchDate(),
                 game.getCategories(), game.getImageUrl(), bannerUrl,
-                game.getMinimumSpecs(), game.getRecommendedSpecs());
+                game.getVideoUrl(), game.getMinimumSpecs(), game.getRecommendedSpecs());
         log.info("Updated banner for game {}", game.getId());
+        return game;
+    }
+
+    @Transactional
+    public Game updateVideoUrl(Long id, String videoUrl) {
+        log.info("Updating video for game {}: {}", id, videoUrl);
+        var game = findById(id);
+        game.update(game.getName(), game.getOriginalPrice(), game.getDiscountPercent(),
+                game.getDescription(), game.getState(), game.getLaunchDate(),
+                game.getCategories(), game.getImageUrl(), game.getBannerUrl(),
+                videoUrl, game.getMinimumSpecs(), game.getRecommendedSpecs());
+        log.info("Updated video for game {}", game.getId());
         return game;
     }
 
@@ -157,5 +172,53 @@ public class GameService {
         }
         gameRepository.deleteById(id);
         log.info("Deleted game {}", id);
+    }
+
+    @Transactional
+    public Game assignBanner(Long id, String bannerUrl) {
+        log.info("Assigning banner to game {}: {}", id, bannerUrl);
+        var game = findById(id);
+        game.setBannerUrl(bannerUrl);
+        return game;
+    }
+
+    @Transactional
+    public Game addGalleryImage(Long id, String url, Integer position) {
+        log.info("Adding gallery image to game {} at position {}: {}", id, position, url);
+        var game = findById(id);
+        var image = GameImage.builder()
+                .game(game)
+                .url(url)
+                .position(position)
+                .createdAt(Instant.now())
+                .build();
+        game.getGallery().add(image);
+        return game;
+    }
+
+    @Transactional
+    public Game replaceGallery(Long id, List<String> urls) {
+        log.info("Replacing gallery for game {} with {} images", id, urls.size());
+        var game = findById(id);
+        game.getGallery().clear();
+        for (int i = 0; i < urls.size(); i++) {
+            var image = GameImage.builder()
+                    .game(game)
+                    .url(urls.get(i))
+                    .position(i)
+                    .createdAt(Instant.now())
+                    .build();
+            game.getGallery().add(image);
+        }
+        return game;
+    }
+
+    public void assertCanModify(Game game, User user) {
+        if (user.getRole() == Role.ADMIN) {
+            return;
+        }
+        if (game.getSeller() == null || !game.getSeller().getId().equals(user.getId())) {
+            throw new SecurityException("User " + user.getId() + " is not authorized to modify game " + game.getId());
+        }
     }
 }

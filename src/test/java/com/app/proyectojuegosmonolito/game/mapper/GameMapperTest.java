@@ -22,7 +22,7 @@ class GameMapperTest {
     void toEntity_shouldMapAllFields() {
         var request = new GameRequest("Test Game", new BigDecimal("29.99"), 20,
                 "Description", GameState.AVAILABLE, LocalDate.of(2026, 6, 15),
-                List.of("Action", "RPG"), "min specs", "rec specs");
+                List.of("Action", "RPG"), "min specs", "rec specs", null, 10L);
 
         var result = mapper.toEntity(request);
 
@@ -34,6 +34,7 @@ class GameMapperTest {
         assertThat(result.getLaunchDate()).isEqualTo(LocalDate.of(2026, 6, 15));
         assertThat(result.getMinimumSpecs()).isEqualTo("min specs");
         assertThat(result.getRecommendedSpecs()).isEqualTo("rec specs");
+        assertThat(result.getVideoUrl()).isNull();
         assertThat(result.getId()).isNull();
         assertThat(result.getCreatedAt()).isNull();
     }

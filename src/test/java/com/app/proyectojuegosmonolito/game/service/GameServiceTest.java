@@ -100,7 +100,7 @@ class GameServiceTest {
 
         var result = gameService.update(1L, "New Name", new BigDecimal("49.99"), 10,
                 "New desc", GameState.COMING_SOON, LocalDate.of(2027, 1, 1), new ArrayList<>(),
-                "min specs", "rec specs");
+                "min specs", "rec specs", null);
 
         assertThat(result.getName()).isEqualTo("New Name");
         assertThat(result.getOriginalPrice()).isEqualByComparingTo("49.99");
