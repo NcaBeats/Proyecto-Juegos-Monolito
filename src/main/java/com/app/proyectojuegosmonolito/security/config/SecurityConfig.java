@@ -53,11 +53,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
-                        // Games: anyone can read, only ADMIN can write
+                        // Games: anyone can read; ADMIN and VENDEDOR can create; ADMIN and owning VENDEDOR can update
                         .requestMatchers(HttpMethod.GET, "/api/v1/games").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/games/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/games").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/games/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/games").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/games/**").hasAnyRole("ADMIN", "VENDEDOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/games/**").hasRole("ADMIN")
                         // Uploaded files (trailers): public
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()

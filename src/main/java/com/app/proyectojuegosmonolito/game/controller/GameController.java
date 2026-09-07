@@ -1,5 +1,9 @@
 package com.app.proyectojuegosmonolito.game.controller;
 
+import com.app.proyectojuegosmonolito.SecurityContext;
+import com.app.proyectojuegosmonolito.account.user.model.Role;
+import com.app.proyectojuegosmonolito.account.user.model.User;
+import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.dto.GameResponse;
 import com.app.proyectojuegosmonolito.game.dto.GameStatsResponse;
@@ -19,10 +23,12 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +42,8 @@ public class GameController {
     private final GameMapper gameMapper;
     private final CategoryService categoryService;
     private final ImageService imageService;
+    private final UserService userService;
+    private final SecurityContext securityContext;
 
     @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category or name")
     @ApiResponse(responseCode = "200", description = "List of games retrieved successfully")
@@ -86,26 +94,38 @@ public class GameController {
         return ResponseEntity.ok(gameMapper.toResponse(gameService.findById(id)));
     }
 
-    @Operation(summary = "Create a new game", description = "Creates a new game with the provided details")
+    @Operation(summary = "Create a new game", description = "Creates a new game with the provided details and optional media files. " +
+            "Parts: metadata (JSON), image (required), banner, video, gallery (multiple)")
     @ApiResponse(responseCode = "201", description = "Game created successfully")
-    @PostMapping
-    public ResponseEntity<GameResponse> create(@Valid @RequestBody GameRequest request) {
-        var game = gameMapper.toEntity(request);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<GameResponse> create(
+            @RequestPart("metadata") GameRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "banner", required = false) MultipartFile banner,
+            @RequestPart(value = "video", required = false) MultipartFile video,
+            @RequestPart(value = "gallery", required = false) List<MultipartFile> gallery) throws IOException {
+        var user = userService.findById(securityContext.getCurrentUserId());
+        User seller = resolveSellerForCreate(request.sellerId(), user);
         var categories = resolveCategories(request.categoryNames());
-        game.setCategories(categories);
-        var saved = gameService.create(game);
+        var saved = gameService.createWithFiles(request, categories, seller, image, banner, video, gallery);
         return ResponseEntity.status(HttpStatus.CREATED).body(gameMapper.toResponse(saved));
     }
 
-    @Operation(summary = "Update a game", description = "Updates an existing game by its ID")
+    @Operation(summary = "Update a game", description = "Updates an existing game and optional media files by its ID. " +
+            "VENDEDOR can only update games assigned to them; a NEW image is required on create but optional here.")
     @ApiResponse(responseCode = "200", description = "Game updated successfully")
     @ApiResponse(responseCode = "404", description = "Game not found")
-    @PutMapping("/{id}")
-    public ResponseEntity<GameResponse> update(@PathVariable Long id, @Valid @RequestBody GameRequest request) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<GameResponse> update(
+            @PathVariable Long id,
+            @RequestPart("metadata") GameRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "banner", required = false) MultipartFile banner,
+            @RequestPart(value = "video", required = false) MultipartFile video,
+            @RequestPart(value = "gallery", required = false) List<MultipartFile> gallery) throws IOException {
+        assertCanModify(id);
         var categories = resolveCategories(request.categoryNames());
-        var game = gameService.update(id, request.name(), request.originalPrice(), request.discountPercent(),
-                request.description(), request.state(), request.launchDate(), categories,
-                request.minimumSpecs(), request.recommendedSpecs(), request.videoUrl());
+        var game = gameService.updateWithFiles(id, request, categories, image, banner, video, gallery);
         return ResponseEntity.ok(gameMapper.toResponse(game));
     }
 
@@ -115,8 +135,9 @@ public class GameController {
     @PostMapping("/{id}/image")
     public ResponseEntity<GameResponse> uploadImage(
             @PathVariable Long id,
-            @RequestParam("file") MultipartFile file) {
-        var imageUrl = imageService.store(file);
+            @RequestParam("file") MultipartFile file) throws java.io.IOException {
+        assertCanModify(id);
+        var imageUrl = imageService.store(file, "games/" + gameService.slugify(gameService.findById(id).getName()) + "/card");
         var game = gameService.updateImage(id, imageUrl);
         return ResponseEntity.ok(gameMapper.toResponse(game));
     }
@@ -127,8 +148,9 @@ public class GameController {
     @PostMapping("/{id}/banner")
     public ResponseEntity<GameResponse> uploadBanner(
             @PathVariable Long id,
-            @RequestParam("file") MultipartFile file) {
-        var bannerUrl = imageService.store(file);
+            @RequestParam("file") MultipartFile file) throws java.io.IOException {
+        assertCanModify(id);
+        var bannerUrl = imageService.store(file, "games/" + gameService.slugify(gameService.findById(id).getName()) + "/banner");
         var game = gameService.updateBannerUrl(id, bannerUrl);
         return ResponseEntity.ok(gameMapper.toResponse(game));
     }
@@ -166,5 +188,20 @@ public class GameController {
                             Category.builder().name(name).build()));
                 })
                 .toList();
+    }
+
+    private User resolveSellerForCreate(Long requestedSellerId, User currentUser) {
+        if (currentUser.getRole() == Role.VENDEDOR) {
+            return currentUser;
+        }
+        if (requestedSellerId != null) {
+            return userService.findById(requestedSellerId);
+        }
+        return null;
+    }
+
+    private void assertCanModify(Long id) {
+        var user = userService.findById(securityContext.getCurrentUserId());
+        gameService.assertCanModify(gameService.findById(id), user);
     }
 }

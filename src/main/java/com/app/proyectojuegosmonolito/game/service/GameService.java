@@ -2,6 +2,8 @@ package com.app.proyectojuegosmonolito.game.service;
 
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
+import com.app.proyectojuegosmonolito.game.dto.GameRequest;
+import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
 import com.app.proyectojuegosmonolito.game.model.Category;
 import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.game.model.GameImage;
@@ -14,12 +16,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -27,6 +35,8 @@ import java.util.List;
 public class GameService {
 
     private final GameRepository gameRepository;
+    private final GameMapper gameMapper;
+    private final ImageService imageService;
 
     @Transactional
     public Game create(Game game) {
@@ -107,6 +117,95 @@ public class GameService {
         game.setSeller(seller);
         log.info("Assigned seller {} to game {} (id={})", seller.getId(), game.getName(), game.getId());
         return game;
+    }
+
+    @Transactional
+    public Game createWithFiles(GameRequest request, List<Category> categories, User seller,
+                                MultipartFile image, MultipartFile banner, MultipartFile video,
+                                List<MultipartFile> gallery) throws IOException {
+        if (image == null || image.isEmpty()) {
+            throw new IllegalArgumentException("La imagen principal (image) es obligatoria");
+        }
+        var game = gameMapper.toEntity(request);
+        game.setCategories(categories);
+        if (seller != null) {
+            game.setSeller(seller);
+        }
+        var saved = create(game);
+
+        String folderBase = "games/" + slugify(saved.getName());
+        updateImage(saved.getId(), imageService.store(image, folderBase + "/card"));
+        if (banner != null && !banner.isEmpty()) {
+            updateBannerUrl(saved.getId(), imageService.store(banner, folderBase + "/banner"));
+        }
+        if (video != null && !video.isEmpty()) {
+            updateVideoUrl(saved.getId(), storeVideoLocal(video, slugify(saved.getName())));
+        }
+        if (gallery != null && !gallery.isEmpty()) {
+            int position = 0;
+            List<String> urls = new ArrayList<>(gallery.size());
+            for (MultipartFile file : gallery) {
+                if (file == null || file.isEmpty()) continue;
+                urls.add(imageService.store(file, folderBase + "/gallery"));
+            }
+            replaceGallery(saved.getId(), urls);
+            saved = findById(saved.getId());
+        }
+        log.info("Created game with files: {} (id={})", saved.getName(), saved.getId());
+        return saved;
+    }
+
+    @Transactional
+    public Game updateWithFiles(Long id, GameRequest request, List<Category> categories,
+                                MultipartFile image, MultipartFile banner, MultipartFile video,
+                                List<MultipartFile> gallery) throws IOException {
+        var game = update(id, request.name(), request.originalPrice(), request.discountPercent(),
+                request.description(), request.state(), request.launchDate(), categories,
+                request.minimumSpecs(), request.recommendedSpecs(), request.videoUrl());
+
+        String folderBase = "games/" + slugify(game.getName());
+        if (image != null && !image.isEmpty()) {
+            updateImage(id, imageService.store(image, folderBase + "/card"));
+        }
+        if (banner != null && !banner.isEmpty()) {
+            updateBannerUrl(id, imageService.store(banner, folderBase + "/banner"));
+        }
+        if (video != null && !video.isEmpty()) {
+            updateVideoUrl(id, storeVideoLocal(video, slugify(game.getName())));
+        }
+        if (gallery != null && !gallery.isEmpty()) {
+            List<String> urls = new ArrayList<>(gallery.size());
+            for (MultipartFile file : gallery) {
+                if (file == null || file.isEmpty()) continue;
+                urls.add(imageService.store(file, folderBase + "/gallery"));
+            }
+            replaceGallery(id, urls);
+        }
+        log.info("Updated game with files: {} (id={})", game.getName(), game.getId());
+        return findById(id);
+    }
+
+    public String slugify(String name) {
+        if (name == null) return "game";
+        String slug = name.toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("(^-|-$)", "");
+        return slug.isBlank() ? "game" : slug;
+    }
+
+    private String storeVideoLocal(MultipartFile video, String slug) throws IOException {
+        String extension = "";
+        String original = video.getOriginalFilename();
+        if (original != null && original.contains(".")) {
+            extension = original.substring(original.lastIndexOf('.'));
+        }
+        Path dir = Paths.get("uploads/games/" + slug);
+        Files.createDirectories(dir);
+        Path target = dir.resolve("trailer.mp4");
+        video.transferTo(target.toAbsolutePath());
+        String path = "/uploads/games/" + slug + "/trailer.mp4";
+        log.info("Stored video locally: {}", target);
+        return path;
     }
 
     @Transactional(readOnly = true)
