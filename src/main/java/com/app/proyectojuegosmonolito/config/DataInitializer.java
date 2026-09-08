@@ -71,7 +71,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2011, 11, 18))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149050/sjclgg4kv5nvvooh4acf.webp")
-                .videoUrl("/uploads/games/minecraft/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/minecraft/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788746076/Banner_Minecraft.avif")
                 .minimumSpecs("""
                         {"os": "Windows 10", "processor": "Intel Core i3-3210 o AMD A8-7600", "memory": "4 GB RAM", "graphics": "Intel HD Graphics 4000 o AMD Radeon R5", "storage": "1 GB disponible", "additional": "Internet requerido para multijugador"}""")
@@ -93,7 +93,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 2, 26))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149138/wrpzkzlrasq3boe9x2vp.webp")
-                .videoUrl("/uploads/games/stardew-valley/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/stardew-valley/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788746373/stardew-valley_Banner.jpg")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10", "processor": "2 GHz", "memory": "2 GB RAM", "graphics": "256 MB de VRAM compatible", "storage": "500 MB disponible", "additional": "Compatibilidad con gamepad opcional"}""")
@@ -115,7 +115,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 2, 25))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149161/q5zkmswvhs13xkkrsbcz.webp")
-                .videoUrl("/uploads/games/elden-ring/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/elden-ring/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788707257/games/elden-ring/banner/banner.jpg")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-8400 o AMD Ryzen 3 3300X", "memory": "12 GB RAM", "graphics": "NVIDIA GTX 1060 3GB o AMD RX 580 4GB", "storage": "60 GB disponible", "directX": "Version 12"}""")
@@ -137,7 +137,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 7, 7))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149186/jlvjpqerig4jsh4f7ypr.webp")
-                .videoUrl("/uploads/games/rocket-league/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/rocket-league/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226686/zw94nyucmyjac8jszexj.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10", "processor": "Intel Core i5-750 o AMD Phenom II x4 945", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 460 o AMD Radeon HD 6850", "storage": "20 GB disponible"}""")
@@ -159,7 +159,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 8, 12))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149206/xrjf04vgulidbc4lbyf3.avif")
-                .videoUrl("/uploads/games/spider-man/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/spider-man/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226722/y6bb4iesp3jqbvymtaoe.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i3-4160 o AMD ryzen 3 1300X", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 950 o AMD Radeon RX 470", "storage": "75 GB disponible", "directX": "Version 12"}""")
@@ -181,7 +181,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2013, 9, 17))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149231/pfmjtit08yk4aoikwfqv.webp")
-                .videoUrl("/uploads/games/gta-v/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/gta-v/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226489/a1iuiy2siwpbr74n3prx.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Quad Q6600 a 2.4 GHz o AMD Phenom 9850", "memory": "4 GB RAM", "graphics": "NVIDIA 9800 GT 1GB o AMD HD 4870 1GB", "storage": "110 GB disponible", "sound": "100% compatible DirectX 10"}""")
@@ -203,7 +203,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 10, 21))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149249/yuuilkytoh575uzxosfd.webp")
-                .videoUrl("/uploads/games/battlefield-1/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/bf-1/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5 6600K o AMD FX-6350", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 2GB o AMD Radeon HD 7850 2GB", "storage": "50 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -224,7 +224,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 3, 20))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149264/ixpm2q4qxzrddzuxbbla.webp")
-                .videoUrl("/uploads/games/assassins-creed-shadows/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/ac-shadows/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-8700K o AMD Ryzen 5 3600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1070 8GB o AMD RX 5700 XT 8GB", "storage": "100 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -245,7 +245,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 12, 10))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149286/pzyxwb5xndhfrs9quhlr.webp")
-                .videoUrl("/uploads/games/cyberpunk-2077/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cyberpunk-2077/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-6700 o AMD Ryzen 5 1600", "memory": "12 GB RAM", "graphics": "NVIDIA GTX 1060 6GB o AMD RX 580 8GB", "storage": "70 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -266,7 +266,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 1, 26))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149302/qir5n5rdwxwanuzd4x4u.webp")
-                .videoUrl("/uploads/games/dragon-ball-fighterz/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dragon-ball-fighterz/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i5-3470 o AMD FX-4350", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 650 o AMD Radeon HD 7790", "storage": "6 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -287,7 +287,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2019, 4, 23))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149323/m9njptc1b0tthgombbgy.webp")
-                .videoUrl("/uploads/games/mortal-kombat-11/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-11/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/10 de 64 bits", "processor": "Intel Core i5-750 o AMD Phenom II x4 965", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 670 o AMD Radeon HD 7950", "storage": "60 GB disponible"}""")
                 .recommendedSpecs("""
@@ -308,7 +308,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 10, 26))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149472/y2wcocuowgind8c8jgza.avif")
-                .videoUrl("/uploads/games/red-dead-redemption-2/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/red-dead-redemption-2/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-2500K o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 770 2GB o AMD Radeon R9 280 3GB", "storage": "150 GB disponible"}""")
                 .recommendedSpecs("""
@@ -329,7 +329,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 7, 17))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149493/kdq0puz7vosdiun1vvkt.webp")
-                .videoUrl("/uploads/games/hollow-knight-silksong/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hollow-knight-silksong/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Duo E5200", "memory": "4 GB RAM", "graphics": "GeForce 9800GTX+ (1GB) o equivalente", "storage": "5 GB disponible"}""")
                 .recommendedSpecs("""
@@ -350,7 +350,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 5, 19))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149509/co60ksh6jnzks1mzhkik.webp")
-                .videoUrl("/uploads/games/the-witcher-3/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-witcher-3/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel CPU Core i5-2500K 3.3 GHz o AMD CPU Phenom II X4 940", "memory": "6 GB RAM", "graphics": "NVIDIA GPU GeForce GTX 660 o AMD GPU Radeon HD 7870", "storage": "50 GB disponible"}""")
                 .recommendedSpecs("""
@@ -371,7 +371,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 9, 19))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788151900/tcixcrqzkgrrrihoiref.webp")
-                .videoUrl("/uploads/games/god-of-war-ragnarok/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/god-of-war-ragnarok/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-8400 o AMD Ryzen 5 3600X", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1070 8GB o AMD RX 580 8GB", "storage": "90 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -392,7 +392,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 3, 24))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152018/kqhok1e1hqpwmtkoxpnd.webp")
-                .videoUrl("/uploads/games/resident-evil-4/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-4/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "AMD Ryzen 5 3600X o Intel Core i7-8700", "memory": "16 GB RAM", "graphics": "AMD Radeon RX 5700 o NVIDIA GeForce GTX 1070", "storage": "60 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -413,7 +413,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 11, 10))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152199/q9wkj9p7pwkp7mfl2il6.webp")
-                .videoUrl("/uploads/games/call-of-duty-modern-warfare-3/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cod-mw-3/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-6600 o AMD Ryzen 5 1400", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 960 o AMD Radeon RX 470", "storage": "125 GB SSD disponible"}""")
                 .recommendedSpecs("""
@@ -434,7 +434,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2021, 12, 8))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152365/y2ha15uhuawclxfqs17g.webp")
-                .videoUrl("/uploads/games/halo-infinite/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/halo-infinite/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "AMD Ryzen 5 1600 o Intel Core i7-4770", "memory": "8 GB RAM", "graphics": "AMD RX 570 o Nvidia GTX 1050 Ti", "storage": "50 GB disponible"}""")
                 .recommendedSpecs("""
@@ -455,7 +455,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 10, 2))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152509/slibpbfpsr8maroiffdi.webp")
-                .videoUrl("/uploads/games/forza-horizon-4/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-horizon-4/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226771/ql7cef0v5jpuba26rexg.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i3-4170 o Intel Core i5 750", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 650 Ti o AMD Radeon R7 250X", "storage": "80 GB disponible"}""")
@@ -477,7 +477,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 10, 21))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152670/ulge1bf2tbmcexewxnh2.avif")
-                .videoUrl("/uploads/games/civilization-vi/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/civilization-6/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10/11 de 64 bits", "processor": "Intel Core i3 2.4 Ghz o AMD equivalente", "memory": "4 GB RAM", "graphics": "512 MB ATI 4850 o mejor, 1 GB NVidia 460 o mejor, Intel HD 4000 integrada o mejor", "storage": "17 GB disponible"}""")
                 .recommendedSpecs("""
@@ -498,7 +498,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 10, 8))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152834/fdzr9lxwibrx1cmdwt8a.webp")
-                .videoUrl("/uploads/games/silent-hill-2/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/silent-hill-2/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-8700K o AMD Ryzen 5 3600X", "memory": "16 GB RAM", "graphics": "NVIDIA GeForce RTX 2080 o AMD Radeon RX 6800 XT", "storage": "50 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -519,7 +519,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2012, 10, 18))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152907/q2jmubh8qbjb0jgsih5c.avif")
-                .videoUrl("/uploads/games/euro-truck-simulator-2/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/euro-truck-simulator-2/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10/11 de 64 bits", "processor": "Intel Core i5-6400 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 660 2GB o AMD Radeon R9 270X 2GB", "storage": "12 GB disponible"}""")
                 .recommendedSpecs("""
@@ -540,7 +540,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2019, 3, 22))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788153006/l2zmofnyufiwvlxerayj.webp")
-                .videoUrl("/uploads/games/sekiro/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/sekiro/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7 SP1/8.1/10 de 64 bits", "processor": "Intel Core i3-2100 o AMD FX-6300", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 760 6GB o AMD Radeon HD 7950 3GB", "storage": "25 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -561,7 +561,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2014, 9, 2))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788153094/rbqhx5vnpk1crm3antvw.webp")
-                .videoUrl("/uploads/games/the-sims-4/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-sims-4/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Duo E4300 o AMD Athlon 64 X2 4000+", "memory": "2 GB RAM", "graphics": "NVIDIA GeForce 6600 o ATI Radeon X1300", "storage": "25 GB disponible"}""")
                 .recommendedSpecs("""
@@ -580,7 +580,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 9, 13)) // VERIFICAR
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751965/egs-easportswrc-codemasters-editions-s2-1200x1600-52af98c1afa8.jpg") // pendiente: subir asset propio
-                .videoUrl("/uploads/games/wrc-24/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/wrc-24/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751870/691eab9e41e3822072608b1b1cc1710ee95af7ae6cc77a8b.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-4460 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 960 o AMD Radeon R9 380", "storage": "80 GB disponible", "directX": "Version 12"}""")
@@ -600,7 +600,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2019, 2, 4))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752100/MV5BM2Q5YmMzM2ItNzY2OS00OWQ3LTkzMzMtYzJiYTE4NDVjODgzXkEyXkFqcGc._V1_.jpg")
-                .videoUrl("/uploads/games/apex-legends/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/apex-legends/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749032/16x9_ApexLegends_image1600w.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 7 de 64 bits", "processor": "Intel Core i3-6300 o AMD FX-4350", "memory": "6 GB RAM", "graphics": "NVIDIA GeForce GT 640 o AMD Radeon HD 7730", "storage": "56 GB disponible", "directX": "Version 11"}""")
@@ -620,7 +620,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2014, 12, 19))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752041/9667231.jpg")
-                .videoUrl("/uploads/games/assetto-corsa/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assetto-corsa/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750903/assetto_corsa-wallpaper-1600x900.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel i3 2.4 GHz o equivalente", "memory": "4 GB RAM", "graphics": "NVIDIA GTX 460 / ATI 5850 (1GB VRAM)", "storage": "15 GB disponible", "directX": "Version 11"}""")
@@ -640,7 +640,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 9, 27))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752142/Cs2_boxart.webp")
-                .videoUrl("/uploads/games/cs2/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cs2/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788748925/1329760.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "4 núcleos, 2.4 GHz", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 o AMD RX 580 (compatible con DirectX 11)", "storage": "85 GB disponible", "directX": "Version 11"}""")
@@ -660,7 +660,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 6, 14))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752190/840_560.jpg")
-                .videoUrl("/uploads/games/dead-by-daylight/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dead-by-daylight/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750068/fe28c7ebca96e110b3dd09bfe34d11c8ac72577e25c55a435d56c34dc59aa00d.avif")
                 .minimumSpecs("""
                 {"os": "Windows 7 de 64 bits", "processor": "Intel Core i3-4340 o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 o AMD Radeon HD 7850", "storage": "50 GB disponible", "directX": "Version 11"}""")
@@ -680,7 +680,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 3, 20))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752221/b4Q1XWYaTdJLUvRuALuqr0wP.avif")
-                .videoUrl("/uploads/games/doom-eternal/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/doom-eternal/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788748785/2ei5g6azyf331.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-6600K o AMD Ryzen 5 1600", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1050 Ti o AMD RX 470", "storage": "50 GB disponible", "directX": "Version 12"}""")
@@ -700,7 +700,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 5, 30)) // VERIFICAR
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752256/73fc6fb9bad1b2e74180c166f0c7af9d3940e0d6a6e01525.avif")
-                .videoUrl("/uploads/games/f1-25/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/f1-25/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751232/ca36c3ae7641a273ff3f00e63732fb76e2850c57f577d6eb.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i3-2130 o AMD FX-4300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1050 Ti o AMD RX 470", "storage": "100 GB disponible", "directX": "Version 12"}""")
@@ -720,7 +720,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 10, 10))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752368/59410829-50f6-4324-b2b3-3ec31c5879c9.jpg")
-                .videoUrl("/uploads/games/forza-motorsport/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-motorsport/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751677/official-forza-motorsport-cover-art-v0-plobg1au622b1.webp")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-8400 o AMD Ryzen 5 1600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1060 6GB o AMD RX 590", "storage": "150 GB disponible (SSD requerido)", "directX": "Version 12"}""")
@@ -740,7 +740,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 9, 17))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752440/Hades_Pack_Art.webp")
-                .videoUrl("/uploads/games/hades/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hades/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788748485/2560x1440-2560x1440-5e710b93049cbd2125cf0261dcfbf943.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 7 de 64 bits", "processor": "Dual Core 2.4 GHz", "memory": "4 GB RAM", "graphics": "512 MB VRAM", "storage": "10 GB disponible", "directX": "Version 10"}""")
@@ -760,7 +760,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2017, 11, 14))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752517/MV5BZWI5ZDhjMmItMGZiZi00M2VlLTgxMmMtNDIzZDg0Njk2NmE3XkEyXkFqcGc._V1_.jpg")
-                .videoUrl("/uploads/games/injustice-2/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/injustice-2/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749497/4becd989-efd6-4bf2-8b59-4f7f143da7bcInjustice_2_cover.webp")
                 .minimumSpecs("""
                 {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i5-750 o AMD Phenom II X4 965", "memory": "4 GB RAM", "graphics": "NVIDIA GTX 650 Ti o AMD Radeon HD 7850", "storage": "40 GB disponible", "directX": "Version 11"}""")
@@ -780,7 +780,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 8, 18))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752564/apps.1351.14377492558798445.319163e9-0c55-4be6-a4bb-aa431ab21aa6.jpg")
-                .videoUrl("/uploads/games/flight/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/flight/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750490/82f3c320b574b55348aafb3bd5eced07ca4835a1590302cf.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-4460 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 770 o AMD Radeon RX 570", "storage": "150 GB disponible", "directX": "Version 11"}""")
@@ -800,7 +800,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 9, 19))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752598/MK1_portada.webp")
-                .videoUrl("/uploads/games/mk1/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mk1/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749603/Mortal_kombat_1_primera_imagen.webp")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-2500K o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 950 o AMD RX 470", "storage": "120 GB disponible", "directX": "Version 12"}""")
@@ -820,7 +820,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 4, 14))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752638/Mortal_Kombat_X_Cover_Art.webp")
-                .videoUrl("/uploads/games/mk10/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mk10/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749806/mkx-logo-630x381.png")
                 .minimumSpecs("""
                 {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i5-750 o AMD Phenom II X4 965", "memory": "3 GB RAM", "graphics": "NVIDIA GTX 460 o AMD Radeon HD 5850", "storage": "35 GB disponible", "directX": "Version 11"}""")
@@ -840,7 +840,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 12, 2))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752709/apps.31585.14329152328871129.15deab2a-237c-449c-880e-7926330dab80.jpg")
-                .videoUrl("/uploads/games/nfs/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/nfs/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751551/capsule_616x353.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-8400 o AMD Ryzen 5 1600", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1650 o AMD RX 570", "storage": "50 GB disponible", "directX": "Version 12"}""")
@@ -860,7 +860,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2013, 9, 4))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752729/EGS_Outlast_RedBarrels_S2_1200x1600-b02ebdfb4bcd3b1d608ab5b87257b3c4.jpg")
-                .videoUrl("/uploads/games/outlast/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/outlast/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750246/EGS_Outlast_RedBarrels_S1_2560x1440-00bcfe36f1adad2b9168add0a137fbc2.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 7 de 64 bits", "processor": "Intel Core 2 Duo E8200 o AMD Athlon 64 X2 6000+", "memory": "4 GB RAM", "graphics": "NVIDIA GTS 450 o AMD Radeon HD 5750", "storage": "5 GB disponible", "directX": "Version 9"}""")
@@ -880,7 +880,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 9, 18))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752761/phasmophobia-5275630.jpg")
-                .videoUrl("/uploads/games/phasmophobia/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/phasmophobia/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749967/unnamed-3_zdr1.1280.webp")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i3 o equivalente", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 970 o equivalente", "storage": "20 GB disponible", "directX": "Version 11"}""")
@@ -900,7 +900,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 1, 1)) // VERIFICAR fecha exacta
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752876/co9tye.webp")
-                .videoUrl("/uploads/games/power2/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/power2/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750712/050db8610fa9593b531cd2b7d563b5115bbe5431ea3db42962da435f70edb39c.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i3 o equivalente", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 o equivalente", "storage": "15 GB disponible", "directX": "Version 11"}""")
@@ -920,7 +920,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2017, 1, 24))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752942/resident_evil_7-5898772.jpg")
-                .videoUrl("/uploads/games/re7/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/re7/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750377/cp7G7TILGKzAzLGb1MMn9hyt.avif")
                 .minimumSpecs("""
                 {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel i5-4460 o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 760 o AMD Radeon R7 260x (2GB VRAM)", "storage": "24 GB disponible", "directX": "Version 11"}""")
@@ -940,7 +940,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 6, 2))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788753038/IDaKtZp5aUEU33tThd6r9Qbb_png_293869b7-40b5-493f-ad7d-962e4060925e.webp")
-                .videoUrl("/uploads/games/street-fighter-6/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/street-fighter-6/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749324/12d36a4c9bbf43a4babba2f203e1e271ef08de143349e08231dff56fd2bef70e.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i3-4160 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 o AMD RX 570", "storage": "60 GB disponible", "directX": "Version 12"}""")
@@ -960,7 +960,7 @@ public class DataInitializer implements CommandLineRunner {
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 1, 26))
                 .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788753110/tekken_8-5868007.webp")
-                .videoUrl("/uploads/games/tekken-8/trailer.mp4")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/tekken-8/trailer.mp4")
                 .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749144/TEKKEN8_Header_mobile_2.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-6600K o AMD Ryzen 5 2600", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 6GB o AMD RX 580", "storage": "90 GB disponible", "directX": "Version 12"}""")
@@ -1358,7 +1358,7 @@ public class DataInitializer implements CommandLineRunner {
         seedGallery("Civilization VI", List.of(
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707408/games/civilization-vi/imagelist/1.jpg",
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707410/games/civilization-vi/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707410/games/civilization-vi/imagelist/3.png," +
+                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707410/games/civiliz+ation-vi/imagelist/3.png," +
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707407/games/civilization-vi/banner/banner.png"));
 
         assignBanner("Silent Hill 2", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707420/games/silent-hill-2/banner/banner.jpg");
@@ -1393,7 +1393,7 @@ public class DataInitializer implements CommandLineRunner {
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707439/games/the-sims-4/imagelist/3.jpg",
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707441/games/the-sims-4/imagelist/4.jpg"));
 
-        seedGallery("WRC 24", List.of(
+        seedGallery("EA SPORTS WRC", List.of(
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751934/WRC-24-Solberg-Sweden.avif",
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751930/4aca15e53943d04fcaef5a50e5055e9961b190cb95c7438e.webp",
                 "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751907/egs-easportswrc-codemasters-editions-s1-2560x1440-85c00d204428.jpg"));

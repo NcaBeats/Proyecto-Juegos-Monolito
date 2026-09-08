@@ -25,8 +25,11 @@ services:
       - 'SPRING_PROFILES_ACTIVE=dev'
       - 'KEY_JWT_SECRET=Uo4MkxmgYVdBK+6mYtjYYpI8k4fpSUihZ8FNhpiSmZ4xyb59cUYKLdW94eKtkoRe'
       - 'CLOUDINARY_URL=cloudinary://312127544695893:sbCqVOP04vt4hJrmryY0ojeEOPs@tpjbimjw'
-    volumes:
-      - './uploads:/app/uploads'
+      - 'R2_ACCOUNT_ID=cf9e0f7fa105c15259b487b0a447d09b'
+      - 'R2_ACCESS_KEY_ID=dbe4102d8a1e851b23b409a9510b63a2'
+      - 'R2_SECRET_ACCESS_KEY=abcdf7e7b485a9aad72e1c310e8a1181ad79649bf1c8bcc4bac085cdb55d9ff6'
+      - 'R2_BUCKET=trailers'
+      - 'R2_PUBLIC_BASE_URL=https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev'
 
 volumes:
   postgres-data:

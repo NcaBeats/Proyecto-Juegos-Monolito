@@ -2,6 +2,7 @@ package com.app.proyectojuegosmonolito.game.service;
 
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
+import com.app.proyectojuegosmonolito.config.R2StorageService;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
 import com.app.proyectojuegosmonolito.game.model.Category;
@@ -20,9 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,6 +35,7 @@ public class GameService {
     private final GameRepository gameRepository;
     private final GameMapper gameMapper;
     private final ImageService imageService;
+    private final R2StorageService r2StorageService;
 
     @Transactional
     public Game create(Game game) {
@@ -139,7 +138,7 @@ public class GameService {
             updateBannerUrl(saved.getId(), imageService.store(banner, folderBase + "/banner"));
         }
         if (video != null && !video.isEmpty()) {
-            updateVideoUrl(saved.getId(), storeVideoLocal(video, slugify(saved.getName())));
+            updateVideoUrl(saved.getId(), storeVideo(video, saved.getName()));
         }
         if (gallery != null && !gallery.isEmpty()) {
             int position = 0;
@@ -159,9 +158,17 @@ public class GameService {
     public Game updateWithFiles(Long id, GameRequest request, List<Category> categories,
                                 MultipartFile image, MultipartFile banner, MultipartFile video,
                                 List<MultipartFile> gallery) throws IOException {
+        var current = findById(id);
+        String videoUrl = request.videoUrl();
+        if (video != null && !video.isEmpty()) {
+            videoUrl = storeVideo(video, request.name());
+        }
+        if (videoUrl == null || videoUrl.isBlank()) {
+            videoUrl = current.getVideoUrl();
+        }
         var game = update(id, request.name(), request.originalPrice(), request.discountPercent(),
                 request.description(), request.state(), request.launchDate(), categories,
-                request.minimumSpecs(), request.recommendedSpecs(), request.videoUrl());
+                request.minimumSpecs(), request.recommendedSpecs(), videoUrl);
 
         String folderBase = "games/" + slugify(game.getName());
         if (image != null && !image.isEmpty()) {
@@ -169,9 +176,6 @@ public class GameService {
         }
         if (banner != null && !banner.isEmpty()) {
             updateBannerUrl(id, imageService.store(banner, folderBase + "/banner"));
-        }
-        if (video != null && !video.isEmpty()) {
-            updateVideoUrl(id, storeVideoLocal(video, slugify(game.getName())));
         }
         if (gallery != null && !gallery.isEmpty()) {
             List<String> urls = new ArrayList<>(gallery.size());
@@ -193,19 +197,15 @@ public class GameService {
         return slug.isBlank() ? "game" : slug;
     }
 
-    private String storeVideoLocal(MultipartFile video, String slug) throws IOException {
-        String extension = "";
-        String original = video.getOriginalFilename();
-        if (original != null && original.contains(".")) {
-            extension = original.substring(original.lastIndexOf('.'));
-        }
-        Path dir = Paths.get("uploads/games/" + slug);
-        Files.createDirectories(dir);
-        Path target = dir.resolve("trailer.mp4");
-        video.transferTo(target.toAbsolutePath());
-        String path = "/uploads/games/" + slug + "/trailer.mp4";
-        log.info("Stored video locally: {}", target);
-        return path;
+    /**
+     * Store the trailer video to Cloudflare R2 (primary).
+     * The relative /uploads path is kept in the DB; the frontend resolves it to R2.
+     */
+    private String storeVideo(MultipartFile video, String name) throws IOException {
+        String slug = slugify(name);
+        String url = r2StorageService.storeVideo(video, slug);
+        log.info("Stored video to R2: {}", url);
+        return "/uploads/games/" + slug + "/trailer.mp4";
     }
 
     @Transactional(readOnly = true)
