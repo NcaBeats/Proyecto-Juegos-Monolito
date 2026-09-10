@@ -2,12 +2,14 @@ package com.app.proyectojuegosmonolito.account.profile.dto;
 
 import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Region;
+import com.app.proyectojuegosmonolito.account.profile.model.ValidRun;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 public record ProfilePatchRequest(
+        @ValidRun String run,
         @Size(max = 255) String nickname,
         String bio,
         Visibility visibility,

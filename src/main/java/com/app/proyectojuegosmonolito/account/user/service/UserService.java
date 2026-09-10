@@ -2,11 +2,12 @@ package com.app.proyectojuegosmonolito.account.user.service;
 
 import com.app.proyectojuegosmonolito.TokenVersionCache;
 import com.app.proyectojuegosmonolito.account.profile.model.Profile;
+import com.app.proyectojuegosmonolito.account.user.dto.AdminUserUpdateRequest;
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.wallet.model.Wallet;
-import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import com.app.proyectojuegosmonolito.account.user.repository.UserRepository;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,23 +36,18 @@ public class UserService {
 
     @Transactional
     public User create(User user, Profile profile) {
+        if (profile == null) {
+            throw new BusinessException(BusinessException.PROFILE_REQUIRED,
+                    "A profile is required to create a user.");
+        }
         var now = Instant.now();
         user.setCreatedAt(now);
 
-        if (profile != null) {
-            profile.setUser(user);
-            if (profile.getCreatedAt() == null) {
-                profile.setCreatedAt(now);
-            }
-            user.setProfile(profile);
-        } else {
-            user.setProfile(Profile.builder()
-                    .user(user)
-                    .nickname(user.getEmail())
-                    .visibility(Visibility.PUBLIC)
-                    .createdAt(now)
-                    .build());
+        profile.setUser(user);
+        if (profile.getCreatedAt() == null) {
+            profile.setCreatedAt(now);
         }
+        user.setProfile(profile);
 
         user.setWallet(Wallet.builder()
                 .user(user)
@@ -78,16 +74,26 @@ public class UserService {
 
     public User findByEmail (String email) {
         log.info("Fetching user by email: {}", email);
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> {
                     log.warn("User not found with email: {}", email);
-                    return new EntityNotFoundException("User not found with email: " + email);
+                    return new EntityNotFoundException("User not found: " + email);
                 });
+    }
+
+    public Optional<User> findOptionalByEmail(String email) {
+        log.info("Fetching optional user by email: {}", email);
+        return userRepository.findByEmail(email);
     }
 
     public Page<User> findAll(Pageable pageable) {
         log.info("Fetching all users with pageable: {}", pageable);
-        return userRepository.findAll(pageable);
+        return userRepository.findAllByDeletedAtIsNull(pageable);
+    }
+
+    public Page<User> searchByEmail(String email, Pageable pageable) {
+        log.info("Searching users by email: {} with pageable: {}", email, pageable);
+        return userRepository.findByEmailContainingIgnoreCase(email, pageable);
     }
 
     @Transactional
@@ -103,10 +109,32 @@ public class UserService {
     }
 
     @Transactional
+    public User adminUpdate(Long id, AdminUserUpdateRequest request) {
+        var user = userRepository.findById(id).orElseThrow(() -> {
+            log.warn("User not found for admin update: {}", id);
+            return new EntityNotFoundException("User not found: " + id);
+        });
+
+        if (request.email() != null && !request.email().isBlank()) {
+            user.setEmail(request.email());
+        }
+        if (request.role() != null) {
+            user.setRole(request.role());
+        }
+        if (request.password() != null && !request.password().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.password()));
+        }
+
+        var saved = userRepository.save(user);
+        log.info("Admin updated user {}: email={}, role={}", id, saved.getEmail(), saved.getRole());
+        return saved;
+    }
+
+    @Transactional
     public void updatePassword (Long id, String currentPassword, String newPassword) {
         var user = userRepository.findById(id).orElseThrow(() -> {
             log.warn("User not found with id: {}", id);
-            return new EntityNotFoundException("User not found with id: " + id);
+            return new EntityNotFoundException("User not found: " + id);
         });
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IllegalArgumentException("Current password is incorrect");
@@ -119,7 +147,7 @@ public class UserService {
     public int revokeAllTokens(Long id) {
         var user = userRepository.findById(id).orElseThrow(() -> {
             log.warn("User not found with id: {}", id);
-            return new EntityNotFoundException("User not found with id: " + id);
+            return new EntityNotFoundException("User not found: " + id);
         });
         return incrementTokenVersion(user);
     }
@@ -138,11 +166,21 @@ public class UserService {
 
     @Transactional
     public void delete(Long id) {
-        if (!userRepository.existsById(id)) {
+        var user = userRepository.findById(id).orElseThrow(() -> {
             log.warn("Attempted to delete non-existent user: {}", id);
-            throw new EntityNotFoundException("User not found: " + id);
+            return new EntityNotFoundException("User not found: " + id);
+        });
+        if (user.getRole() == Role.ADMIN) {
+            log.warn("Attempted to delete admin account: {}", id);
+            throw new IllegalArgumentException("The admin account cannot be deleted");
         }
-        userRepository.deleteById(id);
-        log.info("Deleted user {}", id);
+        if (user.getDeletedAt() != null) {
+            log.info("User {} is already deleted", id);
+            return;
+        }
+        user.setDeletedAt(Instant.now());
+        userRepository.save(user);
+        incrementTokenVersion(user);
+        log.info("Soft-deleted user {}", id);
     }
 }

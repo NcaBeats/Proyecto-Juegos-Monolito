@@ -45,7 +45,7 @@ class WalletControllerIntegrationTest {
 
     @Test
     void getMyWallet_shouldReturn200() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(get("/api/v1/wallet").with(token))
@@ -55,11 +55,12 @@ class WalletControllerIntegrationTest {
 
     @Test
     void update_shouldReturn200() throws Exception {
-        var admin = userService.create(User.builder()
+        var admin = User.builder()
                 .email("admin@test.com")
                 .password("pass123")
                 .role(Role.ADMIN)
-                .build());
+                .build();
+        userService.create(admin, profile(admin));
         var token = jwt().jwt(b -> b.subject(admin.getId().toString()))
                 .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
@@ -72,11 +73,12 @@ class WalletControllerIntegrationTest {
 
     @Test
     void update_withNegativeBalance_shouldReturn400() throws Exception {
-        var admin = userService.create(User.builder()
+        var admin = User.builder()
                 .email("admin2@test.com")
                 .password("pass123")
                 .role(Role.ADMIN)
-                .build());
+                .build();
+        userService.create(admin, profile(admin));
         var token = jwt().jwt(b -> b.subject(admin.getId().toString()))
                 .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
@@ -91,7 +93,7 @@ class WalletControllerIntegrationTest {
 
     @Test
     void update_withUserRole_shouldReturn403() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(put("/api/v1/wallet").with(token)
@@ -102,7 +104,7 @@ class WalletControllerIntegrationTest {
 
     @Test
     void deposit_shouldAddFunds() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(post("/api/v1/wallet/deposit").with(token)
@@ -114,7 +116,7 @@ class WalletControllerIntegrationTest {
 
     @Test
     void deposit_withNegativeAmount_shouldReturn400() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(post("/api/v1/wallet/deposit").with(token)
@@ -128,7 +130,7 @@ class WalletControllerIntegrationTest {
 
     @Test
     void deposit_withZeroAmount_shouldReturn400() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(post("/api/v1/wallet/deposit").with(token)

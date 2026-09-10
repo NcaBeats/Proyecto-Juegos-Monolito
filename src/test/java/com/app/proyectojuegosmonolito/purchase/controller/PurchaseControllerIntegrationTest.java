@@ -32,6 +32,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Import(TestcontainersConfiguration.class)
@@ -62,10 +64,11 @@ class PurchaseControllerIntegrationTest {
 
     @Test
     void create_shouldReturn201() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
         var game = gameRepository.save(game("Test Game", new BigDecimal("29.99")));
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(post("/api/v1/purchases").with(token)
                         .header("Idempotency-Key", "key-create-201")
@@ -79,8 +82,9 @@ class PurchaseControllerIntegrationTest {
 
     @Test
     void create_withoutIdempotencyKey_shouldReturn400() throws Exception {
-        var user = userService.create(user());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var user = userService.create(user(), profile(user()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(post("/api/v1/purchases").with(token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -91,10 +95,11 @@ class PurchaseControllerIntegrationTest {
 
     @Test
     void create_withSameIdempotencyKey_shouldReturnSamePurchaseAndChargeOnce() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
         var game = gameRepository.save(game("Test Game", new BigDecimal("29.99")));
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         var request = post("/api/v1/purchases").with(token)
                 .header("Idempotency-Key", "same-key")
@@ -119,7 +124,8 @@ class PurchaseControllerIntegrationTest {
 
     @Test
     void create_withInvalidBody_shouldReturn400() throws Exception {
-        mockMvc.perform(post("/api/v1/purchases").with(jwt())
+        mockMvc.perform(post("/api/v1/purchases").with(jwt().jwt(b -> b.subject("424242"))
+                        .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE")))
                         .header("Idempotency-Key", "key-invalid-body")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new PurchaseRequest(List.of()))))
@@ -131,10 +137,11 @@ class PurchaseControllerIntegrationTest {
 
     @Test
     void getById_shouldReturn200() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
         var game = gameRepository.save(game());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         var response = mockMvc.perform(post("/api/v1/purchases").with(token)
                         .header("Idempotency-Key", "key-getbyid")
@@ -152,16 +159,18 @@ class PurchaseControllerIntegrationTest {
 
     @Test
     void getById_whenNotFound_shouldReturn404() throws Exception {
-        mockMvc.perform(get("/api/v1/purchases/999").with(jwt()))
+        mockMvc.perform(get("/api/v1/purchases/999").with(jwt().jwt(b -> b.subject("424242"))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"))))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void getMyPurchases_shouldReturn200() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
         var game = gameRepository.save(game());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(post("/api/v1/purchases").with(token)
                         .header("Idempotency-Key", "key-getmypurchases")
@@ -178,10 +187,11 @@ class PurchaseControllerIntegrationTest {
     @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void getMyPurchases_withoutOpenSession_shouldReturn200() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user("no-session@test.com"), profile(user("no-session@test.com")));
         walletService.updateBalance(user.getId(), new BigDecimal("100.00"));
         var game = gameRepository.save(game());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         try {
             mockMvc.perform(post("/api/v1/purchases").with(token)

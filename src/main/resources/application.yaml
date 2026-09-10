@@ -18,12 +18,22 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 300MB
+      max-request-size: 500MB
+
+  jackson:
+    find-and-add-modules: true
 
 app:
   cloudinary:
     url: ${CLOUDINARY_URL:}
+
+  r2:
+    account-id: ${R2_ACCOUNT_ID:}
+    access-key-id: ${R2_ACCESS_KEY_ID:}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY:}
+    bucket: ${R2_BUCKET:trailers}
+    public-base-url: ${R2_PUBLIC_BASE_URL:https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev}
 
   jpa:
     hibernate:
