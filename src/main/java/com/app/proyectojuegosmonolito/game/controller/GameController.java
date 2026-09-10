@@ -99,7 +99,7 @@ public class GameController {
     @ApiResponse(responseCode = "201", description = "Game created successfully")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<GameResponse> create(
-            @RequestPart("metadata") GameRequest request,
+            @RequestPart("metadata") @Valid GameRequest request,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestPart(value = "banner", required = false) MultipartFile banner,
             @RequestPart(value = "video", required = false) MultipartFile video,
@@ -118,7 +118,7 @@ public class GameController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<GameResponse> update(
             @PathVariable Long id,
-            @RequestPart("metadata") GameRequest request,
+            @RequestPart("metadata") @Valid GameRequest request,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestPart(value = "banner", required = false) MultipartFile banner,
             @RequestPart(value = "video", required = false) MultipartFile video,

@@ -67,13 +67,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/categories/**").hasRole("ADMIN")
                         // Users: ADMIN for list/create/get-by-id/update, authenticated for self-only endpoints
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/password").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/users/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/users/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/password").authenticated()
-                        // Profile: ADMIN can edit any user's profile, users can edit their own
+                        // Profile: everyone can view another user's public profile (READ visibility), ADMIN edits any
+                        .requestMatchers(HttpMethod.GET, "/api/v1/profile/{userId}").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/profile/{userId}").hasRole("ADMIN")
                         // Wallet: ADMIN only for funding
                         .requestMatchers(HttpMethod.PUT, "/api/v1/wallet").hasRole("ADMIN")

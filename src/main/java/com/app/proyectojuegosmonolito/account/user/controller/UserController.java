@@ -86,12 +86,14 @@ public class UserController {
         return ResponseEntity.ok(userMapper.toResponse(userService.findById(userId)));
     }
 
-    @Operation(summary = "Create a new user", description = "Creates a new user with auto-generated profile and wallet")
+    @Operation(summary = "Create a new user", description = "Creates a new user with a required profile and wallet")
     @ApiResponse(responseCode = "201", description = "User created successfully")
     @PostMapping
     public ResponseEntity<UserResponse> create(@Valid @RequestBody UserRequestCreate request) {
-        var user = userService.create(userMapper.toEntityCreate(request));
-        return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toResponse(user));
+        var user = userMapper.toEntityCreate(request);
+        var profile = userMapper.toProfileCreate(request, user);
+        var saved = userService.create(user, profile);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toResponse(saved));
     }
 
     @Operation(summary = "Update my user", description = "Updates the authenticated user")

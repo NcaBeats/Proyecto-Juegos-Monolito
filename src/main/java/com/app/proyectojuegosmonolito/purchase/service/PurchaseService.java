@@ -9,7 +9,8 @@ import com.app.proyectojuegosmonolito.purchase.model.PurchaseStatus;
 import com.app.proyectojuegosmonolito.purchase.repository.PurchaseRepository;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.account.wallet.service.WalletService;
-import jakarta.persistence.EntityNotFoundException;
+import com.app.proyectojuegosmonolito.common.RepositoryUtils;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -72,10 +73,10 @@ public class PurchaseService {
 
         if (wallet.getBalance().compareTo(totalAmount) < 0) {
             log.warn("Insufficient balance for user {}: wallet={}, total={}", userId, wallet.getBalance(), totalAmount);
-            throw new IllegalArgumentException("Insufficient balance");
+            throw new BusinessException(BusinessException.INSUFFICIENT_BALANCE, "Insufficient balance");
         }
 
-        wallet.setBalance(wallet.getBalance().subtract(totalAmount));
+        walletService.updateBalance(userId, wallet.getBalance().subtract(totalAmount));
         purchase.setStatus(PurchaseStatus.COMPLETED);
         var saved = purchaseRepository.save(purchase);
         log.info("Purchase {} completed for user {}, total={}", saved.getId(), userId, totalAmount);
@@ -87,11 +88,7 @@ public class PurchaseService {
 
     public Purchase findById(Long id) {
         log.info("Fetching purchase by id: {}", id);
-        return purchaseRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Purchase not found: {}", id);
-                    return new EntityNotFoundException("Purchase not found: " + id);
-                });
+        return RepositoryUtils.findOrThrow(purchaseRepository, id, "Purchase");
     }
 
     public Page<Purchase> findAll(Pageable pageable) {

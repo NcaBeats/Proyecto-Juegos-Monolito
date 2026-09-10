@@ -29,11 +29,11 @@ class ProfileServiceIntegrationTest {
 
     @Test
     void findByUserId_shouldReturnProfile() {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
 
         var profile = profileService.findByUserId(user.getId());
 
-        assertThat(profile.getNickname()).isEqualTo("user");
+        assertThat(profile.getNickname()).isEqualTo("user@test.com");
         assertThat(profile.getVisibility()).isEqualTo(Visibility.PUBLIC);
     }
 
@@ -45,7 +45,7 @@ class ProfileServiceIntegrationTest {
 
     @Test
     void update_shouldModifyAndSave() {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
 
         var result = profileService.update(user.getId(), new ProfilePatchRequest(null, "newnick", "new bio", Visibility.PRIVATE, null, null, null, null, null, null));
 

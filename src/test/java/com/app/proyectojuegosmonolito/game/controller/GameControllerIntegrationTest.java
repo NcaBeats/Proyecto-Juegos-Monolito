@@ -1,25 +1,37 @@
 package com.app.proyectojuegosmonolito.game.controller;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
+import com.app.proyectojuegosmonolito.account.user.model.Role;
+import com.app.proyectojuegosmonolito.account.user.model.User;
+import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
+import com.app.proyectojuegosmonolito.game.service.ImageService;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import static com.app.proyectojuegosmonolito.game.GameFixtures.*;
+import static com.app.proyectojuegosmonolito.account.user.UserFixtures.profile;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,6 +53,22 @@ class GameControllerIntegrationTest {
 
     @Autowired
     private GameRepository gameRepository;
+
+    @Autowired
+    private UserService userService;
+
+    @MockitoBean
+    private ImageService imageService;
+
+    private User createAdmin() {
+        var admin = User.builder()
+                .email("gameadmin@test.com")
+                .password("pass123")
+                .role(Role.ADMIN)
+                .createdAt(java.time.Instant.now())
+                .build();
+        return userService.create(admin, profile(admin));
+    }
 
     @Test
     void getById_shouldReturn200() throws Exception {
@@ -87,12 +115,18 @@ class GameControllerIntegrationTest {
 
     @Test
     void create_shouldReturn201() throws Exception {
-        mockMvc.perform(post("/api/v1/games")
-                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new GameRequest("Nuevo Juego", new BigDecimal("29.99"), 10, "Descripción",
-                                        GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action"), null, null, null, null))))
+        when(imageService.store(any(MultipartFile.class), anyString())).thenReturn("https://example.com/img.png");
+        var admin = createAdmin();
+        var metadata = new MockMultipartFile("metadata", null, MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(new GameRequest("Nuevo Juego", new BigDecimal("29.99"), 10, "Descripción",
+                        GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action"), null, null, null, null)));
+        var image = new MockMultipartFile("image", "cover.png", MediaType.IMAGE_PNG_VALUE, new byte[]{1, 2, 3});
+
+        mockMvc.perform(multipart("/api/v1/games")
+                        .file(metadata)
+                        .file(image)
+                        .with(jwt().jwt(b -> b.subject(admin.getId().toString()))
+                                .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.name").value("Nuevo Juego"))
@@ -103,25 +137,29 @@ class GameControllerIntegrationTest {
 
     @Test
     void create_withInvalidBody_shouldReturn400() throws Exception {
-        mockMvc.perform(post("/api/v1/games")
-                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new GameRequest(null, null, null, null, null, null, null, null, null, null, null))))
+        var metadata = new MockMultipartFile("metadata", null, MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(new GameRequest(null, null, null, null, null, null, null, null, null, null, null)));
+
+        mockMvc.perform(multipart("/api/v1/games")
+                        .file(metadata)
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Validation Error"))
-                .andExpect(jsonPath("$.errors.length()").value(7));
+                .andExpect(jsonPath("$.errors.length()").value(8));
     }
 
     @Test
     void update_shouldReturn200() throws Exception {
         var saved = gameRepository.save(game());
+        var admin = createAdmin();
+        var metadata = new MockMultipartFile("metadata", null, MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsBytes(new GameRequest("Actualizado", new BigDecimal("49.99"), 20, "Nueva desc",
+                        GameState.COMING_SOON, LocalDate.of(2027, 1, 1), List.of("Action"), null, null, null, null)));
 
-        mockMvc.perform(put("/api/v1/games/{id}", saved.getId())
-                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new GameRequest("Actualizado", new BigDecimal("49.99"), 20, "Nueva desc",
-                                        GameState.COMING_SOON, LocalDate.of(2027, 1, 1), List.of(), null, null, null, null))))
+        mockMvc.perform(multipart(HttpMethod.PUT, "/api/v1/games/{id}", saved.getId())
+                        .file(metadata)
+                        .with(jwt().jwt(b -> b.subject(admin.getId().toString()))
+                                .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Actualizado"));
     }

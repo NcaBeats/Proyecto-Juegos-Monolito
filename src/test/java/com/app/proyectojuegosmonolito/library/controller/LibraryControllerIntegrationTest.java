@@ -25,6 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Import(TestcontainersConfiguration.class)
@@ -51,7 +53,8 @@ class LibraryControllerIntegrationTest {
     void add_shouldReturn201() throws Exception {
         var user = userRepository.save(user());
         var game = gameRepository.save(game());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(post("/api/v1/library").with(token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -67,7 +70,8 @@ class LibraryControllerIntegrationTest {
         var user = userRepository.save(user());
         var game = gameRepository.save(game());
         libraryService.add(user.getId(), game.getId());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(post("/api/v1/library").with(token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +83,8 @@ class LibraryControllerIntegrationTest {
     @Test
     void add_withNonExistentGame_shouldReturn404() throws Exception {
         var user = userRepository.save(user());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(post("/api/v1/library").with(token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,7 +95,8 @@ class LibraryControllerIntegrationTest {
     @Test
     void add_withNullGameId_shouldReturn400() throws Exception {
         var user = userRepository.save(user());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(post("/api/v1/library").with(token)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,7 +112,8 @@ class LibraryControllerIntegrationTest {
         var user = userRepository.save(user());
         var game = gameRepository.save(game());
         libraryService.add(user.getId(), game.getId());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(get("/api/v1/library").with(token))
                 .andExpect(status().isOk())
@@ -118,7 +125,8 @@ class LibraryControllerIntegrationTest {
         var user = userRepository.save(user());
         var game = gameRepository.save(game());
         libraryService.add(user.getId(), game.getId());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(delete("/api/v1/library/game/{gameId}", game.getId()).with(token))
                 .andExpect(status().isNoContent());
@@ -126,7 +134,8 @@ class LibraryControllerIntegrationTest {
 
     @Test
     void removeByGame_whenNotFound_shouldReturn404() throws Exception {
-        var token = jwt().jwt(b -> b.subject("424242"));
+        var token = jwt().jwt(b -> b.subject("424242"))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(delete("/api/v1/library/game/{gameId}", 999L).with(token))
                 .andExpect(status().isNotFound());
@@ -139,7 +148,8 @@ class LibraryControllerIntegrationTest {
         var game2 = gameRepository.save(game("Other Game", BigDecimal.valueOf(5)));
         libraryService.add(user.getId(), game1.getId());
         libraryService.add(user.getId(), game2.getId());
-        var token = jwt().jwt(b -> b.subject(user.getId().toString()));
+        var token = jwt().jwt(b -> b.subject(user.getId().toString()))
+                .authorities(new SimpleGrantedAuthority("ROLE_CLIENTE"));
 
         mockMvc.perform(delete("/api/v1/library").with(token))
                 .andExpect(status().isNoContent());

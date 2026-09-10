@@ -2,7 +2,8 @@ package com.app.proyectojuegosmonolito.game.service;
 
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
-import com.app.proyectojuegosmonolito.config.R2StorageService;
+import com.app.proyectojuegosmonolito.common.RepositoryUtils;
+import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
 import com.app.proyectojuegosmonolito.game.model.Category;
@@ -20,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -48,11 +47,7 @@ public class GameService {
     @Transactional(readOnly = true)
     public Game findById(Long id) {
         log.info("Fetching game by id: {}", id);
-        return gameRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Game not found: {}", id);
-                    return new EntityNotFoundException("Game not found: " + id);
-                });
+        return RepositoryUtils.findOrThrow(gameRepository, id, "Game");
     }
 
     public long count() {
@@ -133,12 +128,12 @@ public class GameService {
         var saved = create(game);
 
         String folderBase = "games/" + slugify(saved.getName());
-        updateImage(saved.getId(), imageService.store(image, folderBase + "/card"));
+        saved.setImageUrl(imageService.store(image, folderBase + "/card"));
         if (banner != null && !banner.isEmpty()) {
-            updateBannerUrl(saved.getId(), imageService.store(banner, folderBase + "/banner"));
+            saved.setBannerUrl(imageService.store(banner, folderBase + "/banner"));
         }
         if (video != null && !video.isEmpty()) {
-            updateVideoUrl(saved.getId(), storeVideo(video, saved.getName()));
+            saved.setVideoUrl(storeVideo(video, saved.getName()));
         }
         if (gallery != null && !gallery.isEmpty()) {
             int position = 0;
@@ -159,23 +154,23 @@ public class GameService {
                                 MultipartFile image, MultipartFile banner, MultipartFile video,
                                 List<MultipartFile> gallery) throws IOException {
         var current = findById(id);
-        String videoUrl = request.videoUrl();
+        var game = update(id, request, categories);
+
+        String effectiveVideoUrl = request.videoUrl();
         if (video != null && !video.isEmpty()) {
-            videoUrl = storeVideo(video, request.name());
+            effectiveVideoUrl = storeVideo(video, request.name());
         }
-        if (videoUrl == null || videoUrl.isBlank()) {
-            videoUrl = current.getVideoUrl();
+        if (effectiveVideoUrl == null || effectiveVideoUrl.isBlank()) {
+            effectiveVideoUrl = current.getVideoUrl();
         }
-        var game = update(id, request.name(), request.originalPrice(), request.discountPercent(),
-                request.description(), request.state(), request.launchDate(), categories,
-                request.minimumSpecs(), request.recommendedSpecs(), videoUrl);
+        game.setVideoUrl(effectiveVideoUrl);
 
         String folderBase = "games/" + slugify(game.getName());
         if (image != null && !image.isEmpty()) {
-            updateImage(id, imageService.store(image, folderBase + "/card"));
+            game.setImageUrl(imageService.store(image, folderBase + "/card"));
         }
         if (banner != null && !banner.isEmpty()) {
-            updateBannerUrl(id, imageService.store(banner, folderBase + "/banner"));
+            game.setBannerUrl(imageService.store(banner, folderBase + "/banner"));
         }
         if (gallery != null && !gallery.isEmpty()) {
             List<String> urls = new ArrayList<>(gallery.size());
@@ -219,10 +214,13 @@ public class GameService {
     }
 
     @Transactional
-    public Game update(Long id, String name, BigDecimal originalPrice, Integer discountPercent, String description, GameState state, LocalDate launchDate, List<Category> categories, String minimumSpecs, String recommendedSpecs, String videoUrl) {
-        log.info("Updating game {}: name={}, originalPrice={}, discountPercent={}", id, name, originalPrice, discountPercent);
+    public Game update(Long id, GameRequest request, List<Category> categories) {
+        log.info("Updating game {}: name={}, originalPrice={}, discountPercent={}", id, request.name(), request.originalPrice(), request.discountPercent());
         var game = findById(id);
-        game.update(name, originalPrice, discountPercent, description, state, launchDate, categories, game.getImageUrl(), game.getBannerUrl(), videoUrl, minimumSpecs, recommendedSpecs);
+        game.update(request.name(), request.originalPrice(), request.discountPercent(),
+                request.description(), request.state(), request.launchDate(), categories,
+                game.getImageUrl(), game.getBannerUrl(), request.videoUrl(),
+                request.minimumSpecs(), request.recommendedSpecs());
         log.info("Updated game {}", game.getId());
         return game;
     }
@@ -231,10 +229,7 @@ public class GameService {
     public Game updateImage(Long id, String imageUrl) {
         log.info("Updating image for game {}: {}", id, imageUrl);
         var game = findById(id);
-        game.update(game.getName(), game.getOriginalPrice(), game.getDiscountPercent(),
-                game.getDescription(), game.getState(), game.getLaunchDate(),
-                game.getCategories(), imageUrl, game.getBannerUrl(),
-                game.getVideoUrl(), game.getMinimumSpecs(), game.getRecommendedSpecs());
+        game.setImageUrl(imageUrl);
         log.info("Updated image for game {}", game.getId());
         return game;
     }
@@ -243,10 +238,7 @@ public class GameService {
     public Game updateBannerUrl(Long id, String bannerUrl) {
         log.info("Updating banner for game {}: {}", id, bannerUrl);
         var game = findById(id);
-        game.update(game.getName(), game.getOriginalPrice(), game.getDiscountPercent(),
-                game.getDescription(), game.getState(), game.getLaunchDate(),
-                game.getCategories(), game.getImageUrl(), bannerUrl,
-                game.getVideoUrl(), game.getMinimumSpecs(), game.getRecommendedSpecs());
+        game.setBannerUrl(bannerUrl);
         log.info("Updated banner for game {}", game.getId());
         return game;
     }
@@ -255,10 +247,7 @@ public class GameService {
     public Game updateVideoUrl(Long id, String videoUrl) {
         log.info("Updating video for game {}: {}", id, videoUrl);
         var game = findById(id);
-        game.update(game.getName(), game.getOriginalPrice(), game.getDiscountPercent(),
-                game.getDescription(), game.getState(), game.getLaunchDate(),
-                game.getCategories(), game.getImageUrl(), game.getBannerUrl(),
-                videoUrl, game.getMinimumSpecs(), game.getRecommendedSpecs());
+        game.setVideoUrl(videoUrl);
         log.info("Updated video for game {}", game.getId());
         return game;
     }

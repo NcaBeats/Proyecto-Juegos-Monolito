@@ -39,18 +39,18 @@ class ProfileControllerIntegrationTest {
 
     @Test
     void getMyProfile_shouldReturn200() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(get("/api/v1/profile").with(token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nickname").value("user"))
+                .andExpect(jsonPath("$.nickname").value("user@test.com"))
                 .andExpect(jsonPath("$.visibility").value("PUBLIC"));
     }
 
     @Test
     void update_shouldReturn200() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(patch("/api/v1/profile").with(token)
@@ -64,7 +64,7 @@ class ProfileControllerIntegrationTest {
 
     @Test
     void update_withEmptyBody_shouldReturn200() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
 
         mockMvc.perform(patch("/api/v1/profile").with(token)
@@ -75,7 +75,7 @@ class ProfileControllerIntegrationTest {
 
     @Test
     void update_withTooLongNickname_shouldReturn400() throws Exception {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
         var token = jwt().jwt(b -> b.subject(user.getId().toString()));
         var tooLongNickname = "n".repeat(256);
 

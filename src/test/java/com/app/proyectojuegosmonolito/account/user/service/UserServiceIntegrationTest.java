@@ -3,6 +3,7 @@ package com.app.proyectojuegosmonolito.account.user.service;
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import com.app.proyectojuegosmonolito.account.user.repository.UserRepository;
+import com.app.proyectojuegosmonolito.account.user.model.User;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ class UserServiceIntegrationTest {
 
     @Test
     void create_shouldPersistUserWithProfileAndWallet() {
-        var result = userService.create(user());
+        var result = userService.create(user(), profile(user()));
 
         assertThat(result.getId()).isNotNull();
         assertThat(result.getCreatedAt()).isNotNull();
@@ -44,7 +45,7 @@ class UserServiceIntegrationTest {
 
     @Test
     void findById_shouldReturnUser() {
-        var saved = userService.create(user());
+        var saved = userService.create(user(), profile(user()));
 
         var result = userService.findById(saved.getId());
 
@@ -73,7 +74,7 @@ class UserServiceIntegrationTest {
 
     @Test
     void update_shouldModifyAndSave() {
-        var saved = userService.create(user());
+        var saved = userService.create(user(), profile(user()));
         var savedPassword = saved.getPassword();
 
         var result = userService.update(saved.getId(), "new@test.com");
@@ -83,12 +84,17 @@ class UserServiceIntegrationTest {
     }
 
     @Test
-    void delete_shouldRemove() {
-        var saved = userService.create(user());
+    void delete_shouldSoftDelete() {
+        var saved = userService.create(user(), profile(user()));
 
         userService.delete(saved.getId());
 
-        assertThat(userRepository.findById(saved.getId())).isEmpty();
+        assertThat(userRepository.findById(saved.getId())).isPresent();
+        assertThat(userService.findAll(PageRequest.of(0, 10)).getContent())
+                .extracting(User::getId)
+                .doesNotContain(saved.getId());
+        assertThatThrownBy(() -> userService.findByEmail(saved.getEmail()))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.game.service;
 
+import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
@@ -98,9 +99,11 @@ class GameServiceTest {
         var game = game(1L, "Old", BigDecimal.ONE);
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
 
-        var result = gameService.update(1L, "New Name", new BigDecimal("49.99"), 10,
-                "New desc", GameState.COMING_SOON, LocalDate.of(2027, 1, 1), new ArrayList<>(),
-                "min specs", "rec specs", null);
+        var request = new GameRequest("New Name", new BigDecimal("49.99"), 10,
+                "New desc", GameState.COMING_SOON, LocalDate.of(2027, 1, 1), List.of(),
+                "min specs", "rec specs", null, 1L);
+
+        var result = gameService.update(1L, request, new ArrayList<>());
 
         assertThat(result.getName()).isEqualTo("New Name");
         assertThat(result.getOriginalPrice()).isEqualByComparingTo("49.99");

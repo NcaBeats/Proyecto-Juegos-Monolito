@@ -36,6 +36,9 @@ public class User {
     @Column(nullable = false)
     private int tokenVersion;
 
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
 

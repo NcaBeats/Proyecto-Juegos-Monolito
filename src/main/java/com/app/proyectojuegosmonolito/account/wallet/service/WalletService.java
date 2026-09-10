@@ -2,7 +2,8 @@ package com.app.proyectojuegosmonolito.account.wallet.service;
 
 import com.app.proyectojuegosmonolito.account.wallet.model.Wallet;
 import com.app.proyectojuegosmonolito.account.wallet.repository.WalletRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.app.proyectojuegosmonolito.common.RepositoryUtils;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,18 +20,14 @@ public class WalletService {
 
     public Wallet findByUserId(Long userId) {
         log.info("Fetching wallet for user: {}", userId);
-        return walletRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.warn("Wallet not found for user: {}", userId);
-                    return new EntityNotFoundException("Wallet not found: " + userId);
-                });
+        return RepositoryUtils.findOrThrow(walletRepository, userId, "Wallet");
     }
 
     @Transactional
     public Wallet updateBalance(Long userId, BigDecimal newBalance) {
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
             log.warn("Attempted to set negative balance for user {}: {}", userId, newBalance);
-            throw new IllegalArgumentException("Balance cannot be negative");
+            throw new BusinessException(BusinessException.INSUFFICIENT_BALANCE, "Balance cannot be negative");
         }
         log.info("Updating wallet for user {}: new balance={}", userId, newBalance);
         var wallet = findByUserId(userId);
@@ -44,7 +41,7 @@ public class WalletService {
     public Wallet deposit(Long userId, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             log.warn("Attempted to deposit non-positive amount for user {}: {}", userId, amount);
-            throw new IllegalArgumentException("Deposit amount must be positive");
+            throw new BusinessException(BusinessException.INVALID_DEPOSIT_AMOUNT, "Deposit amount must be positive");
         }
         log.info("Depositing {} to wallet for user {}", amount, userId);
         var wallet = findByUserId(userId);

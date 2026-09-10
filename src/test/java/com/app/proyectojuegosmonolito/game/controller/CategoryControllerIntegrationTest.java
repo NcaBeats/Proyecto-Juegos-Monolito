@@ -2,7 +2,6 @@ package com.app.proyectojuegosmonolito.game.controller;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
 import com.app.proyectojuegosmonolito.game.dto.CategoryRequest;
-import com.app.proyectojuegosmonolito.game.model.Category;
 import com.app.proyectojuegosmonolito.game.repository.CategoryRepository;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
 
+import static com.app.proyectojuegosmonolito.game.CategoryFixtures.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -39,7 +39,7 @@ class CategoryControllerIntegrationTest {
 
     @Test
     void getById_shouldReturn200() throws Exception {
-        var saved = categoryRepository.save(Category.builder().name("Action").build());
+        var saved = categoryRepository.save(category("Action"));
 
         mockMvc.perform(get("/api/v1/categories/{id}", saved.getId()).with(jwt()))
                 .andExpect(status().isOk())
@@ -55,8 +55,8 @@ class CategoryControllerIntegrationTest {
 
     @Test
     void getAll_shouldReturnPage() throws Exception {
-        categoryRepository.save(Category.builder().name("Action").build());
-        categoryRepository.save(Category.builder().name("RPG").build());
+        categoryRepository.save(category("Action"));
+        categoryRepository.save(category("RPG"));
 
         mockMvc.perform(get("/api/v1/categories")
                         .with(jwt())
@@ -89,7 +89,7 @@ class CategoryControllerIntegrationTest {
 
     @Test
     void update_shouldReturn200() throws Exception {
-        var saved = categoryRepository.save(Category.builder().name("Old").build());
+        var saved = categoryRepository.save(category("Old"));
 
         mockMvc.perform(put("/api/v1/categories/{id}", saved.getId())
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))
@@ -101,7 +101,7 @@ class CategoryControllerIntegrationTest {
 
     @Test
     void delete_shouldReturn204() throws Exception {
-        var saved = categoryRepository.save(Category.builder().name("ToDelete").build());
+        var saved = categoryRepository.save(category("ToDelete"));
 
         mockMvc.perform(delete("/api/v1/categories/{id}", saved.getId())
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))

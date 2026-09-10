@@ -52,6 +52,7 @@ CREATE TABLE "public"."user" (
     "created_at"    timestamp NOT NULL,
     "role"          varchar(10) NOT NULL DEFAULT 'CLIENTE',
     "token_version" integer NOT NULL DEFAULT 0,
+    "deleted_at"    timestamp,
     PRIMARY KEY ("id")
 );
 

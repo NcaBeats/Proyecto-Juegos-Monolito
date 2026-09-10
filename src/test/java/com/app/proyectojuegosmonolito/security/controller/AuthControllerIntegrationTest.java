@@ -48,12 +48,12 @@ class AuthControllerIntegrationTest {
 
     @Test
     void login_withValidCredentials_shouldReturn200AndToken() throws Exception {
-        saveUser("authuser@test.com", "pass123");
+        saveUser("authuser@gmail.com", "pass123");
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new LoginRequest("authuser@test.com", "pass123"))))
+                                new LoginRequest("authuser@gmail.com", "pass123"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
                 .andExpect(jsonPath("$.expiresIn").isNumber());
@@ -61,12 +61,12 @@ class AuthControllerIntegrationTest {
 
     @Test
     void login_withInvalidPassword_shouldReturn401() throws Exception {
-        saveUser("authuser@test.com", "pass123");
+        saveUser("authuser@gmail.com", "pass123");
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new LoginRequest("authuser@test.com", "wrong-password"))))
+                                new LoginRequest("authuser@gmail.com", "wrong"))))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.title").value("Unauthorized"));
     }
@@ -76,7 +76,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new LoginRequest("ghost@test.com", "pass123"))))
+                                new LoginRequest("ghost@gmail.com", "pass123"))))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.title").value("Unauthorized"));
     }
@@ -95,7 +95,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("new@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
+                                new RegisterRequest("new@gmail.com", "pass123", "190110222", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").isNotEmpty());
     }
@@ -104,7 +104,7 @@ class AuthControllerIntegrationTest {
     void register_withMalformedJson_shouldReturn400() throws Exception {
         mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\": \"new@test.com\""))
+                        .content("{\"email\": \"new@gmail.com\""))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Bad Request"));
     }
@@ -114,7 +114,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(put("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("new@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
+                                new RegisterRequest("new@gmail.com", "pass123", "190110222", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.title").value("Method Not Allowed"));
     }
@@ -140,8 +140,8 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(put("/api/v1/users/password").header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(Map.of(
-                                "currentPassword", "password123",
-                                "newPassword", "newpassword123"))))
+                                "currentPassword", "pass123",
+                                "newPassword", "newpass123"))))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/api/v1/users/me").header("Authorization", "Bearer " + token))
@@ -152,7 +152,7 @@ class AuthControllerIntegrationTest {
         MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("revoked@test.com", "password123", "12345678K", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
+                                new RegisterRequest("revoked@gmail.com", "pass123", "190110222", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
                 .andExpect(status().isCreated())
                 .andReturn();
         return objectMapper.readTree(result.getResponse().getContentAsString()).get("token").asText();

@@ -12,6 +12,10 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM User u WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))")
+    Optional<User> findByEmailAndDeletedAtIsNull(String email);
+
+    Page<User> findAllByDeletedAtIsNull(Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%')) AND u.deletedAt IS NULL")
     Page<User> findByEmailContainingIgnoreCase(@Param("email") String email, Pageable pageable);
 }

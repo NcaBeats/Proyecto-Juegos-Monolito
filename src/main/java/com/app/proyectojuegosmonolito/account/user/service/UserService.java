@@ -6,8 +6,8 @@ import com.app.proyectojuegosmonolito.account.user.dto.AdminUserUpdateRequest;
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.wallet.model.Wallet;
-import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import com.app.proyectojuegosmonolito.account.user.repository.UserRepository;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,23 +36,18 @@ public class UserService {
 
     @Transactional
     public User create(User user, Profile profile) {
+        if (profile == null) {
+            throw new BusinessException(BusinessException.PROFILE_REQUIRED,
+                    "A profile is required to create a user.");
+        }
         var now = Instant.now();
         user.setCreatedAt(now);
 
-        if (profile != null) {
-            profile.setUser(user);
-            if (profile.getCreatedAt() == null) {
-                profile.setCreatedAt(now);
-            }
-            user.setProfile(profile);
-        } else {
-            user.setProfile(Profile.builder()
-                    .user(user)
-                    .nickname(user.getEmail())
-                    .visibility(Visibility.PUBLIC)
-                    .createdAt(now)
-                    .build());
+        profile.setUser(user);
+        if (profile.getCreatedAt() == null) {
+            profile.setCreatedAt(now);
         }
+        user.setProfile(profile);
 
         user.setWallet(Wallet.builder()
                 .user(user)
@@ -79,7 +74,7 @@ public class UserService {
 
     public User findByEmail (String email) {
         log.info("Fetching user by email: {}", email);
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> {
                     log.warn("User not found with email: {}", email);
                     return new EntityNotFoundException("User not found: " + email);
@@ -93,7 +88,7 @@ public class UserService {
 
     public Page<User> findAll(Pageable pageable) {
         log.info("Fetching all users with pageable: {}", pageable);
-        return userRepository.findAll(pageable);
+        return userRepository.findAllByDeletedAtIsNull(pageable);
     }
 
     public Page<User> searchByEmail(String email, Pageable pageable) {
@@ -179,7 +174,13 @@ public class UserService {
             log.warn("Attempted to delete admin account: {}", id);
             throw new IllegalArgumentException("The admin account cannot be deleted");
         }
-        userRepository.deleteById(id);
-        log.info("Deleted user {}", id);
+        if (user.getDeletedAt() != null) {
+            log.info("User {} is already deleted", id);
+            return;
+        }
+        user.setDeletedAt(Instant.now());
+        userRepository.save(user);
+        incrementTokenVersion(user);
+        log.info("Soft-deleted user {}", id);
     }
 }
