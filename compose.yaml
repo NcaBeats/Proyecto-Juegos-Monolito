@@ -4,7 +4,7 @@ services:
     container_name: '${CONTAINER_NAME:-postgres-container}'
     environment:
       - 'POSTGRES_DB=${DB_NAME:-proyecto_juegos}'
-      - 'POSTGRES_PASSWORD=${DB_PASSWORD:-Empanada5678}'
+      - 'POSTGRES_PASSWORD=${DB_PASSWORD:?falta DB_PASSWORD en .env}'
       - 'POSTGRES_USER=${DB_USER:-nico}'
     ports:
       - '5432:5432'
@@ -14,17 +14,16 @@ services:
   app:
     build: .
     container_name: 'juegos-app'
+    env_file:
+      - .env
     ports:
-      - '9090:9090'
+      - '9090:8080'
     depends_on:
       - postgres
     environment:
-      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/proyecto_juegos'
-      - 'SPRING_DATASOURCE_USERNAME=nico'
-      - 'SPRING_DATASOURCE_PASSWORD=Empanada5678'
+      - 'PORT=8080'
       - 'SPRING_PROFILES_ACTIVE=dev'
-      - 'KEY_JWT_SECRET=Uo4MkxmgYVdBK+6mYtjYYpI8k4fpSUihZ8FNhpiSmZ4xyb59cUYKLdW94eKtkoRe'
-      - 'CLOUDINARY_URL=cloudinary://312127544695893:sbCqVOP04vt4hJrmryY0ojeEOPs@tpjbimjw'
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${DB_NAME:-proyecto_juegos}'
 
 volumes:
   postgres-data:

@@ -8,7 +8,7 @@ public class RunValidator implements ConstraintValidator<ValidRun, String> {
     @Override
     public boolean isValid(String run, ConstraintValidatorContext context) {
         if (run == null || run.isBlank()) {
-            return false;
+            return true;
         }
 
         String cleaned = run.trim().toUpperCase();

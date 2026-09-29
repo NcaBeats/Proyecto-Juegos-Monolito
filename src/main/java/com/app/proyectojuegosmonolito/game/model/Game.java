@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.game.model;
 
+import com.app.proyectojuegosmonolito.account.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,6 +48,15 @@ public class Game {
     @Column(name = "banner_url", length = 500)
     private String bannerUrl;
 
+    @Column(name = "video_url", length = 500)
+    private String videoUrl;
+
+    @Column(name = "minimum_specs", columnDefinition = "TEXT")
+    private String minimumSpecs;
+
+    @Column(name = "recommended_specs", columnDefinition = "TEXT")
+    private String recommendedSpecs;
+
     @Column(nullable = false)
     private Instant createdAt;
 
@@ -58,6 +68,15 @@ public class Game {
     )
     @Builder.Default
     private List<Category> categories = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private User seller;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("position ASC")
+    @Builder.Default
+    private List<GameImage> gallery = new ArrayList<>();
 
     @Transient
     public BigDecimal getPrice() {
@@ -73,7 +92,7 @@ public class Game {
         return originalPrice.multiply(multiplier).setScale(2, java.math.RoundingMode.HALF_UP);
     }
 
-    public Game update(String name, BigDecimal originalPrice, Integer discountPercent, String description, GameState state, LocalDate launchDate, List<Category> categories, String imageUrl, String bannerUrl) {
+    public Game update(String name, BigDecimal originalPrice, Integer discountPercent, String description, GameState state, LocalDate launchDate, List<Category> categories, String imageUrl, String bannerUrl, String videoUrl, String minimumSpecs, String recommendedSpecs) {
         this.name = name;
         this.originalPrice = originalPrice;
         this.discountPercent = discountPercent;
@@ -83,6 +102,9 @@ public class Game {
         this.categories = categories;
         this.imageUrl = imageUrl;
         this.bannerUrl = bannerUrl;
+        this.videoUrl = videoUrl;
+        this.minimumSpecs = minimumSpecs;
+        this.recommendedSpecs = recommendedSpecs;
         return this;
     }
 }

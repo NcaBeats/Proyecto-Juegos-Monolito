@@ -38,7 +38,14 @@ public class ProfileService {
     @Transactional
     public Profile update(Long userId, ProfilePatchRequest request) {
         log.info("Updating profile for user {}", userId);
+        return updateById(userId, request);
+    }
+
+    @Transactional
+    public Profile updateById(Long userId, ProfilePatchRequest request) {
+        log.info("Admin updating profile for user {}", userId);
         var profile = findByUserId(userId);
+        if (request.run() != null) profile.setRun(request.run());
         if (request.nickname() != null) profile.setNickname(request.nickname());
         if (request.bio() != null) profile.setBio(request.bio());
         if (request.visibility() != null) profile.setVisibility(request.visibility());
@@ -49,7 +56,7 @@ public class ProfileService {
         if (request.comuna() != null) profile.setComuna(request.comuna());
         if (request.address() != null) profile.setAddress(request.address());
         var saved = profileRepository.save(profile);
-        log.info("Updated profile for user {}", userId);
+        log.info("Admin updated profile for user {}", userId);
         return saved;
     }
 }

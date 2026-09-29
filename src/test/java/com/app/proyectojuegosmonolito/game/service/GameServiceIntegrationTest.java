@@ -1,6 +1,7 @@
 package com.app.proyectojuegosmonolito.game.service;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
+import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -88,8 +89,10 @@ class GameServiceIntegrationTest {
     void update_shouldModifyAndSave() {
         var saved = gameRepository.save(game());
 
-        var result = gameService.update(saved.getId(), "Nuevo nombre",
-                BigDecimal.TEN, 0, "desc", GameState.COMING_SOON, LocalDate.now(), new ArrayList<>());
+        var request = new GameRequest("Nuevo nombre", BigDecimal.TEN, 0, "desc",
+                GameState.COMING_SOON, LocalDate.now(), List.of(), "min specs", "rec specs", null, null);
+
+        var result = gameService.update(saved.getId(), request, new ArrayList<>());
 
         assertThat(result.getName()).isEqualTo("Nuevo nombre");
     }

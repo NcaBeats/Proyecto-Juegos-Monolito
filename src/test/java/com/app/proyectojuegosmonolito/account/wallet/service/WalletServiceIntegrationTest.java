@@ -2,6 +2,7 @@ package com.app.proyectojuegosmonolito.account.wallet.service;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ class WalletServiceIntegrationTest {
 
     @Test
     void findByUserId_shouldReturnWallet() {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
 
         var wallet = walletService.findByUserId(user.getId());
 
@@ -44,7 +45,7 @@ class WalletServiceIntegrationTest {
 
     @Test
     void updateBalance_withPositiveAmount_shouldSucceed() {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
 
         var wallet = walletService.updateBalance(user.getId(), new BigDecimal("50.00"));
 
@@ -53,9 +54,12 @@ class WalletServiceIntegrationTest {
 
     @Test
     void updateBalance_withNegativeAmount_shouldThrow() {
-        var user = userService.create(user());
+        var user = userService.create(user(), profile(user()));
 
         assertThatThrownBy(() -> walletService.updateBalance(user.getId(), new BigDecimal("-10.00")))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("negative")
+                .extracting(ex -> ((BusinessException) ex).getCode())
+                .isEqualTo(BusinessException.INSUFFICIENT_BALANCE);
     }
 }

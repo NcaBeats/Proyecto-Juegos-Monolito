@@ -8,6 +8,7 @@ import com.app.proyectojuegosmonolito.purchase.model.PurchaseStatus;
 import com.app.proyectojuegosmonolito.purchase.repository.PurchaseRepository;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.account.wallet.service.WalletService;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,7 +70,7 @@ class PurchaseServiceTest {
         assertThat(result.getTotalAmount()).isEqualByComparingTo("79.98");
         assertThat(result.getIdempotencyKey()).isEqualTo("key-1");
         assertThat(result.getItems()).hasSize(2);
-        assertThat(wallet.getBalance()).isEqualByComparingTo("20.02");
+        verify(walletService).updateBalance(1L, new BigDecimal("20.02"));
         verify(libraryService).add(1L, 1L);
         verify(libraryService).add(1L, 2L);
         verify(purchaseRepository).save(any(Purchase.class));
@@ -107,7 +108,7 @@ class PurchaseServiceTest {
         var items = List.of(new PurchaseLine(1L, 1));
 
         assertThatThrownBy(() -> purchaseService.create(1L, "key-1", items))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Insufficient balance");
 
         verify(purchaseRepository, never()).save(any());

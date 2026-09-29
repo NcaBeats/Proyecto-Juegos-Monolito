@@ -1,6 +1,7 @@
 package com.app.proyectojuegosmonolito.account.wallet.service;
 
 import com.app.proyectojuegosmonolito.account.wallet.repository.WalletRepository;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,8 +63,10 @@ class WalletServiceTest {
     @Test
     void updateBalance_withNegativeAmount_shouldThrow() {
         assertThatThrownBy(() -> walletService.updateBalance(1L, new BigDecimal("-10.00")))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("negative");
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("negative")
+                .extracting(ex -> ((BusinessException) ex).getCode())
+                .isEqualTo(BusinessException.INSUFFICIENT_BALANCE);
 
         verify(walletRepository, never()).findById(any());
         verify(walletRepository, never()).save(any());

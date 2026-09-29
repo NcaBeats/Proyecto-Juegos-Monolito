@@ -2,3 +2,17 @@ app:
   jwt:
     secret: ${KEY_JWT_SECRET:test-secret-0123456789abcdefghijklmnopqrstuvwxyz}
     expiration: ${KEY_JWT_EXPIRATION:3600000}
+
+  # Valores ficticios: los tests construyen estos beans pero nunca llaman a
+  # Cloudinary ni a R2 de verdad. Sin esto, ImageService explota en el constructor
+  # (new Cloudinary("")) y el contexto completo no arranca, tumbando las 14 clases
+  # de @SpringBootTest.
+  cloudinary:
+    url: ${CLOUDINARY_URL:cloudinary://000000000000000:testonlyapisecrettestonlyapisecret@test-cloud}
+
+  r2:
+    account-id: ${R2_ACCOUNT_ID:testaccount}
+    access-key-id: ${R2_ACCESS_KEY_ID:testaccesskey}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY:testsecretkeytestsecretkeytestsecretkey}
+    bucket: ${R2_BUCKET:trailers-test}
+    public-base-url: ${R2_PUBLIC_BASE_URL:https://pub-test.r2.dev}

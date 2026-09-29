@@ -21,6 +21,7 @@ import static com.app.proyectojuegosmonolito.account.user.UserFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +49,7 @@ class UserServiceTest {
         });
         when(passwordEncoder.encode(any(CharSequence.class))).thenReturn("encoded");
 
-        var result = userService.create(user);
+        var result = userService.create(user, profile(user));
 
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getCreatedAt()).isNotNull();
@@ -84,7 +85,7 @@ class UserServiceTest {
         var pageable = PageRequest.of(0, 10);
         var users = List.of(user(1L), user(2L));
         var page = new PageImpl<>(users, pageable, 2);
-        when(userRepository.findAll(pageable)).thenReturn(page);
+        when(userRepository.findAllByDeletedAtIsNull(pageable)).thenReturn(page);
 
         var result = userService.findAll(pageable);
 
@@ -104,23 +105,24 @@ class UserServiceTest {
     }
 
     @Test
-    void delete_whenExists_shouldDelete() {
-        when(userRepository.existsById(1L)).thenReturn(true);
+    void delete_whenExists_shouldSoftDelete() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user(1L)));
 
         userService.delete(1L);
 
-        verify(userRepository).deleteById(1L);
+        verify(userRepository).save(any(User.class));
+        verify(tokenVersionCache).set(eq(1L), anyInt());
     }
 
     @Test
     void delete_whenNotFound_shouldThrow() {
-        when(userRepository.existsById(99L)).thenReturn(false);
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.delete(99L))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("99");
 
-        verify(userRepository, never()).deleteById(any());
+        verify(userRepository, never()).save(any());
     }
 
     @Test

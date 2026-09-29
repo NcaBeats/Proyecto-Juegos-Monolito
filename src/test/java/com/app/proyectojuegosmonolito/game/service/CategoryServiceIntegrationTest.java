@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.app.proyectojuegosmonolito.game.CategoryFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -27,8 +28,7 @@ class CategoryServiceIntegrationTest {
 
     @Test
     void create_shouldPersistCategory() {
-        var category = com.app.proyectojuegosmonolito.game.model.Category.builder()
-                .name("Action").build();
+        var category = category("Action");
 
         var result = categoryService.create(category);
 
@@ -41,8 +41,7 @@ class CategoryServiceIntegrationTest {
 
     @Test
     void findById_shouldReturnCategory() {
-        var saved = categoryRepository.save(
-                com.app.proyectojuegosmonolito.game.model.Category.builder().name("RPG").build());
+        var saved = categoryRepository.save(category("RPG"));
 
         var result = categoryService.findById(saved.getId());
 
@@ -57,8 +56,8 @@ class CategoryServiceIntegrationTest {
 
     @Test
     void findAll_shouldReturnPage() {
-        categoryRepository.save(com.app.proyectojuegosmonolito.game.model.Category.builder().name("Action").build());
-        categoryRepository.save(com.app.proyectojuegosmonolito.game.model.Category.builder().name("RPG").build());
+        categoryRepository.save(category("Action"));
+        categoryRepository.save(category("RPG"));
 
         var page = categoryService.findAll(PageRequest.of(0, 10));
 
@@ -67,8 +66,7 @@ class CategoryServiceIntegrationTest {
 
     @Test
     void update_shouldModifyAndSave() {
-        var saved = categoryRepository.save(
-                com.app.proyectojuegosmonolito.game.model.Category.builder().name("Old").build());
+        var saved = categoryRepository.save(category("Old"));
 
         var result = categoryService.update(saved.getId(), "New");
 
@@ -77,8 +75,7 @@ class CategoryServiceIntegrationTest {
 
     @Test
     void delete_shouldRemoveCategory() {
-        var saved = categoryRepository.save(
-                com.app.proyectojuegosmonolito.game.model.Category.builder().name("ToDelete").build());
+        var saved = categoryRepository.save(category("ToDelete"));
 
         categoryService.delete(saved.getId());
 

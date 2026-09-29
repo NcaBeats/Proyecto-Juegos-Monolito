@@ -32,7 +32,7 @@ class WalletOptimisticLockIntegrationTest {
 
     @Test
     void update_withStaleDetachedWallet_shouldThrowOptimisticLockingFailure() {
-        var user = userService.create(user());
+        var user = userService.create(user("opt-lock@test.com"), profile(user("opt-lock@test.com")));
 
         try {
             var stale = transactionTemplate.execute(status ->

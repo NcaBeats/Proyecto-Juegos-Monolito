@@ -87,6 +87,44 @@ Known debt (explicitly deferred, not urgent):
 - Tables: `user` (has `role varchar(10)` + `token_version integer`), `profile`, `wallet` (has `version bigint` for optimistic locking), `game`, `library`, `purchase` (has `idempotency_key` + `UNIQUE (user_id, idempotency_key)`), `purchase_item`
 - **Migrations**: ALL schema lives in a single file `V1.0.0__init_schema.sql` (wallet `version` and user `token_version` are columns inside the CREATE TABLEs). If an existing dev DB already applied an older split (`V1.1.0`), Flyway's checksum will fail → reset with `docker compose down -v`
 
+## ⚠️ CRITICAL: Reset DB + image when changing `V1.0.0__init_schema.sql` or Java code
+
+**Symptom** (what you see when this rule is broken):
+- `GET http://localhost:9090/api/v1/games` (a `permitAll()` endpoint) returns **401** with header `WWW-Authenticate: Bearer resource_metadata="http://127.0.0.1:9090/.well-known/oauth-protected-resource"` — but `curl /api/v1/categories` and `curl /actuator/health` also fail
+- `docker compose logs app` shows `Migration checksum mismatch for migration version 1.0.0 — Applied to database: <num>, Resolved locally: <num>`
+- Or: the app starts but Hibernate logs old SQL (e.g. `insert into "user" (..., username) values ...`) → the running JAR is stale
+
+**Cause** (why this happens):
+1. You edited `V1.0.0__init_schema.sql` (or Java code in `src/main/java/`)
+2. You ran `docker compose up -d`
+3. Docker reused the **cached image** (old JAR) — `docker compose up -d` does **NOT** rebuild by default
+4. On the next restart, the new JAR + new migration collide with the existing `postgres-data` volume: either the old JAR responds with a stale JWT secret / token-version → 401, or the new JAR fails Flyway validation → refuses to start
+
+**Solution — always run together when migration or Java code changes:**
+
+```bash
+docker compose down -v          # stops + removes containers AND the postgres-data volume
+docker compose build --no-cache # forces a clean image rebuild (downloads deps, recompiles, repackages)
+docker compose up -d            # starts fresh: empty Postgres → Flyway applies new migration → app starts
+docker compose logs -f app      # verify: "Started ProyectoJuegosMonolitoApplication" + no Flyway errors
+```
+
+**Three flags are mandatory** — missing any one recreates the bug:
+| Flag | Purpose |
+|------|---------|
+| `-v` | Removes the `postgres-data` volume (Flyway history + old schema) |
+| `--no-cache` | Rebuilds the Docker image from scratch (new JAR with your latest code) |
+| `-d` | Runs in background (so you can `logs -f app` separately) |
+
+**For Java-only changes (no migration edit)**: drop `-v` (the volume is fine), keep `--no-cache` (new JAR).
+
+**For fast dev iteration (no Docker image rebuild at all)**: use `mvnw spring-boot:run` — only Postgres runs in Docker, the app runs locally with hot reload. This is the fastest feedback loop:
+
+```bash
+docker compose up -d postgres
+./mvnw spring-boot:run "-Dspring-boot.run.profiles=dev"
+```
+
 ## Testing
 - All `@SpringBootTest` classes: Testcontainers (`@Import(TestcontainersConfiguration.class)` → `postgres:17-alpine`) + `@ActiveProfiles("test")`
 - Docker Desktop down ⇒ every context load fails ("Could not find a valid Docker environment")

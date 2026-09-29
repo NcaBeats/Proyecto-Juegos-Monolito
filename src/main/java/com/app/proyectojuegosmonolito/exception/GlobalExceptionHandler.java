@@ -11,13 +11,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.net.URI;
 
@@ -35,10 +38,38 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(BusinessException.class)
+    public ProblemDetail handleBusiness(BusinessException ex) {
+        log.warn("Business rule violation: {}", sanitize(ex.getMessage()));
+        var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setType(URI.create("about:blank"));
+        problem.setTitle("Bad Request");
+        problem.setProperty("code", ex.getCode());
+        return problem;
+    }
+
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ProblemDetail handleMissingHeader(MissingRequestHeaderException ex) {
         log.warn("Missing request header: {}", ex.getHeaderName());
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Bad request.");
+        problem.setType(URI.create("about:blank"));
+        problem.setTitle("Bad Request");
+        return problem;
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ProblemDetail handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        log.warn("Unsupported media type: {}", ex.getContentType());
+        var problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported media type.");
+        problem.setType(URI.create("about:blank"));
+        problem.setTitle("Unsupported Media Type");
+        return problem;
+    }
+
+    @ExceptionHandler({MissingServletRequestPartException.class, MultipartException.class})
+    public ProblemDetail handleMissingPart(Exception ex) {
+        log.warn("Invalid multipart request: {}", sanitize(ex.getMessage()));
+        var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid multipart request.");
         problem.setType(URI.create("about:blank"));
         problem.setTitle("Bad Request");
         return problem;

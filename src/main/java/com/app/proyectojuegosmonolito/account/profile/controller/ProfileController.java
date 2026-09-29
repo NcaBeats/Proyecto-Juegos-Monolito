@@ -49,4 +49,15 @@ public class ProfileController {
         var profile = profileService.update(userId, request);
         return ResponseEntity.ok(profileMapper.toResponse(profile));
     }
+
+    @Operation(summary = "Admin update profile by user ID", description = "Updates the profile for any user (admin)")
+    @ApiResponse(responseCode = "200", description = "Profile updated successfully")
+    @ApiResponse(responseCode = "404", description = "Profile not found")
+    @PatchMapping("/{userId}")
+    public ResponseEntity<ProfileResponse> updateProfileById(
+            @PathVariable Long userId,
+            @Valid @RequestBody ProfilePatchRequest request) {
+        var profile = profileService.updateById(userId, request);
+        return ResponseEntity.ok(profileMapper.toResponse(profile));
+    }
 }
