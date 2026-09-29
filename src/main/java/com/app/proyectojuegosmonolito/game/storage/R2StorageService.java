@@ -9,7 +9,9 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
@@ -105,5 +107,28 @@ public class R2StorageService {
                 contentType,
                 PRESIGN_TTL.toSeconds()
         );
+    }
+
+    /**
+     * Borra el trailer de un juego. Se invoca como limpieza best-effort tras el
+     * commit del borrado: si R2 no responde, el juego ya esta eliminado y no
+     * debe revertirse por un archivo huerfano.
+     *
+     * @return {@code true} si el objeto existia y se borro.
+     */
+    public boolean deleteVideo(String slug) {
+        String key = slug + "/trailer.mp4";
+        try {
+            s3Client.deleteObject(
+                    DeleteObjectRequest.builder()
+                            .bucket(bucket)
+                            .key(key)
+                            .build());
+            log.info("Deleted video from R2 bucket={} key={}", bucket, key);
+            return true;
+        } catch (SdkException e) {
+            log.warn("Could not delete video from R2 bucket={} key={}: {}", bucket, key, e.getMessage());
+            return false;
+        }
     }
 }

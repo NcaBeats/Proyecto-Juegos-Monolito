@@ -18,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -292,8 +294,59 @@ public class GameService {
             log.warn("Attempted to delete non-existent game: {}", id);
             throw new EntityNotFoundException("Game not found: " + id);
         }
+        // Las URLs se leen antes del borrado: despues la entidad ya no esta y
+        // no habria forma de saber que archivos limpiar.
+        var game = gameRepository.findById(id).orElseThrow();
+        var imageUrl = game.getImageUrl();
+        var bannerUrl = game.getBannerUrl();
+        var videoUrl = game.getVideoUrl();
+        var galleryUrls = game.getGallery().stream().map(GameImage::getUrl).toList();
+        var slug = game.getName() == null ? null : slugify(game.getName());
+
         gameRepository.deleteById(id);
+
+        // Cloudinary y R2 no participate de la transaccion: si el borrado
+        // externo se hiciera aqui y luego la transaccion fallara, los archivos
+        // ya habrian desaparecido sin que el juego se borrara. Por eso se
+        // difiere al commit y, si falla, se loguea sin revivir el borrado.
+        afterCommit(() -> {
+            deleteQuietly(imageUrl, "image");
+            deleteQuietly(bannerUrl, "banner");
+            galleryUrls.forEach(url -> deleteQuietly(url, "gallery"));
+            if (videoUrl != null && slug != null) {
+                try {
+                    r2StorageService.deleteVideo(slug);
+                } catch (RuntimeException e) {
+                    log.warn("Could not delete trailer of game {}: {}", id, e.getMessage());
+                }
+            }
+        });
+
         log.info("Deleted game {}", id);
+    }
+
+    private void afterCommit(Runnable action) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    action.run();
+                }
+            });
+        } else {
+            action.run();
+        }
+    }
+
+    private void deleteQuietly(String url, String kind) {
+        if (url == null || url.isBlank()) {
+            return;
+        }
+        try {
+            imageService.delete(url);
+        } catch (RuntimeException e) {
+            log.warn("Could not delete {} image {}: {}", kind, url, e.getMessage());
+        }
     }
 
     @Transactional

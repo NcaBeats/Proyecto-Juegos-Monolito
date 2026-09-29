@@ -2,8 +2,10 @@ package com.app.proyectojuegosmonolito.game.service;
 
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.model.Game;
+import com.app.proyectojuegosmonolito.game.model.GameImage;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
+import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +31,12 @@ class GameServiceTest {
 
     @Mock
     private GameRepository gameRepository;
+
+    @Mock
+    private ImageService imageService;
+
+    @Mock
+    private R2StorageService r2StorageService;
 
     @InjectMocks
     private GameService gameService;
@@ -152,8 +160,45 @@ class GameServiceTest {
     @Test
     void delete_whenExists_shouldDelete() {
         when(gameRepository.existsById(1L)).thenReturn(true);
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game(1L, "Old", BigDecimal.ONE)));
 
         gameService.delete(1L);
+
+        verify(gameRepository).deleteById(1L);
+    }
+
+    @Test
+    void delete_shouldCleanUpCloudinaryImagesAndTheR2Trailer() {
+        var game = game(1L, "Shadow Blade", BigDecimal.ONE);
+        game.setImageUrl("https://res.cloudinary.com/demo/image/upload/games/shadow-blade/card.jpg");
+        game.setBannerUrl("https://res.cloudinary.com/demo/image/upload/games/shadow-blade/banner.jpg");
+        game.setVideoUrl("https://pub-test.r2.dev/shadow-blade/trailer.mp4");
+        game.getGallery().add(GameImage.builder().game(game)
+                .url("https://res.cloudinary.com/demo/image/upload/games/shadow-blade/gallery/1.jpg")
+                .position(0).build());
+        when(gameRepository.existsById(1L)).thenReturn(true);
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+
+        gameService.delete(1L);
+
+        verify(gameRepository).deleteById(1L);
+        verify(imageService).delete(game.getImageUrl());
+        verify(imageService).delete(game.getBannerUrl());
+        verify(imageService).delete(game.getGallery().getFirst().getUrl());
+        verify(r2StorageService).deleteVideo("shadow-blade");
+    }
+
+    @Test
+    void delete_shouldSucceedEvenIfMediaCleanupFails() {
+        var game = game(1L, "Shadow Blade", BigDecimal.ONE);
+        game.setImageUrl("https://res.cloudinary.com/demo/image/upload/games/shadow-blade/card.jpg");
+        when(gameRepository.existsById(1L)).thenReturn(true);
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+        doThrow(new RuntimeException("cloudinary caido")).when(imageService).delete(anyString());
+
+        // El juego ya esta borrado en base de datos: un almacen caido no debe
+        // dejar el borrado a medias ni propagar el error.
+        assertThatNoException().isThrownBy(() -> gameService.delete(1L));
 
         verify(gameRepository).deleteById(1L);
     }
