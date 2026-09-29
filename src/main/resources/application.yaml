@@ -34,6 +34,13 @@ app:
   cors:
     allowed-origins: "${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000}"
 
+  security:
+    login:
+      # 5 fallos por correo y 20 por IP dentro de una ventana de 15 minutos.
+      max-per-email: 5
+      max-per-ip: 20
+      window-ms: 900000
+
   r2:
     account-id: ${R2_ACCOUNT_ID:}
     access-key-id: ${R2_ACCESS_KEY_ID:}

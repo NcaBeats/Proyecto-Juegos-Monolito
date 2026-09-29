@@ -16,3 +16,13 @@ app:
     secret-access-key: ${R2_SECRET_ACCESS_KEY:testsecretkeytestsecretkeytestsecretkey}
     bucket: ${R2_BUCKET:trailers-test}
     public-base-url: ${R2_PUBLIC_BASE_URL:https://pub-test.r2.dev}
+
+  security:
+    login:
+      # Los tests exercised logins fallidos a proposito; con los limites reales
+      # (5 por correo) una clase se auto-bloquearia a mitad de la suite. El
+      # comportamiento del limiter se cubre en LoginAttemptLimiterTest, que
+      # instancia su propia instancia con limites chicos.
+      max-per-email: 1000
+      max-per-ip: 1000
+      window-ms: 900000

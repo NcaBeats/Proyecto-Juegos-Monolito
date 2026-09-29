@@ -6,6 +6,12 @@ app:
   jwt:
     secret: ${KEY_JWT_SECRET}
     expiration: ${KEY_JWT_EXPIRATION}
+  cors:
+    # Sin default a proposito: el perfil base declara localhost, asi que omitir
+    # esta variable en produccion dejaria al backend aceptando solo el origen
+    # equivocado y todos los requests del frontend fallarian por CORS. Que
+    # falle el arranque es mas facil de diagnosticar que un 403 silencioso.
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}
 
 
 logging:
