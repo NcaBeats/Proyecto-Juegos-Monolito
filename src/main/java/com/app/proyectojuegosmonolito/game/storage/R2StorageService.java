@@ -1,5 +1,6 @@
 package com.app.proyectojuegosmonolito.game.storage;
 
+import com.app.proyectojuegosmonolito.game.dto.PresignedUploadResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,15 +11,30 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class R2StorageService {
 
+    private static final Duration PRESIGN_TTL = Duration.ofMinutes(15);
+
+    private static final Set<String> ALLOWED_VIDEO_CONTENT_TYPES = Set.of(
+            "video/mp4",
+            "video/webm",
+            "video/quicktime",
+            "video/x-m4v"
+    );
+
     private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
     private final String bucket;
     private final String publicBaseUrl;
 
@@ -30,11 +46,18 @@ public class R2StorageService {
             @Value("${app.r2.public-base-url}") String publicBaseUrl) {
         this.bucket = bucket;
         this.publicBaseUrl = publicBaseUrl;
+        var endpoint = URI.create("https://" + accountId + ".r2.cloudflarestorage.com");
+        var credentials = StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(accessKeyId, secretAccessKey));
         this.s3Client = S3Client.builder()
                 .region(Region.of("auto"))
-                .endpointOverride(URI.create("https://" + accountId + ".r2.cloudflarestorage.com"))
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKeyId, secretAccessKey)))
+                .endpointOverride(endpoint)
+                .credentialsProvider(credentials)
+                .build();
+        this.s3Presigner = S3Presigner.builder()
+                .region(Region.of("auto"))
+                .endpointOverride(endpoint)
+                .credentialsProvider(credentials)
                 .build();
     }
 
@@ -51,5 +74,36 @@ public class R2StorageService {
         String url = publicBaseUrl + "/" + key;
         log.info("Uploaded video to R2 bucket={} key={} ({} bytes)", bucket, key, video.getSize());
         return url;
+    }
+
+    /**
+     * Genera una URL firmada para que el navegador suba el trailer directo a R2.
+     * El contentType queda firmado: el cliente debe reenviarlo identico en el header,
+     * de lo contrario Cloudflare responde 403 SignatureDoesNotMatch.
+     */
+    public PresignedUploadResponse presignVideo(String slug, String contentType) {
+        if (contentType == null || !ALLOWED_VIDEO_CONTENT_TYPES.contains(contentType)) {
+            throw new IllegalArgumentException(
+                    "Unsupported video content type. Allowed: " + ALLOWED_VIDEO_CONTENT_TYPES);
+        }
+        String key = slug + "/trailer.mp4";
+        PresignedPutObjectRequest presigned = s3Presigner.presignPutObject(
+                PutObjectPresignRequest.builder()
+                        .signatureDuration(PRESIGN_TTL)
+                        .putObjectRequest(PutObjectRequest.builder()
+                                .bucket(bucket)
+                                .key(key)
+                                .contentType(contentType)
+                                .build())
+                        .build()
+        );
+        log.info("Presigned video upload bucket={} key={} contentType={}", bucket, key, contentType);
+        return new PresignedUploadResponse(
+                presigned.url().toString(),
+                key,
+                "/uploads/games/" + key,
+                contentType,
+                PRESIGN_TTL.toSeconds()
+        );
     }
 }

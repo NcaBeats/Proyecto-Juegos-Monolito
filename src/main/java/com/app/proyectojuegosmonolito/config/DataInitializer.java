@@ -18,6 +18,7 @@ import com.app.proyectojuegosmonolito.blog.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Component
-@org.springframework.context.annotation.Profile("dev")
+@ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true")
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 

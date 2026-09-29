@@ -256,6 +256,36 @@ public class GameService {
         return game;
     }
 
+    /**
+     * Registra las URLs de media que el navegador ya subio directo a Cloudinary / R2.
+     * Los campos ausentes o vacios se dejan intactos, de modo que una edicion parcial
+     * no borra la portada ni la galeria que ya tenia el juego.
+     */
+    @Transactional
+    public Game applyMediaUrls(Long id, String imageUrl, String bannerUrl, List<String> galleryUrls) {
+        var game = findById(id);
+        if (imageUrl != null && !imageUrl.isBlank()) {
+            game.setImageUrl(imageUrl);
+        }
+        if (bannerUrl != null && !bannerUrl.isBlank()) {
+            game.setBannerUrl(bannerUrl);
+        }
+        if (galleryUrls != null && !galleryUrls.isEmpty()) {
+            game.getGallery().clear();
+            for (int i = 0; i < galleryUrls.size(); i++) {
+                game.getGallery().add(GameImage.builder()
+                        .game(game)
+                        .url(galleryUrls.get(i))
+                        .position(i)
+                        .createdAt(Instant.now())
+                        .build());
+            }
+        }
+        log.info("Applied media urls to game {}: image={} banner={} gallery={}",
+                id, imageUrl, bannerUrl, galleryUrls == null ? 0 : galleryUrls.size());
+        return game;
+    }
+
     @Transactional
     public void delete(Long id) {
         if (!gameRepository.existsById(id)) {

@@ -25,6 +25,9 @@ spring:
     find-and-add-modules: true
 
 app:
+  seed:
+    enabled: ${APP_SEED_ENABLED:false}
+
   cloudinary:
     url: ${CLOUDINARY_URL:}
 

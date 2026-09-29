@@ -7,6 +7,11 @@ import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.dto.GameResponse;
 import com.app.proyectojuegosmonolito.game.dto.GameStatsResponse;
+import com.app.proyectojuegosmonolito.game.dto.GameWithMediaRequest;
+import com.app.proyectojuegosmonolito.game.dto.ImagePresignRequest;
+import com.app.proyectojuegosmonolito.game.dto.PresignedUploadResponse;
+import com.app.proyectojuegosmonolito.game.dto.SignedImageUploadResponse;
+import com.app.proyectojuegosmonolito.game.dto.VideoPresignRequest;
 import com.app.proyectojuegosmonolito.game.dto.VideoUrlRequest;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
 import com.app.proyectojuegosmonolito.game.model.Category;
@@ -14,6 +19,7 @@ import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.service.CategoryService;
 import com.app.proyectojuegosmonolito.game.service.GameService;
 import com.app.proyectojuegosmonolito.game.service.ImageService;
+import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Tag(name = "Games", description = "Game management APIs")
 @RestController
@@ -42,6 +49,7 @@ public class GameController {
     private final GameMapper gameMapper;
     private final CategoryService categoryService;
     private final ImageService imageService;
+    private final R2StorageService r2StorageService;
     private final UserService userService;
     private final SecurityContext securityContext;
 
@@ -129,6 +137,60 @@ public class GameController {
         return ResponseEntity.ok(gameMapper.toResponse(game));
     }
 
+    @Operation(summary = "Presign trailer upload", description = "Returns a short-lived R2 URL so the browser can upload the trailer " +
+            "directly, bypassing the body size limit of serverless platforms. The returned contentType must be echoed " +
+            "verbatim in the PUT header, otherwise R2 rejects the upload with SignatureDoesNotMatch.")
+    @ApiResponse(responseCode = "200", description = "Presigned upload granted")
+    @PostMapping(value = "/media/video/presign", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PresignedUploadResponse> presignVideo(@Valid @RequestBody VideoPresignRequest request) {
+        var slug = gameService.slugify(request.name());
+        return ResponseEntity.ok(r2StorageService.presignVideo(slug, request.contentType()));
+    }
+
+    @Operation(summary = "Presign image upload", description = "Returns signed Cloudinary upload parameters for the given kind " +
+            "(image, banner or gallery). The browser posts the file straight to api.cloudinary.com. One signature can be " +
+            "reused for every file of the same kind, since the signed params only cover timestamp and folder.")
+    @ApiResponse(responseCode = "200", description = "Signed upload parameters granted")
+    @PostMapping(value = "/media/image/presign", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SignedImageUploadResponse> presignImage(@Valid @RequestBody ImagePresignRequest request) {
+        var folder = "games/" + gameService.slugify(request.name()) + "/" + folderSuffix(request.kind());
+        return ResponseEntity.ok(imageService.signUpload(folder));
+    }
+
+    @Operation(summary = "Create a new game with pre-uploaded media", description = "Creates a game whose media was already uploaded " +
+            "directly to Cloudinary and R2. Use this variant when the files exceed the platform body limit and cannot travel " +
+            "as multipart through the frontend server.")
+    @ApiResponse(responseCode = "201", description = "Game created successfully")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GameResponse> createWithMediaUrls(@Valid @RequestBody GameWithMediaRequest request) {
+        var user = userService.findById(securityContext.getCurrentUserId());
+        User seller = resolveSellerForCreate(request.sellerId(), user);
+        var categories = resolveCategories(request.categoryNames());
+        var game = gameMapper.toEntity(request.toGameRequest());
+        game.setCategories(categories);
+        if (seller != null) {
+            game.setSeller(seller);
+        }
+        var saved = gameService.create(game);
+        var withMedia = gameService.applyMediaUrls(saved.getId(), request.imageUrl(), request.bannerUrl(), request.galleryUrls());
+        return ResponseEntity.status(HttpStatus.CREATED).body(gameMapper.toResponse(withMedia));
+    }
+
+    @Operation(summary = "Update a game with pre-uploaded media", description = "Updates a game whose media was already uploaded " +
+            "directly to Cloudinary and R2. Media fields left null or blank keep their current value.")
+    @ApiResponse(responseCode = "200", description = "Game updated successfully")
+    @ApiResponse(responseCode = "404", description = "Game not found")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GameResponse> updateWithMediaUrls(
+            @PathVariable Long id,
+            @Valid @RequestBody GameWithMediaRequest request) {
+        assertCanModify(id);
+        var categories = resolveCategories(request.categoryNames());
+        gameService.update(id, request.toGameRequest(), categories);
+        var withMedia = gameService.applyMediaUrls(id, request.imageUrl(), request.bannerUrl(), request.galleryUrls());
+        return ResponseEntity.ok(gameMapper.toResponse(withMedia));
+    }
+
     @Operation(summary = "Upload game cover image", description = "Uploads an image for the specified game")
     @ApiResponse(responseCode = "200", description = "Image uploaded successfully")
     @ApiResponse(responseCode = "404", description = "Game not found")
@@ -198,6 +260,15 @@ public class GameController {
             return userService.findById(requestedSellerId);
         }
         return null;
+    }
+
+    private String folderSuffix(String kind) {
+        return switch (kind.toLowerCase(Locale.ROOT)) {
+            case "image" -> "card";
+            case "banner" -> "banner";
+            case "gallery" -> "gallery";
+            default -> throw new IllegalArgumentException("Unsupported image kind: " + kind);
+        };
     }
 
     private void assertCanModify(Long id) {
