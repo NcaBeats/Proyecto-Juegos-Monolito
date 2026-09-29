@@ -217,9 +217,13 @@ public class GameService {
     public Game update(Long id, GameRequest request, List<Category> categories) {
         log.info("Updating game {}: name={}, originalPrice={}, discountPercent={}", id, request.name(), request.originalPrice(), request.discountPercent());
         var game = findById(id);
+        var effectiveVideoUrl = request.videoUrl();
+        if (effectiveVideoUrl == null || effectiveVideoUrl.isBlank()) {
+            effectiveVideoUrl = game.getVideoUrl();
+        }
         game.update(request.name(), request.originalPrice(), request.discountPercent(),
                 request.description(), request.state(), request.launchDate(), categories,
-                game.getImageUrl(), game.getBannerUrl(), request.videoUrl(),
+                game.getImageUrl(), game.getBannerUrl(), effectiveVideoUrl,
                 request.minimumSpecs(), request.recommendedSpecs());
         log.info("Updated game {}", game.getId());
         return game;

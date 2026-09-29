@@ -115,6 +115,40 @@ class GameServiceTest {
         verify(gameRepository, never()).save(any());
     }
 
+    /**
+     * Una edicion que omite videoUrl no debe vaciar el trailer almacenado: el
+     * valor ausente se completa con el que ya tenia el juego.
+     */
+    @Test
+    void update_whenVideoUrlOmitted_shouldPreserveExistingVideo() {
+        var game = game(1L, "Old", BigDecimal.ONE);
+        game.setVideoUrl("/uploads/games/old/trailer.mp4");
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+
+        var request = new GameRequest("New Name", new BigDecimal("49.99"), 10,
+                "New desc", GameState.COMING_SOON, LocalDate.of(2027, 1, 1), List.of(),
+                "min specs", "rec specs", null, null);
+
+        var result = gameService.update(1L, request, new ArrayList<>());
+
+        assertThat(result.getVideoUrl()).isEqualTo("/uploads/games/old/trailer.mp4");
+    }
+
+    @Test
+    void update_whenVideoUrlProvided_shouldReplaceExistingVideo() {
+        var game = game(1L, "Old", BigDecimal.ONE);
+        game.setVideoUrl("/uploads/games/old/trailer.mp4");
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+
+        var request = new GameRequest("New Name", new BigDecimal("49.99"), 10,
+                "New desc", GameState.COMING_SOON, LocalDate.of(2027, 1, 1), List.of(),
+                "min specs", "rec specs", "/uploads/games/new/trailer.mp4", null);
+
+        var result = gameService.update(1L, request, new ArrayList<>());
+
+        assertThat(result.getVideoUrl()).isEqualTo("/uploads/games/new/trailer.mp4");
+    }
+
     @Test
     void delete_whenExists_shouldDelete() {
         when(gameRepository.existsById(1L)).thenReturn(true);
