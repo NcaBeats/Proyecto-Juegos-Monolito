@@ -89,7 +89,7 @@ proveedor externo.
 | `SPRING_DATASOURCE_PASSWORD` | Contraseña de Postgres |
 | `APP_JWT_SECRET` | Clave de firma de los JWT (HS256, mínimo 256 bits) |
 | `APP_JWT_EXPIRATION` | Vigencia del token en ms (default `3600000`) |
-| `CLOUDINARY_URL` | Imágenes de juegos y categorías: firma los uploads y borra la media |
+| `CLOUDINARY_URL` | **Legacy, ya no se usa**: todo el media (imágenes + trailers) vive en Cloudflare R2. Se conserva por compatibilidad |
 | `R2_ACCOUNT_ID` | Cuenta de Cloudflare R2 (trailers) |
 | `R2_ACCESS_KEY_ID` | Access Key de R2 |
 | `R2_SECRET_ACCESS_KEY` | Secret Key de R2 |
@@ -145,6 +145,73 @@ falla recién al subir el primer archivo. Revisá los logs del primer deploy, no
 > deploy esté arriba, antes de compartir la URL.** El endpoint `PUT /api/v1/users/password`
 > también invalida los tokens ya emitidos de ese usuario.
 
+## Media: Cloudflare R2 (todas las imágenes y trailers)
+
+Todo el media del catálogo vive en el bucket R2 **`trailers`**, con claves agrupadas por el **slug
+canonical** del juego (derivado del nombre, p. ej. *Assassin's Creed Shadows* → `assassin-s-creed-shadows`):
+
+| Asset | Key |
+|-------|-----|
+| Card de juego | `{slug}/card/{archivo}` |
+| Banner | `{slug}/banner/{archivo}` |
+| Galería | `{slug}/gallery/{archivo}` |
+| Trailer | `{slug}/trailer.mp4` |
+| Portada de blog | `blogs/{slug}/cover.{ext}` |
+
+La URL pública se resuelve contra `R2_PUBLIC_BASE_URL` (default en `application.yaml`, no va en `.env`).
+Los uploads **no pasan por el servidor**: el backend **presignea** la URL y el navegador sube directo a R2
+(presign de imagen `POST /api/v1/games/media/image/presign` y de video `POST /api/v1/games/media/video/presign`).
+El frontend guarda la `publicPath` resultante; `CLOUDINARY_URL` ya no se usa.
+
+### Runner de consolidación (`ImageMigrationRunner`)
+
+Componente en `config/` — temporal pero **reutilizable** (no se elimina). Se activa cuando
+`app.migrate.images=true` y deja el catálogo cuadrado con R2 de forma **idempotente**, sin importar
+cuántas veces corra:
+
+1. **Imágenes residuales de Cloudinary** → las trae desde Cloudinary al bucket R2 y reescribe la URL persistida
+   (juegos: card/banner/galería; blog: cover). Mapeo: `imageUrl→{slug}/card/{archivo}`,
+   `bannerUrl→{slug}/banner/{archivo}`, galería→`{slug}/gallery/{archivo}`, blog→`blogs/{slug}/cover.{ext}`.
+2. **Trailers en slugs antiguos** → copia server-side (S3 `CopyObject`) a `{slug}/trailer.mp4` y
+   reescribe `video_url` (caso real: la DB apuntaba los trailers a `gta-v`, `ac-shadows`… mientras las
+   imágenes ya usaban el slug completo; consolidado el 2026-09-30).
+
+El perfil `dev` lo activa por defecto (`app.migrate.images: ${APP_MIGRATE_IMAGES:true}`); en `test` no
+existe. En producción se corre **una sola vez** con la guía de abajo.
+
+### Guía: correr la consolidación en producción (una sola vez)
+
+1. En el panel de Render agregá la variable `APP_MIGRATE_IMAGES=true` (bandera de arranque como
+   `APP_SEED_ENABLED`; el binding relajado la resuelve sin tocar código).
+2. Deploy (Manual Deploy → *Deploy latest image*, o un push). El runner corre al arrancar.
+3. Verificá — los logs del runner son `INFO` y prod loguea `WARN`, así que **validá por SQL y por URL**, no por logs:
+   ```sql
+   -- Debe devolver 0
+   SELECT count(*) FROM game
+   WHERE image_url LIKE '%res.cloudinary.com%'
+      OR banner_url LIKE '%res.cloudinary.com%'
+      OR video_url LIKE '%res.cloudinary.com%';
+   SELECT count(*) FROM game_image WHERE url LIKE '%res.cloudinary.com%';
+   SELECT count(*) FROM blog WHERE cover_image LIKE '%res.cloudinary.com%';
+   -- Todos los video_url deben apuntar al slug canonical ({slug}/trailer.mp4):
+   SELECT id, video_url FROM game ORDER BY id;
+   ```
+   Y un HEAD sobre algunos trailers para confirmar 200 + `video/mp4`, p. ej.
+   `curl -I https://<R2_PUBLIC_BASE_URL>/assassin-s-creed-shadows/trailer.mp4`.
+4. Cuando esté consistente, **quitá `APP_MIGRATE_IMAGES`** del panel (o ponela en `false`) y re-deployá
+   para que el runner no vuelva a ejecutarse en cada reinicio.
+5. Los objetos huérfanos del bucket (`{slug-viejo}/trailer.mp4`, `.gitkeep`, marcadores de carpeta
+   vacíos) se borran a mano desde la consola de R2 o la API, **después** de confirmar que la DB ya no
+   los referencia.
+
+> **Si un arranque local devuelve `401 Unauthorized` contra R2**, hay una variable de entorno del SO
+> (`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`) pisando a `.env`: Spring resuelve las env vars con
+> prioridad sobre el import de `.env`. Limpiala antes de levantar:
+> ```powershell
+> Remove-Item Env:R2_ACCESS_KEY_ID, Env:R2_SECRET_ACCESS_KEY
+> ./mvnw spring-boot:run "-Dspring-boot.run.profiles=dev"
+> ```
+
 ## Tests
 
 Los tests de integración usan **Testcontainers** (levantan un Postgres en Docker sobre la marcha).
@@ -178,7 +245,7 @@ hacen un *soft delete* (marcan `deleted_at` y revocan los tokens del usuario).
 
 ## Datos de prueba
 
-El sistema carga automáticamente **44 juegos, 14 categorías, 3 usuarios base y 25 estudios (`VENDEDOR`)**
+El sistema carga automáticamente **44 juegos, 9 categorías, 3 usuarios base y 24 estudios (`VENDEDOR`)**
 al primer arranque con la base vacía.
 
 ### Usuarios
@@ -189,7 +256,7 @@ al primer arranque con la base vacía.
 | `player2@gmail.com` | `pass123` | CLIENTE | $50 |
 | `broke@gmail.com` | `pass123` | CLIENTE | $0 |
 
-Además se crean 25 estudios con rol `VENDEDOR` (p. ej. `ubisoft@gmail.com`, `microsoft@gmail.com`,
+Además se crean 24 estudios con rol `VENDEDOR` (p. ej. `ubisoft@gmail.com`, `microsoft@gmail.com`,
 `valve@gmail.com`, …) asociados a los juegos como "seller".
 
 ### Roles
@@ -202,7 +269,7 @@ Además se crean 25 estudios con rol `VENDEDOR` (p. ej. `ubisoft@gmail.com`, `mi
 
 ### Categorías
 
-Action, Adventure, RPG, Shooter, Platformer, Fighting, Open World, Sports, Indie, Stealth, Horror, Simulation, Racing, Strategy.
+Action, Adventure, RPG, Shooter, Fighting, Open World, Horror, Simulation, Racing.
 
 ### Juegos de ejemplo (con precio y descuento)
 
@@ -243,6 +310,8 @@ Cada juego incluye una **descripción detallada** y **especificaciones de PC** (
 - `POST /api/v1/games` — Crear juego (ADMIN)
 - `PUT /api/v1/games/{id}` — Actualizar juego (ADMIN)
 - `PUT /api/v1/games/{id}/video` — Subir/actualizar trailer (ADMIN, se guarda en R2)
+- `POST /api/v1/games/media/video/presign` — URL firmada para subir el trailer directo a R2 (ADMIN)
+- `POST /api/v1/games/media/image/presign` — URL firmada para subir una imagen (`{slug}/card|banner|gallery/{uuid}.{ext}`) directo a R2 (ADMIN)
 - `DELETE /api/v1/games/{id}` — Eliminar juego (ADMIN)
 - `POST /api/v1/games/{id}/image` — Subir imagen de portada (ADMIN)
 - `POST /api/v1/games/{id}/banner` — Subir imagen de banner (ADMIN)

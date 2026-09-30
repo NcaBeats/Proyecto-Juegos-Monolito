@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Component
+@Order(0)
 @ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true")
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
@@ -71,9 +73,9 @@ public class DataInitializer implements CommandLineRunner {
                         Desde su lanzamiento, Minecraft se ha convertido en uno de los títulos más vendidos de la historia con más de 300 millones de copias, consolidándose como un fenómeno cultural que inspira creatividad en jugadores de todas las edades.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2011, 11, 18))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149050/sjclgg4kv5nvvooh4acf.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/minecraft/card/sjclgg4kv5nvvooh4acf.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/minecraft/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788746076/Banner_Minecraft.avif")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/minecraft/banner/Banner_Minecraft.avif")
                 .minimumSpecs("""
                         {"os": "Windows 10", "processor": "Intel Core i3-3210 o AMD A8-7600", "memory": "4 GB RAM", "graphics": "Intel HD Graphics 4000 o AMD Radeon R5", "storage": "1 GB disponible", "additional": "Internet requerido para multijugador"}""")
                 .recommendedSpecs("""
@@ -93,9 +95,9 @@ public class DataInitializer implements CommandLineRunner {
                         Además de la agricultura, Stardew Valley ofrece la posibilidad de personalizar tu granja, fabricar objetos, cocinar recetas y participar en una economía local. Es una experiencia relajante pero adictiva que ha cautivado a millones de jugadores por su encanto artesanal y su atención al detalle.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 2, 26))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149138/wrpzkzlrasq3boe9x2vp.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/stardew-valley/card/wrpzkzlrasq3boe9x2vp.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/stardew-valley/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788746373/stardew-valley_Banner.jpg")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/stardew-valley/banner/stardew-valley_Banner.jpg")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10", "processor": "2 GHz", "memory": "2 GB RAM", "graphics": "256 MB de VRAM compatible", "storage": "500 MB disponible", "additional": "Compatibilidad con gamepad opcional"}""")
                 .recommendedSpecs("""
@@ -115,9 +117,9 @@ public class DataInitializer implements CommandLineRunner {
                         Su diseño de mundo interconectado, su narrativa fragmentada y sus combates memorables lo han convertido en el juego mejor valorado de su generación, ganando el premio al Juego del Año 2022 y vendiendo más de 25 millones de copias en su primer año.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 2, 25))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149161/q5zkmswvhs13xkkrsbcz.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/elden-ring/card/q5zkmswvhs13xkkrsbcz.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/elden-ring/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788707257/games/elden-ring/banner/banner.jpg")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/elden-ring/banner/banner.jpg")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-8400 o AMD Ryzen 3 3300X", "memory": "12 GB RAM", "graphics": "NVIDIA GTX 1060 3GB o AMD RX 580 4GB", "storage": "60 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -137,9 +139,9 @@ public class DataInitializer implements CommandLineRunner {
                         Con una curva de aprendizaje que premia la práctica, Rocket League se ha consolidado como un título esports de élite con torneos mundiales, millones de jugadores activos y una comunidad que no deja de crear contenido. Al ser free-to-play, cualquiera puede unirse a la acción de inmediato.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 7, 7))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149186/jlvjpqerig4jsh4f7ypr.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/rocket-league/card/jlvjpqerig4jsh4f7ypr.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/rocket-league/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226686/zw94nyucmyjac8jszexj.webp")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/rocket-league/banner/zw94nyucmyjac8jszexj.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10", "processor": "Intel Core i5-750 o AMD Phenom II x4 945", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 460 o AMD Radeon HD 6850", "storage": "20 GB disponible"}""")
                 .recommendedSpecs("""
@@ -159,9 +161,9 @@ public class DataInitializer implements CommandLineRunner {
                         Con una narrativa profunda protagonizada por villanos icónicos como el Doctor Octopus, el Duende Verde y Kingpin, la campaña ofrece horas de acción trepidante. El juego también te permite explorar un Nueva York lleno de vida, detener crímenes aleatorios y completar misiones secundarias que amplían la experiencia mucho más allá de la historia principal.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 8, 12))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149206/xrjf04vgulidbc4lbyf3.avif")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/spider-man/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226722/y6bb4iesp3jqbvymtaoe.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/spider-man-remastered/card/xrjf04vgulidbc4lbyf3.avif")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/spider-man-remastered/trailer.mp4")
+
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i3-4160 o AMD ryzen 3 1300X", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 950 o AMD Radeon RX 470", "storage": "75 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -181,9 +183,9 @@ public class DataInitializer implements CommandLineRunner {
                         El corazón del juego, sin embargo, es GTA Online, un mundo persistente para hasta 30 jugadores donde puedes formar bandas, asaltar bancos y comprar negocios para construir tu imperio criminal. Con años de contenido añadido constante, sigue siendo en 2026 uno de los juegos más jugados de la historia.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2013, 9, 17))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149231/pfmjtit08yk4aoikwfqv.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/gta-v/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226489/a1iuiy2siwpbr74n3prx.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/card/pfmjtit08yk4aoikwfqv.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/trailer.mp4")
+
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Quad Q6600 a 2.4 GHz o AMD Phenom 9850", "memory": "4 GB RAM", "graphics": "NVIDIA 9800 GT 1GB o AMD HD 4870 1GB", "storage": "110 GB disponible", "sound": "100% compatible DirectX 10"}""")
                 .recommendedSpecs("""
@@ -203,8 +205,8 @@ public class DataInitializer implements CommandLineRunner {
                         El multijugador es el corazón del juego, con combates a gran escala que enfrentan a hasta 64 jugadores en modos como Conquista y Operaciones. Podrás pilotar biplanos, manejar tanques, montar caballos con sable y usar armas de época como el lanzallamas y gases tóxicos. Es una experiencia inmersiva y épica que redefine los shooters de guerra.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 10, 21))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149249/yuuilkytoh575uzxosfd.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/bf-1/trailer.mp4")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/battlefield-1/card/yuuilkytoh575uzxosfd.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/battlefield-1/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5 6600K o AMD FX-6350", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 2GB o AMD Radeon HD 7850 2GB", "storage": "50 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -224,8 +226,8 @@ public class DataInitializer implements CommandLineRunner {
                         El juego profundiza en la mecánica de ocultación: apaga linternas para sumergirte en la oscuridad, usa shurikens y kunais, y escala cualquier superficie. Incluye además la búsqueda de los legendarios artefactos de los Asesinos y la construcción de tu propio búnker, expandiendo la tradición de la hermandad en una de las eras más fascinantes de la historia japonesa.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 3, 20))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149264/ixpm2q4qxzrddzuxbbla.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/ac-shadows/trailer.mp4")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assassin-s-creed-shadows/card/ixpm2q4qxzrddzuxbbla.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assassin-s-creed-shadows/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-8700K o AMD Ryzen 5 3600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1070 8GB o AMD RX 5700 XT 8GB", "storage": "100 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -245,7 +247,7 @@ public class DataInitializer implements CommandLineRunner {
                         Con la expansión Phantom Liberty añadida, la experiencia se enriquece con una nueva zona, personajes memorables y una trama de espionaje político. El juego combina una narrativa adulta, decisiones con consecuencias y un gameplay frenético que lo han consolidado como uno de los RPGs más ambiciosos de su generación.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 12, 10))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149286/pzyxwb5xndhfrs9quhlr.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cyberpunk-2077/card/pzyxwb5xndhfrs9quhlr.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cyberpunk-2077/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-6700 o AMD Ryzen 5 1600", "memory": "12 GB RAM", "graphics": "NVIDIA GTX 1060 6GB o AMD RX 580 8GB", "storage": "70 GB SSD disponible", "directX": "Version 12"}""")
@@ -266,7 +268,7 @@ public class DataInitializer implements CommandLineRunner {
                         El juego ofrece un modo historia original para un jugador con combates contra androides y una trama escrita especialmente para el título, además de un completo multijugador online con ranking, torneos y replays. Es accesible para novatos pero con una profundidad competitiva que lo ha convertido en un pilar de la escena esports de juegos de lucha.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 1, 26))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149302/qir5n5rdwxwanuzd4x4u.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dragon-ball-fighterz/card/qir5n5rdwxwanuzd4x4u.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dragon-ball-fighterz/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i5-3470 o AMD FX-4350", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 650 o AMD Radeon HD 7790", "storage": "6 GB disponible", "directX": "Version 11"}""")
@@ -287,7 +289,7 @@ public class DataInitializer implements CommandLineRunner {
                         Además del modo arcade clásico, destaca el Kustomización, que te permite crear combos, equipar accesorios y cambiar el aspecto de cada luchador. El sistema de torres ofrece desafíos infinitos, y el multijugador online incluye temporadas competitivas, kombat league y el icónico sistema de fatality social. Es el juego de lucha más completo y pulido de la franquicia hasta la fecha.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2019, 4, 23))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149323/m9njptc1b0tthgombbgy.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-11/card/m9njptc1b0tthgombbgy.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-11/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/10 de 64 bits", "processor": "Intel Core i5-750 o AMD Phenom II x4 965", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 670 o AMD Radeon HD 7950", "storage": "60 GB disponible"}""")
@@ -308,7 +310,7 @@ public class DataInitializer implements CommandLineRunner {
                         Con una narrativa adulta, más de 60 horas de campaña principal y un modo online persistente, RDR2 es considerado uno de los mayores logros artísticos de la industria. La atención al detalle en las animaciones faciales, el comportamiento de los caballos y la ambientación sonora te sumerge en un mundo que respira historia en cada rincón.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 10, 26))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149472/y2wcocuowgind8c8jgza.avif")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/red-dead-redemption-2/card/y2wcocuowgind8c8jgza.avif")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/red-dead-redemption-2/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-2500K o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 770 2GB o AMD Radeon R9 280 3GB", "storage": "150 GB disponible"}""")
@@ -329,7 +331,7 @@ public class DataInitializer implements CommandLineRunner {
                         Silksong incluye más de 200 enemigos nuevos, una treintena de jefes y un sistema de misiones secundarias de gran escala. Los fans de los metroidvania encontrarán en él una experiencia desafiante pero profundamente gratificante, con la atmósfera melancólica y la banda sonora orquestal que convirtieron al original en un clásico instantáneo del género indie.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 7, 17))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149493/kdq0puz7vosdiun1vvkt.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hollow-knight-silksong/card/kdq0puz7vosdiun1vvkt.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hollow-knight-silksong/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Duo E5200", "memory": "4 GB RAM", "graphics": "GeForce 9800GTX+ (1GB) o equivalente", "storage": "5 GB disponible"}""")
@@ -350,7 +352,7 @@ public class DataInitializer implements CommandLineRunner {
                         The Witcher 3 incluye dos expansiones épicas: Hearts of Stone, una historia autoconclusiva sobre un contrato con un hombre misterioso, y Blood and Wine, que te transporta a Toussaint, un ducado vinícola lleno de vampiros y secretos. Con sus más de 800 horas potenciales de juego, sigue siendo una obra maestra de la narrativa interactiva.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 5, 19))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788149509/co60ksh6jnzks1mzhkik.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-witcher-3/card/co60ksh6jnzks1mzhkik.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-witcher-3/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel CPU Core i5-2500K 3.3 GHz o AMD CPU Phenom II X4 940", "memory": "6 GB RAM", "graphics": "NVIDIA GPU GeForce GTX 660 o AMD GPU Radeon HD 7870", "storage": "50 GB disponible"}""")
@@ -371,8 +373,8 @@ public class DataInitializer implements CommandLineRunner {
                         Ragnarök es una carta de amor a la mitología nórdica y al legado de Kratos como dios de la guerra. Con más de 30 horas de campaña, combate desafiante contra dioses y monstruos, y un final que cierra el arco del Fantasma de Esparta en estas tierras, es uno de los títulos más emotivos de la generación.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 9, 19))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788151900/tcixcrqzkgrrrihoiref.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/god-of-war-ragnarok/trailer.mp4")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/god-of-war-ragnar-k/card/tcixcrqzkgrrrihoiref.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/god-of-war-ragnar-k/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-8400 o AMD Ryzen 5 3600X", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1070 8GB o AMD RX 580 8GB", "storage": "90 GB SSD disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -392,7 +394,7 @@ public class DataInitializer implements CommandLineRunner {
                         Leon cuenta con un arsenal actualizado que incluye pistolas, escopetas, rifles y ballestas con munición especial. La compra y mejora de armas se hace con el inteligente mercader, un personaje secundario que se ha convertido en uno de los favoritos de los fans. La campaña ofrece aproximadamente 16 horas de acción intensa, con desbloqueo de modos extra como The Mercenaries.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 3, 24))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152018/kqhok1e1hqpwmtkoxpnd.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-4/card/kqhok1e1hqpwmtkoxpnd.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-4/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "AMD Ryzen 5 3600X o Intel Core i7-8700", "memory": "16 GB RAM", "graphics": "AMD Radeon RX 5700 o NVIDIA GeForce GTX 1070", "storage": "60 GB disponible", "directX": "Version 12"}""")
@@ -413,8 +415,8 @@ public class DataInitializer implements CommandLineRunner {
                         El multijugador es el pilar central, con 16 mapas remasterizados de MW2 2009, incluyendo clásicos como Rust, Terminal y Shipment. El modo Zombis, desarrollado en colaboración con Treyarch, ofrece un mapa abierto masivo en el que tienes que sobrevivir contra las hordas en el amenazante Urzikstan. Es un paquete completo para los fans de la franquicia.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 11, 10))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152199/q9wkj9p7pwkp7mfl2il6.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cod-mw-3/trailer.mp4")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/call-of-duty-modern-warfare-iii/card/q9wkj9p7pwkp7mfl2il6.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/call-of-duty-modern-warfare-iii/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-6600 o AMD Ryzen 5 1400", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 960 o AMD Radeon RX 470", "storage": "125 GB SSD disponible"}""")
                 .recommendedSpecs("""
@@ -434,7 +436,7 @@ public class DataInitializer implements CommandLineRunner {
                         El multijugador es free-to-play y ofrece el regreso del arena shooter clásico de Halo con modos icónicos como Slayer, Capture the Flag y Oddball. La Forge te permite crear tus propios mapas con herramientas sin precedentes. Con temporadas regulares y eventos, Halo Infinite sigue siendo una plataforma en constante evolución para los fans del Jefe.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2021, 12, 8))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152365/y2ha15uhuawclxfqs17g.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/halo-infinite/card/y2ha15uhuawclxfqs17g.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/halo-infinite/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "AMD Ryzen 5 1600 o Intel Core i7-4770", "memory": "8 GB RAM", "graphics": "AMD RX 570 o Nvidia GTX 1050 Ti", "storage": "50 GB disponible"}""")
@@ -455,9 +457,9 @@ public class DataInitializer implements CommandLineRunner {
                         Con más de 750 coches coleccionables de fabricantes como Ferrari, Lamborghini, Porsche y McLaren, el abanico de personalización es prácticamente infinito. El mundo abierto te permite conducir libremente, completar carreras, hacer acrobacias, participar en derbis y hasta explorar la isla en búnkeres con tu propio avatar. La banda sonora curada con estaciones de radio licenciadas completa la experiencia inmersiva.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2018, 10, 2))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152509/slibpbfpsr8maroiffdi.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-horizon-4/card/slibpbfpsr8maroiffdi.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-horizon-4/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788226771/ql7cef0v5jpuba26rexg.webp")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-horizon-4/banner/ql7cef0v5jpuba26rexg.webp")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i3-4170 o Intel Core i5 750", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 650 Ti o AMD Radeon R7 250X", "storage": "80 GB disponible"}""")
                 .recommendedSpecs("""
@@ -477,8 +479,8 @@ public class DataInitializer implements CommandLineRunner {
                         Con 20 civilizaciones jugables y 18 líderes únicos, cada partida es una experiencia diferente. Puedes jugar como Roma bajo Trajano, Japón bajo Hojo Tokiyori, Francia bajo Catalina de Médicis o el Congo bajo Mvemba a Nzinga, cada uno con bonificaciones y unidades exclusivas. El juego admite partidas de 5 a 30 horas y ofrece multijugador online con hasta 12 jugadores.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 10, 21))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152670/ulge1bf2tbmcexewxnh2.avif")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/civilization-6/trailer.mp4")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/civilization-vi/card/ulge1bf2tbmcexewxnh2.avif")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/civilization-vi/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10/11 de 64 bits", "processor": "Intel Core i3 2.4 Ghz o AMD equivalente", "memory": "4 GB RAM", "graphics": "512 MB ATI 4850 o mejor, 1 GB NVidia 460 o mejor, Intel HD 4000 integrada o mejor", "storage": "17 GB disponible"}""")
                 .recommendedSpecs("""
@@ -498,7 +500,7 @@ public class DataInitializer implements CommandLineRunner {
                         La narrativa se mantiene fiel al original, explorando temas de culpa, pérdida y la dualidad de la mente humana. La banda sonora, compuesta por Akira Yamaoka, sigue siendo uno de los aspectos más memorables del juego. Silent Hill 2 es considerado una de las obras maestras del género y su remake es una oportunidad única para experimentarlo de una forma completamente nueva.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 10, 8))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152834/fdzr9lxwibrx1cmdwt8a.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/silent-hill-2/card/fdzr9lxwibrx1cmdwt8a.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/silent-hill-2/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core i7-8700K o AMD Ryzen 5 3600X", "memory": "16 GB RAM", "graphics": "NVIDIA GeForce RTX 2080 o AMD Radeon RX 6800 XT", "storage": "50 GB SSD disponible", "directX": "Version 12"}""")
@@ -519,7 +521,7 @@ public class DataInitializer implements CommandLineRunner {
                         Con el dinero ganado podrás comprar más camiones, contratar conductores para que trabajen en tu empresa mientras tú descansas, y eventualmente expandir tu flota con vehículos más potentes. La comunidad de modding es enorme, añadiendo nuevos mapas, camiones y mejoras. Es un juego sorprendentemente relajante, perfecto para sesiones largas de viaje virtual.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2012, 10, 18))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788152907/q2jmubh8qbjb0jgsih5c.avif")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/euro-truck-simulator-2/card/q2jmubh8qbjb0jgsih5c.avif")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/euro-truck-simulator-2/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7/8/10/11 de 64 bits", "processor": "Intel Core i5-6400 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GeForce GTX 660 2GB o AMD Radeon R9 270X 2GB", "storage": "12 GB disponible"}""")
@@ -540,8 +542,8 @@ public class DataInitializer implements CommandLineRunner {
                         El sistema de resurrección añade una capa estratégica: cuando mueres, puedes revivir en el acto, pero si vuelves a morir antes de regresar a un idolo, la resurrección se agota. El juego incluye combates contra jefes épicos como la Gran Serpiente, el Genichiro Way of Tomoe y el Mono Divino Guardián. Es uno de los juegos más desafiantes y gratificantes de FromSoftware.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2019, 3, 22))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788153006/l2zmofnyufiwvlxerayj.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/sekiro/trailer.mp4")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/sekiro-shadows-die-twice/card/l2zmofnyufiwvlxerayj.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/sekiro-shadows-die-twice/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 7 SP1/8.1/10 de 64 bits", "processor": "Intel Core i3-2100 o AMD FX-6300", "memory": "4 GB RAM", "graphics": "NVIDIA GeForce GTX 760 6GB o AMD Radeon HD 7950 3GB", "storage": "25 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -561,7 +563,7 @@ public class DataInitializer implements CommandLineRunner {
                         Los Sims tienen necesidades físicas y emocionales: deben dormir, comer, socializar y divertirse, y tú decides cómo cubrir esas necesidades. Pueden tener familias, carreras, mascotas, e incluso relacionarse románticamente con otros Sims. The Sims 4 es un juego sandbox sin objetivos fijos, perfecto para jugadores creativos que quieran contar sus propias historias. Numerosos packs de expansión amplían la experiencia con nuevos mundos, profesiones y mecánicas.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2014, 9, 2))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788153094/rbqhx5vnpk1crm3antvw.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-sims-4/card/rbqhx5vnpk1crm3antvw.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-sims-4/trailer.mp4")
                 .minimumSpecs("""
                         {"os": "Windows 10 de 64 bits", "processor": "Intel Core 2 Duo E4300 o AMD Athlon 64 X2 4000+", "memory": "2 GB RAM", "graphics": "NVIDIA GeForce 6600 o ATI Radeon X1300", "storage": "25 GB disponible"}""")
@@ -580,9 +582,9 @@ public class DataInitializer implements CommandLineRunner {
                 Incluye vehículos oficiales de las categorías Rally1, Rally2 y clásicos, junto con localizaciones reales de las etapas del campeonato.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 9, 13)) // VERIFICAR
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751965/egs-easportswrc-codemasters-editions-s2-1200x1600-52af98c1afa8.jpg") // pendiente: subir asset propio
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/wrc-24/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751870/691eab9e41e3822072608b1b1cc1710ee95af7ae6cc77a8b.avif")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/ea-sports-wrc/card/egs-easportswrc-codemasters-editions-s2-1200x1600-52af98c1afa8.jpg") // pendiente: subir asset propio
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/ea-sports-wrc/trailer.mp4")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/ea-sports-wrc/banner/691eab9e41e3822072608b1b1cc1710ee95af7ae6cc77a8b.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-4460 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 960 o AMD Radeon R9 380", "storage": "80 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -600,9 +602,9 @@ public class DataInitializer implements CommandLineRunner {
                 Se financia mediante pases de batalla y cosméticos, y recibe actualizaciones de contenido por temporadas.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2019, 2, 4))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752100/MV5BM2Q5YmMzM2ItNzY2OS00OWQ3LTkzMzMtYzJiYTE4NDVjODgzXkEyXkFqcGc._V1_.jpg")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/apex-legends/card/MV5BM2Q5YmMzM2ItNzY2OS00OWQ3LTkzMzMtYzJiYTE4NDVjODgzXkEyXkFqcGc._V1_.jpg")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/apex-legends/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749032/16x9_ApexLegends_image1600w.jpg")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/apex-legends/banner/16x9_ApexLegends_image1600w.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 7 de 64 bits", "processor": "Intel Core i3-6300 o AMD FX-4350", "memory": "6 GB RAM", "graphics": "NVIDIA GeForce GT 640 o AMD Radeon HD 7730", "storage": "56 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -620,9 +622,9 @@ public class DataInitializer implements CommandLineRunner {
                 Soporta volantes de fuerza retroalimentada y realidad virtual, con circuitos y vehículos con licencia oficial.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2014, 12, 19))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752041/9667231.jpg")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assetto-corsa/card/9667231.jpg")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assetto-corsa/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750903/assetto_corsa-wallpaper-1600x900.jpg")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assetto-corsa/banner/assetto_corsa-wallpaper-1600x900.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel i3 2.4 GHz o equivalente", "memory": "4 GB RAM", "graphics": "NVIDIA GTX 460 / ATI 5850 (1GB VRAM)", "storage": "15 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -640,9 +642,9 @@ public class DataInitializer implements CommandLineRunner {
                 Es gratuito y sostiene su modelo económico con el mercado de skins e ítems cosméticos.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 9, 27))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752142/Cs2_boxart.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cs2/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788748925/1329760.jpg")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/counter-strike-2/card/Cs2_boxart.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/counter-strike-2/trailer.mp4")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/counter-strike-2/banner/1329760.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "4 núcleos, 2.4 GHz", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 o AMD RX 580 (compatible con DirectX 11)", "storage": "85 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -660,9 +662,9 @@ public class DataInitializer implements CommandLineRunner {
                 Cuenta con colaboraciones de franquicias de terror icónicas (Halloween, Saw, Alien, Stranger Things, entre otras) como contenido adicional.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2016, 6, 14))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752190/840_560.jpg")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dead-by-daylight/card/840_560.jpg")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dead-by-daylight/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750068/fe28c7ebca96e110b3dd09bfe34d11c8ac72577e25c55a435d56c34dc59aa00d.avif")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dead-by-daylight/banner/fe28c7ebca96e110b3dd09bfe34d11c8ac72577e25c55a435d56c34dc59aa00d.avif")
                 .minimumSpecs("""
                 {"os": "Windows 7 de 64 bits", "processor": "Intel Core i3-4340 o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 o AMD Radeon HD 7850", "storage": "50 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -680,9 +682,9 @@ public class DataInitializer implements CommandLineRunner {
                 Incluye modo multijugador Battlemode y expansiones narrativas como The Ancient Gods.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 3, 20))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752221/b4Q1XWYaTdJLUvRuALuqr0wP.avif")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/doom-eternal/card/b4Q1XWYaTdJLUvRuALuqr0wP.avif")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/doom-eternal/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788748785/2ei5g6azyf331.jpg")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/doom-eternal/banner/2ei5g6azyf331.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel Core i5-6600K o AMD Ryzen 5 1600", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1050 Ti o AMD RX 470", "storage": "50 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -700,9 +702,9 @@ public class DataInitializer implements CommandLineRunner {
                 Incluye modo Carrera profesional, My Team y multijugador online con physics ajustadas cada temporada.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 5, 30)) // VERIFICAR
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752256/73fc6fb9bad1b2e74180c166f0c7af9d3940e0d6a6e01525.avif")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/f1-25/card/73fc6fb9bad1b2e74180c166f0c7af9d3940e0d6a6e01525.avif")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/f1-25/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751232/ca36c3ae7641a273ff3f00e63732fb76e2850c57f577d6eb.avif")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/f1-25/banner/ca36c3ae7641a273ff3f00e63732fb76e2850c57f577d6eb.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i3-2130 o AMD FX-4300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1050 Ti o AMD RX 470", "storage": "100 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -720,9 +722,9 @@ public class DataInitializer implements CommandLineRunner {
                 Ofrece Builder's Cup como modo carrera principal y multijugador competitivo.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 10, 10))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752368/59410829-50f6-4324-b2b3-3ec31c5879c9.jpg")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-motorsport/card/59410829-50f6-4324-b2b3-3ec31c5879c9.jpg")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-motorsport/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751677/official-forza-motorsport-cover-art-v0-plobg1au622b1.webp")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-motorsport/banner/official-forza-motorsport-cover-art-v0-plobg1au622b1.webp")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-8400 o AMD Ryzen 5 1600", "memory": "16 GB RAM", "graphics": "NVIDIA GTX 1060 6GB o AMD RX 590", "storage": "150 GB disponible (SSD requerido)", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -740,9 +742,9 @@ public class DataInitializer implements CommandLineRunner {
                 Combina narrativa profunda —que avanza en cada intento— con combate ágil y una dirección de arte muy reconocida.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 9, 17))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752440/Hades_Pack_Art.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hades/card/Hades_Pack_Art.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hades/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788748485/2560x1440-2560x1440-5e710b93049cbd2125cf0261dcfbf943.jpg")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hades/banner/2560x1440-2560x1440-5e710b93049cbd2125cf0261dcfbf943.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 7 de 64 bits", "processor": "Dual Core 2.4 GHz", "memory": "4 GB RAM", "graphics": "512 MB VRAM", "storage": "10 GB disponible", "directX": "Version 10"}""")
                 .recommendedSpecs("""
@@ -760,9 +762,9 @@ public class DataInitializer implements CommandLineRunner {
                 Incluye una campaña cinemática extensa y modos competitivos online.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2017, 11, 14))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752517/MV5BZWI5ZDhjMmItMGZiZi00M2VlLTgxMmMtNDIzZDg0Njk2NmE3XkEyXkFqcGc._V1_.jpg")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/injustice-2/card/MV5BZWI5ZDhjMmItMGZiZi00M2VlLTgxMmMtNDIzZDg0Njk2NmE3XkEyXkFqcGc._V1_.jpg")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/injustice-2/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749497/4becd989-efd6-4bf2-8b59-4f7f143da7bcInjustice_2_cover.webp")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/injustice-2/banner/4becd989-efd6-4bf2-8b59-4f7f143da7bcInjustice_2_cover.webp")
                 .minimumSpecs("""
                 {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i5-750 o AMD Phenom II X4 965", "memory": "4 GB RAM", "graphics": "NVIDIA GTX 650 Ti o AMD Radeon HD 7850", "storage": "40 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -780,9 +782,9 @@ public class DataInitializer implements CommandLineRunner {
                 Incluye una amplia flota de aeronaves con cabinas detalladas y condiciones meteorológicas en vivo.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 8, 18))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752564/apps.1351.14377492558798445.319163e9-0c55-4be6-a4bb-aa431ab21aa6.jpg")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/flight/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750490/82f3c320b574b55348aafb3bd5eced07ca4835a1590302cf.avif")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/microsoft-flight-simulator/card/apps.1351.14377492558798445.319163e9-0c55-4be6-a4bb-aa431ab21aa6.jpg")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/microsoft-flight-simulator/trailer.mp4")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/microsoft-flight-simulator/banner/82f3c320b574b55348aafb3bd5eced07ca4835a1590302cf.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-4460 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 770 o AMD Radeon RX 570", "storage": "150 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -800,9 +802,9 @@ public class DataInitializer implements CommandLineRunner {
                 Mantiene la violencia gráfica característica de la saga con Fatalities y un modo historia cinemático.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 9, 19))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752598/MK1_portada.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mk1/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749603/Mortal_kombat_1_primera_imagen.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-1/card/MK1_portada.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-1/trailer.mp4")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-1/banner/Mortal_kombat_1_primera_imagen.webp")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-2500K o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 950 o AMD RX 470", "storage": "120 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -820,9 +822,9 @@ public class DataInitializer implements CommandLineRunner {
                 Su modo historia continúa la trama tras Mortal Kombat 9, con saltos temporales de 20 años.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2015, 4, 14))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752638/Mortal_Kombat_X_Cover_Art.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mk10/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749806/mkx-logo-630x381.png")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-x/card/Mortal_Kombat_X_Cover_Art.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-x/trailer.mp4")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-x/banner/mkx-logo-630x381.png")
                 .minimumSpecs("""
                 {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel Core i5-750 o AMD Phenom II X4 965", "memory": "3 GB RAM", "graphics": "NVIDIA GTX 460 o AMD Radeon HD 5850", "storage": "35 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -840,9 +842,9 @@ public class DataInitializer implements CommandLineRunner {
                 Su modo carrera se estructura por semanas dentro de un mundo abierto ambientado en Lakeshore, con apuestas de dinero en cada evento.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2022, 12, 2))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752709/apps.31585.14329152328871129.15deab2a-237c-449c-880e-7926330dab80.jpg")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/nfs/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788751551/capsule_616x353.jpg")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/need-for-speed-unbound/card/apps.31585.14329152328871129.15deab2a-237c-449c-880e-7926330dab80.jpg")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/need-for-speed-unbound/trailer.mp4")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/need-for-speed-unbound/banner/capsule_616x353.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-8400 o AMD Ryzen 5 1600", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1650 o AMD RX 570", "storage": "50 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -860,9 +862,9 @@ public class DataInitializer implements CommandLineRunner {
                 Su enfoque en la indefensión total del protagonista lo convirtió en referente del terror de sigilo moderno.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2013, 9, 4))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752729/EGS_Outlast_RedBarrels_S2_1200x1600-b02ebdfb4bcd3b1d608ab5b87257b3c4.jpg")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/outlast/card/EGS_Outlast_RedBarrels_S2_1200x1600-b02ebdfb4bcd3b1d608ab5b87257b3c4.jpg")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/outlast/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750246/EGS_Outlast_RedBarrels_S1_2560x1440-00bcfe36f1adad2b9168add0a137fbc2.jpg")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/outlast/banner/EGS_Outlast_RedBarrels_S1_2560x1440-00bcfe36f1adad2b9168add0a137fbc2.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 7 de 64 bits", "processor": "Intel Core 2 Duo E8200 o AMD Athlon 64 X2 6000+", "memory": "4 GB RAM", "graphics": "NVIDIA GTS 450 o AMD Radeon HD 5750", "storage": "5 GB disponible", "directX": "Version 9"}""")
                 .recommendedSpecs("""
@@ -880,9 +882,9 @@ public class DataInitializer implements CommandLineRunner {
                 Su enfoque en el juego de voz en vivo y la tensión ambiental lo hizo muy popular en streaming.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2020, 9, 18))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752761/phasmophobia-5275630.jpg")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/phasmophobia/card/phasmophobia-5275630.jpg")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/phasmophobia/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749967/unnamed-3_zdr1.1280.webp")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/phasmophobia/banner/unnamed-3_zdr1.1280.webp")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i3 o equivalente", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 970 o equivalente", "storage": "20 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -900,9 +902,9 @@ public class DataInitializer implements CommandLineRunner {
                 Se apoya en una jugabilidad de bajo estrés, sin fallos ni presión de tiempo, con narrativa ambiental ligera.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2025, 1, 1)) // VERIFICAR fecha exacta
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752876/co9tye.webp")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/power2/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750712/050db8610fa9593b531cd2b7d563b5115bbe5431ea3db42962da435f70edb39c.avif")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/powerwash-simulator-2/card/co9tye.webp")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/powerwash-simulator-2/trailer.mp4")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/powerwash-simulator-2/banner/050db8610fa9593b531cd2b7d563b5115bbe5431ea3db42962da435f70edb39c.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i3 o equivalente", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 660 o equivalente", "storage": "15 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -920,9 +922,9 @@ public class DataInitializer implements CommandLineRunner {
                 Marcó el regreso de la saga a la exploración, gestión de recursos y ambientación opresiva, con soporte completo para realidad virtual.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2017, 1, 24))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788752942/resident_evil_7-5898772.jpg")
-                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/re7/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788750377/cp7G7TILGKzAzLGb1MMn9hyt.avif")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-7-biohazard/card/resident_evil_7-5898772.jpg")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-7-biohazard/trailer.mp4")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-7-biohazard/banner/cp7G7TILGKzAzLGb1MMn9hyt.avif")
                 .minimumSpecs("""
                 {"os": "Windows 7/8/10 de 64 bits", "processor": "Intel i5-4460 o AMD FX-6300", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 760 o AMD Radeon R7 260x (2GB VRAM)", "storage": "24 GB disponible", "directX": "Version 11"}""")
                 .recommendedSpecs("""
@@ -940,9 +942,9 @@ public class DataInitializer implements CommandLineRunner {
                 Introduce el sistema Drive, que gestiona un recurso compartido entre ataques ofensivos y defensivos, ampliando la profundidad estratégica de cada combate.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2023, 6, 2))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788753038/IDaKtZp5aUEU33tThd6r9Qbb_png_293869b7-40b5-493f-ad7d-962e4060925e.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/street-fighter-6/card/IDaKtZp5aUEU33tThd6r9Qbb_png_293869b7-40b5-493f-ad7d-962e4060925e.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/street-fighter-6/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749324/12d36a4c9bbf43a4babba2f203e1e271ef08de143349e08231dff56fd2bef70e.avif")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/street-fighter-6/banner/12d36a4c9bbf43a4babba2f203e1e271ef08de143349e08231dff56fd2bef70e.avif")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i3-4160 o AMD Ryzen 3 1200", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 o AMD RX 570", "storage": "60 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -960,9 +962,9 @@ public class DataInitializer implements CommandLineRunner {
                 Incluye un extenso modo historia cinemático (Arcade Quest y el modo Historia principal) además de combate competitivo online con rollback netcode.""")
                 .state(GameState.AVAILABLE)
                 .launchDate(LocalDate.of(2024, 1, 26))
-                .imageUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788753110/tekken_8-5868007.webp")
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/tekken-8/card/tekken_8-5868007.webp")
                 .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/tekken-8/trailer.mp4")
-                .bannerUrl("https://res.cloudinary.com/tpjbimjw/image/upload/v1788749144/TEKKEN8_Header_mobile_2.jpg")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/tekken-8/banner/TEKKEN8_Header_mobile_2.jpg")
                 .minimumSpecs("""
                 {"os": "Windows 10 de 64 bits", "processor": "Intel i5-6600K o AMD Ryzen 5 2600", "memory": "8 GB RAM", "graphics": "NVIDIA GTX 1060 6GB o AMD RX 580", "storage": "90 GB disponible", "directX": "Version 12"}""")
                 .recommendedSpecs("""
@@ -983,7 +985,7 @@ public class DataInitializer implements CommandLineRunner {
                         + "Best Performance celebrated an actor who brought their character to life with nuance and authenticity. The performance moved players to tears and laughter in equal measure.\n\n"
                         + "Other notable winners include Best RPG for an epic adventure with hundreds of hours of content, Best Action for a tight and responsive combat system, and Best Indie for a small team that punched well above its weight.\n\n"
                         + "These awards reflect an industry in great health, with diverse voices and bold creative visions finding success. As we look forward to 2026, the future of gaming has never looked brighter.")
-                .coverImage("https://res.cloudinary.com/tpjbimjw/image/upload/v1788569184/the-game-awards-portada-26.webp")
+                .coverImage("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/blogs/game-awards-2025-the-best-games-of-the-year/cover.webp")
                 .category("Events")
                 .publishedAt(blogsNow)
                 .createdAt(blogsNow)
@@ -999,7 +1001,7 @@ public class DataInitializer implements CommandLineRunner {
                         + "Naughty Dog continues to push the boundaries of interactive storytelling and technical achievement. Their ability to craft cinematic experiences with realistic characters and nuanced performances has set the bar for narrative-driven games.\n\n"
                         + "Supergiant Games demonstrates that small teams can create masterpieces. With titles like Bastion, Transistor, Pyre, and Hades, the studio has consistently delivered innovative gameplay, stunning art direction, and unforgettable music. Their work is a testament to the power of focused creative vision.\n\n"
                         + "These studios share common traits: a clear creative vision, respect for their audience, willingness to take risks, and talented teams that have grown together over many years. The future of gaming depends on continuing to support and nurture such studios, both large and small.")
-                .coverImage("https://res.cloudinary.com/tpjbimjw/image/upload/v1788570664/TOP_COMPANIES.avif")
+                .coverImage("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/blogs/the-best-video-game-development-studios/cover.avif")
                 .category("Industry")
                 .publishedAt(blogsNow)
                 .createdAt(blogsNow)
@@ -1015,7 +1017,7 @@ public class DataInitializer implements CommandLineRunner {
                         + "Tokyo Game Show in September is the premier Asian gaming event, held in Chiba, Japan. It offers a unique look at Japanese game development, with a heavy focus on mobile, arcade, and console titles. The cosplay culture at TGS is unmatched anywhere else in the world.\n\n"
                         + "Brazil Game Show in October has grown to become the largest gaming event in the Americas. Held in São Paulo, BGS attracts hundreds of thousands of passionate Brazilian gamers and features a mix of AAA titles, indie games, and esports tournaments.\n\n"
                         + "Beyond these major events, there are countless indie showcases, digital events, and publisher-specific streams throughout the year. The gaming calendar is more distributed than ever, giving players a constant stream of news and demos to look forward to.")
-                .coverImage("https://res.cloudinary.com/tpjbimjw/image/upload/v1788570962/313b58c9bda10bce760bd3c3f6dc635e1d90eeeb.webp")
+                .coverImage("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/blogs/upcoming-gaming-events-in-2026/cover.webp")
                 .category("Events")
                 .publishedAt(blogsNow)
                 .createdAt(blogsNow)
@@ -1237,263 +1239,261 @@ public class DataInitializer implements CommandLineRunner {
 
     private void seedImages() {
         seedGallery("Minecraft", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707251/games/minecraft/imagelist/1.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707252/games/minecraft/imagelist/2.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707252/games/minecraft/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707253/games/minecraft/imagelist/4.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707251/games/minecraft/banner/banner.png"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/minecraft/gallery/1.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/minecraft/gallery/2.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/minecraft/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/minecraft/gallery/4.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/minecraft/gallery/banner.png"));
 
         seedGallery("Stardew Valley", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707255/games/stardew-valley/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707255/games/stardew-valley/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707256/games/stardew-valley/imagelist/3.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707254/games/stardew-valley/banner/banner.webp"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/stardew-valley/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/stardew-valley/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/stardew-valley/gallery/3.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/stardew-valley/gallery/banner.webp"));
 
         seedGallery("Elden Ring", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707266/games/elden-ring/imagelist/1.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707267/games/elden-ring/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707266/games/elden-ring/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707267/games/elden-ring/imagelist/4.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/elden-ring/gallery/1.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/elden-ring/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/elden-ring/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/elden-ring/gallery/4.jpg"));
 
-        assignBanner("Spider-Man Remastered", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788226722/games/spider-man-remastered/banner/banner.webp");
+        assignBanner("Spider-Man Remastered", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/spider-man-remastered/banner/banner.webp");
         seedGallery("Spider-Man Remastered", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707280/games/spider-man-remastered/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707281/games/spider-man-remastered/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707281/games/spider-man-remastered/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707280/games/spider-man-remastered/imagelist/4.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/spider-man-remastered/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/spider-man-remastered/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/spider-man-remastered/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/spider-man-remastered/gallery/4.jpg"));
 
-        assignBanner("Grand Theft Auto V", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788226489/games/grand-theft-auto-v/banner/banner.webp");
+        assignBanner("Grand Theft Auto V", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/banner/banner.webp");
         seedGallery("Grand Theft Auto V", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707331/games/grand-theft-auto-v/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707338/games/grand-theft-auto-v/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707338/games/grand-theft-auto-v/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707328/games/grand-theft-auto-v/imagelist/4.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/gallery/4.jpg"));
 
-        assignBanner("Battlefield 1", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707282/games/battlefield-1/banner/banner.jpg");
+        assignBanner("Battlefield 1", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/battlefield-1/banner/banner.jpg");
         seedGallery("Battlefield 1", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707282/games/battlefield-1/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707287/games/battlefield-1/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707503/games/battlefield-1/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707288/games/battlefield-1/imagelist/4.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/battlefield-1/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/battlefield-1/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/battlefield-1/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/battlefield-1/gallery/4.jpg"));
 
-        assignBanner("Assassin's Creed Shadows", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707339/games/assassins-creed-shadows/banner/banner.jpg");
+        assignBanner("Assassin's Creed Shadows", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assassin-s-creed-shadows/banner/banner.jpg");
         seedGallery("Assassin's Creed Shadows", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707509/games/assassins-creed-shadows/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707356/games/assassins-creed-shadows/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707357/games/assassins-creed-shadows/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707511/games/assassins-creed-shadows/imagelist/4.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assassin-s-creed-shadows/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assassin-s-creed-shadows/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assassin-s-creed-shadows/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assassin-s-creed-shadows/gallery/4.jpg"));
 
-        assignBanner("Cyberpunk 2077", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707360/games/cyberpunk-2077/banner/banner.jpg");
+        assignBanner("Cyberpunk 2077", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cyberpunk-2077/banner/banner.jpg");
         seedGallery("Cyberpunk 2077", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707512/games/cyberpunk-2077/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707361/games/cyberpunk-2077/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707369/games/cyberpunk-2077/imagelist/3.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cyberpunk-2077/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cyberpunk-2077/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/cyberpunk-2077/gallery/3.jpg"));
 
-        assignBanner("Dragon Ball FighterZ", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707289/games/dragon-ball-fighterz/banner/banner.jpg");
+        assignBanner("Dragon Ball FighterZ", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dragon-ball-fighterz/banner/banner.jpg");
         seedGallery("Dragon Ball FighterZ", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707290/games/dragon-ball-fighterz/imagelist/1.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707290/games/dragon-ball-fighterz/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707292/games/dragon-ball-fighterz/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707503/games/dragon-ball-fighterz/imagelist/4.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707297/games/dragon-ball-fighterz/imagelist/5.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dragon-ball-fighterz/gallery/1.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dragon-ball-fighterz/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dragon-ball-fighterz/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dragon-ball-fighterz/gallery/4.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dragon-ball-fighterz/gallery/5.jpg"));
 
-        assignBanner("Mortal Kombat 11", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788746772/MK11_BANNER.jpg");
+        assignBanner("Mortal Kombat 11", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-11/banner/MK11_BANNER.jpg");
         seedGallery("Mortal Kombat 11", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707304/games/mortal-kombat-11/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707507/games/mortal-kombat-11/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707307/games/mortal-kombat-11/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707307/games/mortal-kombat-11/imagelist/4.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-11/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-11/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-11/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-11/gallery/4.jpg"));
 
-        assignBanner("Red Dead Redemption 2", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707370/games/red-dead-redemption-2/banner/banner.jpg");
+        assignBanner("Red Dead Redemption 2", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/red-dead-redemption-2/banner/banner.jpg");
         seedGallery("Red Dead Redemption 2", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707370/games/red-dead-redemption-2/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707373/games/red-dead-redemption-2/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707374/games/red-dead-redemption-2/imagelist/3.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/red-dead-redemption-2/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/red-dead-redemption-2/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/red-dead-redemption-2/gallery/3.jpg"));
 
-        assignBanner("Hollow Knight: Silksong", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707310/games/hollow-knight-silksong/banner/banner.jpg");
+        assignBanner("Hollow Knight: Silksong", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hollow-knight-silksong/banner/banner.jpg");
         seedGallery("Hollow Knight: Silksong", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707310/games/hollow-knight-silksong/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707311/games/hollow-knight-silksong/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707312/games/hollow-knight-silksong/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707313/games/hollow-knight-silksong/imagelist/4.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hollow-knight-silksong/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hollow-knight-silksong/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hollow-knight-silksong/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hollow-knight-silksong/gallery/4.jpg"));
 
-        assignBanner("The Witcher 3", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788149509/co60ksh6jnzks1mzhkik.webp");
+        assignBanner("The Witcher 3", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-witcher-3/banner/co60ksh6jnzks1mzhkik.webp");
         seedGallery("The Witcher 3", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707324/games/the-witcher-3/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707324/games/the-witcher-3/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707325/games/the-witcher-3/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707323/games/the-witcher-3/banner/banner.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-witcher-3/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-witcher-3/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-witcher-3/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-witcher-3/gallery/banner.jpg"));
 
-        assignBanner("God of War Ragnarök", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707374/games/god-of-war-ragnarok/banner/banner.jpg");
+        assignBanner("God of War Ragnarök", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/god-of-war-ragnar-k/banner/banner.jpg");
         seedGallery("God of War Ragnarök", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707647/games/god-of-war-ragnarok/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707649/games/god-of-war-ragnarok/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707377/games/god-of-war-ragnarok/imagelist/3.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/god-of-war-ragnar-k/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/god-of-war-ragnar-k/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/god-of-war-ragnar-k/gallery/3.jpg"));
 
-        assignBanner("Resident Evil 4", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707387/games/resident-evil-4/banner/banner.jpg");
+        assignBanner("Resident Evil 4", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-4/banner/banner.jpg");
         seedGallery("Resident Evil 4", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707387/games/resident-evil-4/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707388/games/resident-evil-4/imagelist/2.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707389/games/resident-evil-4/imagelist/3.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-4/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-4/gallery/2.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-4/gallery/3.jpg"));
 
-        assignBanner("Call of Duty: Modern Warfare III", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707391/games/call-of-duty-mwiii/banner/banner.jpg");
+        assignBanner("Call of Duty: Modern Warfare III", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/call-of-duty-modern-warfare-iii/banner/banner.jpg");
         seedGallery("Call of Duty: Modern Warfare III", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707393/games/call-of-duty-mwiii/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707393/games/call-of-duty-mwiii/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707394/games/call-of-duty-mwiii/imagelist/3.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/call-of-duty-modern-warfare-iii/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/call-of-duty-modern-warfare-iii/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/call-of-duty-modern-warfare-iii/gallery/3.jpg"));
 
-        assignBanner("Halo Infinite", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707395/games/halo-infinite/banner/banner.jpg");
+        assignBanner("Halo Infinite", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/halo-infinite/banner/banner.jpg");
         seedGallery("Halo Infinite", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707396/games/halo-infinite/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707403/games/halo-infinite/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707404/games/halo-infinite/imagelist/3.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/halo-infinite/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/halo-infinite/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/halo-infinite/gallery/3.jpg"));
 
-        assignBanner("Forza Horizon 4", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788226771/ql7cef0v5jpuba26rexg.webp");
+        assignBanner("Forza Horizon 4", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-horizon-4/banner/ql7cef0v5jpuba26rexg.webp");
         seedGallery("Forza Horizon 4", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707405/games/forza-horizon-4/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707649/games/forza-horizon-4/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707407/games/forza-horizon-4/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707405/games/forza-horizon-4/banner/banner.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-horizon-4/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-horizon-4/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-horizon-4/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-horizon-4/gallery/banner.jpg"));
 
-        assignBanner("Civilization VI", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788152670/ulge1bf2tbmcexewxnh2.avif");
+        assignBanner("Civilization VI", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/civilization-vi/banner/ulge1bf2tbmcexewxnh2.avif");
         seedGallery("Civilization VI", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707408/games/civilization-vi/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707410/games/civilization-vi/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707410/games/civiliz+ation-vi/imagelist/3.png," +
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707407/games/civilization-vi/banner/banner.png"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/civilization-vi/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/civilization-vi/gallery/2.jpg"));
 
-        assignBanner("Silent Hill 2", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707420/games/silent-hill-2/banner/banner.jpg");
+        assignBanner("Silent Hill 2", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/silent-hill-2/banner/banner.jpg");
         seedGallery("Silent Hill 2", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707420/games/silent-hill-2/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707422/games/silent-hill-2/imagelist/2.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707421/games/silent-hill-2/imagelist/3.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/silent-hill-2/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/silent-hill-2/gallery/2.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/silent-hill-2/gallery/3.jpg"));
 
-        assignBanner("Euro Truck Simulator 2", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707422/games/euro-truck-simulator-2/banner/banner.jpg");
+        assignBanner("Euro Truck Simulator 2", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/euro-truck-simulator-2/banner/banner.jpg");
         seedGallery("Euro Truck Simulator 2", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707422/games/euro-truck-simulator-2/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707424/games/euro-truck-simulator-2/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707425/games/euro-truck-simulator-2/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707425/games/euro-truck-simulator-2/imagelist/4.webp"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/euro-truck-simulator-2/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/euro-truck-simulator-2/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/euro-truck-simulator-2/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/euro-truck-simulator-2/gallery/4.webp"));
 
         seedGallery("Rocket League", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707327/games/rocket-league/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707508/games/rocket-league/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707328/games/rocket-league/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707326/games/rocket-league/banner/banner.webp"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/rocket-league/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/rocket-league/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/rocket-league/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/rocket-league/gallery/banner.webp"));
 
-        assignBanner("Sekiro: Shadows Die Twice", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707425/games/sekiro-shadows-die-twice/banner/banner.webp");
+        assignBanner("Sekiro: Shadows Die Twice", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/sekiro-shadows-die-twice/banner/banner.webp");
         seedGallery("Sekiro: Shadows Die Twice", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707433/games/sekiro-shadows-die-twice/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707433/games/sekiro-shadows-die-twice/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707650/games/sekiro-shadows-die-twice/imagelist/3.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/sekiro-shadows-die-twice/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/sekiro-shadows-die-twice/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/sekiro-shadows-die-twice/gallery/3.jpg"));
 
-        assignBanner("The Sims 4", "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707436/games/the-sims-4/banner/banner.jpg");
+        assignBanner("The Sims 4", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-sims-4/banner/banner.jpg");
         seedGallery("The Sims 4", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707437/games/the-sims-4/imagelist/1.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707438/games/the-sims-4/imagelist/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707439/games/the-sims-4/imagelist/3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788707441/games/the-sims-4/imagelist/4.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-sims-4/gallery/1.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-sims-4/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-sims-4/gallery/3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/the-sims-4/gallery/4.jpg"));
 
         seedGallery("EA SPORTS WRC", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751934/WRC-24-Solberg-Sweden.avif",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751930/4aca15e53943d04fcaef5a50e5055e9961b190cb95c7438e.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751907/egs-easportswrc-codemasters-editions-s1-2560x1440-85c00d204428.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/ea-sports-wrc/gallery/WRC-24-Solberg-Sweden.avif",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/ea-sports-wrc/gallery/4aca15e53943d04fcaef5a50e5055e9961b190cb95c7438e.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/ea-sports-wrc/gallery/egs-easportswrc-codemasters-editions-s1-2560x1440-85c00d204428.jpg"));
 
         seedGallery("Apex Legends", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749075/Gizmodo-46.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749073/1366_2000.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749055/b49472734809d268553775f142f5da92abd0b15d96bfb824.avif"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/apex-legends/gallery/Gizmodo-46.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/apex-legends/gallery/1366_2000.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/apex-legends/gallery/b49472734809d268553775f142f5da92abd0b15d96bfb824.avif"));
 
         seedGallery("Assetto Corsa", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750975/99b1f8d4-0de5-463a-a5e9-e6bbc50a9ab0.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750973/Screenshot_hw_drag_camaro_drive_speedway_17-0-123-23-15-53.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750937/vrc-ferrari.webp"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assetto-corsa/gallery/99b1f8d4-0de5-463a-a5e9-e6bbc50a9ab0.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assetto-corsa/gallery/Screenshot_hw_drag_camaro_drive_speedway_17-0-123-23-15-53.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/assetto-corsa/gallery/vrc-ferrari.webp"));
 
         seedGallery("Counter-Strike 2", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748977/counter-strike-2-cs2-edpi-calcul.width-1500.format-webp.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748974/counter-strike-2-consejos.avif",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748958/Counter-Strike_2_Sys.width-1000.bgcolor-000.format-webp.webp"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/counter-strike-2/gallery/counter-strike-2-cs2-edpi-calcul.width-1500.format-webp.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/counter-strike-2/gallery/counter-strike-2-consejos.avif",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/counter-strike-2/gallery/Counter-Strike_2_Sys.width-1000.bgcolor-000.format-webp.webp"));
 
         seedGallery("Dead by Daylight", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750142/Dead-by-Daylight.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750134/ghost-face-key-art-1920x1080-9503e5d7a31c.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750114/98da8939b48f5be8fdcefe9c904e919a16e59ab9a299c1eb.avif"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dead-by-daylight/gallery/Dead-by-Daylight.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dead-by-daylight/gallery/ghost-face-key-art-1920x1080-9503e5d7a31c.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/dead-by-daylight/gallery/98da8939b48f5be8fdcefe9c904e919a16e59ab9a299c1eb.avif"));
 
         seedGallery("Doom Eternal", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748834/doom-eternal-for-pc-review_3cma.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748832/DE_Horde_Mode_HERO_1920x870.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748816/requisitos-de-DOOM-Eternal.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/doom-eternal/gallery/doom-eternal-for-pc-review_3cma.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/doom-eternal/gallery/DE_Horde_Mode_HERO_1920x870.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/doom-eternal/gallery/requisitos-de-DOOM-Eternal.jpg"));
 
         seedGallery("F1 25", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751303/oeQPvckcaBiviGAcgu7Hua.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751283/f1-24-gameplay.avif",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751268/New-F1-25-gameplay-video-shows-off-laser-scanned-tracks-and-reverse-layouts.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/f1-25/gallery/oeQPvckcaBiviGAcgu7Hua.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/f1-25/gallery/f1-24-gameplay.avif",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/f1-25/gallery/New-F1-25-gameplay-video-shows-off-laser-scanned-tracks-and-reverse-layouts.jpg"));
 
         seedGallery("Forza Motorsport", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751800/ForzaMotorsport_XboxGamesShowcase2023-PressKit-02-16x9_WM_HERO-c683f03b1007573adc75.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751761/ForzaMotorsport_XboxGamesShowcase2023-PressKit-04-16x9_WM-c52b35d08347e817af60.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751715/forza-motorsport-image-9.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-motorsport/gallery/ForzaMotorsport_XboxGamesShowcase2023-PressKit-02-16x9_WM_HERO-c683f03b1007573adc75.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-motorsport/gallery/ForzaMotorsport_XboxGamesShowcase2023-PressKit-04-16x9_WM-c52b35d08347e817af60.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/forza-motorsport/gallery/forza-motorsport-image-9.jpg"));
 
         seedGallery("Hades", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748546/images.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748544/hades_08_3.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788748520/the-first-15-minutes-of-hades-gameplay-1080p-60fps_pz25.1280.webp"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hades/gallery/images.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hades/gallery/hades_08_3.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/hades/gallery/the-first-15-minutes-of-hades-gameplay-1080p-60fps_pz25.1280.webp"));
 
         seedGallery("Injustice 2", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749559/injustice.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749547/Injustice-3-scaled.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749545/Injustice_2__Legendary_Edition_20180828060615.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/injustice-2/gallery/injustice.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/injustice-2/gallery/Injustice-3-scaled.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/injustice-2/gallery/Injustice_2__Legendary_Edition_20180828060615.jpg"));
 
         seedGallery("Microsoft Flight Simulator", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750525/ac528313-6b2f-4db2-81d0-e470f0e6bb22.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750517/microsoft-flight-simulator-cielo-imagen.avif",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750511/microsoft-flight-simulator-2024-update-20-japan.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/microsoft-flight-simulator/gallery/ac528313-6b2f-4db2-81d0-e470f0e6bb22.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/microsoft-flight-simulator/gallery/microsoft-flight-simulator-cielo-imagen.avif",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/microsoft-flight-simulator/gallery/microsoft-flight-simulator-2024-update-20-japan.jpg"));
 
         seedGallery("Mortal Kombat 1", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749671/mortal_kombat_1_liu_kang_sub-zero_6.8.23.jpg.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749674/f6yCNnESMq8yTLZcGbwApS.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749654/mortal-kombat-1-image.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-1/gallery/mortal_kombat_1_liu_kang_sub-zero_6.8.23.jpg.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-1/gallery/f6yCNnESMq8yTLZcGbwApS.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-1/gallery/mortal-kombat-1-image.jpg"));
 
         seedGallery("Mortal Kombat X", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749907/wallpapersden.com_mortal-kombat-x-new-game_3840x2160.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749899/mortal-kombat-x-scorpion-inferno-uhd-4k-wallpaper.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749893/MortalKombatX_ShinnokvLK-scaled.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-x/gallery/wallpapersden.com_mortal-kombat-x-new-game_3840x2160.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-x/gallery/mortal-kombat-x-scorpion-inferno-uhd-4k-wallpaper.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/mortal-kombat-x/gallery/MortalKombatX_ShinnokvLK-scaled.jpg"));
 
         seedGallery("Need for Speed Unbound", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751629/need-for-speed-unbound_98.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751616/4UqqNpJc93HJqGkTh73ZcM.png",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788751582/my-opinion-about-nfs-unbound-v0-d6a5egoeglce1.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/need-for-speed-unbound/gallery/need-for-speed-unbound_98.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/need-for-speed-unbound/gallery/4UqqNpJc93HJqGkTh73ZcM.png",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/need-for-speed-unbound/gallery/my-opinion-about-nfs-unbound-v0-d6a5egoeglce1.jpg"));
 
         seedGallery("Outlast", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750333/outlast-trials-release-date-gameplay-platforms-more.avif",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750330/outlast-1.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750319/x1080.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/outlast/gallery/outlast-trials-release-date-gameplay-platforms-more.avif",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/outlast/gallery/outlast-1.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/outlast/gallery/x1080.jpg"));
 
 
         seedGallery("Phasmophobia", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750026/b5b0af81c853e1debf490a06c7e5f998.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750023/phasmophobia-console-trailer-68400ac89d873.avif",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750021/phasmophobia_gameplay.webp"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/phasmophobia/gallery/b5b0af81c853e1debf490a06c7e5f998.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/phasmophobia/gallery/phasmophobia-console-trailer-68400ac89d873.avif",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/phasmophobia/gallery/phasmophobia_gameplay.webp"));
 
         seedGallery("PowerWash Simulator 2", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750778/powerwash-simulator-780x470.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750750/1_tgem3sWI4c2FxZfdYZxDfQ.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750747/powerwash-simulator-2-2-3840x2160-3521e9556744.png"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/powerwash-simulator-2/gallery/powerwash-simulator-780x470.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/powerwash-simulator-2/gallery/1_tgem3sWI4c2FxZfdYZxDfQ.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/powerwash-simulator-2/gallery/powerwash-simulator-2-2-3840x2160-3521e9556744.png"));
 
         seedGallery("Resident Evil 7: Biohazard", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750460/2.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750445/image-_2.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788750409/resident-evil-7-gameplay-de-8-mi.webp"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-7-biohazard/gallery/2.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-7-biohazard/gallery/image-_2.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/resident-evil-7-biohazard/gallery/resident-evil-7-gameplay-de-8-mi.webp"));
 
         seedGallery("Street Fighter 6", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749411/alex-llega-a-street-fighter-6-a-principios-de-primavera-cover6960408b584eb.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749395/capcom-street-fighter-6-evo-2024_34vk.1280.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749372/street-fighter-6_ry9y.1920.webp"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/street-fighter-6/gallery/alex-llega-a-street-fighter-6-a-principios-de-primavera-cover6960408b584eb.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/street-fighter-6/gallery/capcom-street-fighter-6-evo-2024_34vk.1280.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/street-fighter-6/gallery/street-fighter-6_ry9y.1920.webp"));
 
         seedGallery("Tekken 8", List.of(
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749252/tekken-8-adds-newcomer-azucena-along-with-returning-fighter-raven.webp",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749211/52355865886_ad83c6d20d_h.jpg",
-                "https://res.cloudinary.com/tpjbimjw/image/upload/v1788749171/Tekken8_Law_Battle.jpg"));
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/tekken-8/gallery/tekken-8-adds-newcomer-azucena-along-with-returning-fighter-raven.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/tekken-8/gallery/52355865886_ad83c6d20d_h.jpg",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/tekken-8/gallery/Tekken8_Law_Battle.jpg"));
 
 
     }

@@ -35,7 +35,6 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final GameMapper gameMapper;
-    private final ImageService imageService;
     private final R2StorageService r2StorageService;
 
     @Transactional
@@ -43,6 +42,20 @@ public class GameService {
         game.setCreatedAt(Instant.now());
         var saved = gameRepository.save(game);
         log.info("Created game: {} (id={})", saved.getName(), saved.getId());
+        return saved;
+    }
+
+    /**
+     * Persiste en bloque entidades posiblemente detached (merge). Lo usa el runner
+     * de migracion para reescribir URLs de media de todos los juegos de una pasada.
+     */
+    @Transactional
+    public List<Game> saveAll(List<Game> games) {
+        if (games.isEmpty()) {
+            return games;
+        }
+        var saved = gameRepository.saveAll(games);
+        log.info("Saved {} games", saved.size());
         return saved;
     }
 
@@ -60,6 +73,11 @@ public class GameService {
     public Page<Game> findAll(Pageable pageable) {
         log.info("Fetching all games with pageable: {}", pageable);
         return gameRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Game> findAllWithGallery() {
+        return gameRepository.findAllWithGallery();
     }
 
     @Transactional(readOnly = true)
@@ -129,20 +147,19 @@ public class GameService {
         }
         var saved = create(game);
 
-        String folderBase = "games/" + slugify(saved.getName());
-        saved.setImageUrl(imageService.store(image, folderBase + "/card"));
+        String slug = slugify(saved.getName());
+        saved.setImageUrl(r2StorageService.storeImage(image, slug, "card"));
         if (banner != null && !banner.isEmpty()) {
-            saved.setBannerUrl(imageService.store(banner, folderBase + "/banner"));
+            saved.setBannerUrl(r2StorageService.storeImage(banner, slug, "banner"));
         }
         if (video != null && !video.isEmpty()) {
             saved.setVideoUrl(storeVideo(video, saved.getName()));
         }
         if (gallery != null && !gallery.isEmpty()) {
-            int position = 0;
             List<String> urls = new ArrayList<>(gallery.size());
             for (MultipartFile file : gallery) {
                 if (file == null || file.isEmpty()) continue;
-                urls.add(imageService.store(file, folderBase + "/gallery"));
+                urls.add(r2StorageService.storeImage(file, slug, "gallery"));
             }
             replaceGallery(saved.getId(), urls);
             saved = findById(saved.getId());
@@ -167,18 +184,18 @@ public class GameService {
         }
         game.setVideoUrl(effectiveVideoUrl);
 
-        String folderBase = "games/" + slugify(game.getName());
+        String slug = slugify(game.getName());
         if (image != null && !image.isEmpty()) {
-            game.setImageUrl(imageService.store(image, folderBase + "/card"));
+            game.setImageUrl(r2StorageService.storeImage(image, slug, "card"));
         }
         if (banner != null && !banner.isEmpty()) {
-            game.setBannerUrl(imageService.store(banner, folderBase + "/banner"));
+            game.setBannerUrl(r2StorageService.storeImage(banner, slug, "banner"));
         }
         if (gallery != null && !gallery.isEmpty()) {
             List<String> urls = new ArrayList<>(gallery.size());
             for (MultipartFile file : gallery) {
                 if (file == null || file.isEmpty()) continue;
-                urls.add(imageService.store(file, folderBase + "/gallery"));
+                urls.add(r2StorageService.storeImage(file, slug, "gallery"));
             }
             replaceGallery(id, urls);
         }
@@ -305,10 +322,10 @@ public class GameService {
 
         gameRepository.deleteById(id);
 
-        // Cloudinary y R2 no participate de la transaccion: si el borrado
-        // externo se hiciera aqui y luego la transaccion fallara, los archivos
-        // ya habrian desaparecido sin que el juego se borrara. Por eso se
-        // difiere al commit y, si falla, se loguea sin revivir el borrado.
+        // R2 no participa de la transaccion: si el borrado externo se hiciera
+        // aqui y luego la transaccion fallara, los archivos ya habrian
+        // desaparecido sin que el juego se borrara. Por eso se difiere al commit
+        // y, si falla, se loguea sin revivir el borrado.
         afterCommit(() -> {
             deleteQuietly(imageUrl, "image");
             deleteQuietly(bannerUrl, "banner");
@@ -343,7 +360,7 @@ public class GameService {
             return;
         }
         try {
-            imageService.delete(url);
+            r2StorageService.deleteImage(url);
         } catch (RuntimeException e) {
             log.warn("Could not delete {} image {}: {}", kind, url, e.getMessage());
         }

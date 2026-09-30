@@ -10,7 +10,6 @@ import com.app.proyectojuegosmonolito.game.dto.GameStatsResponse;
 import com.app.proyectojuegosmonolito.game.dto.GameWithMediaRequest;
 import com.app.proyectojuegosmonolito.game.dto.ImagePresignRequest;
 import com.app.proyectojuegosmonolito.game.dto.PresignedUploadResponse;
-import com.app.proyectojuegosmonolito.game.dto.SignedImageUploadResponse;
 import com.app.proyectojuegosmonolito.game.dto.VideoPresignRequest;
 import com.app.proyectojuegosmonolito.game.dto.VideoUrlRequest;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
@@ -18,7 +17,6 @@ import com.app.proyectojuegosmonolito.game.model.Category;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.service.CategoryService;
 import com.app.proyectojuegosmonolito.game.service.GameService;
-import com.app.proyectojuegosmonolito.game.service.ImageService;
 import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,7 +46,6 @@ public class GameController {
     private final GameService gameService;
     private final GameMapper gameMapper;
     private final CategoryService categoryService;
-    private final ImageService imageService;
     private final R2StorageService r2StorageService;
     private final UserService userService;
     private final SecurityContext securityContext;
@@ -147,18 +144,18 @@ public class GameController {
         return ResponseEntity.ok(r2StorageService.presignVideo(slug, request.contentType()));
     }
 
-    @Operation(summary = "Presign image upload", description = "Returns signed Cloudinary upload parameters for the given kind " +
-            "(image, banner or gallery). The browser posts the file straight to api.cloudinary.com. One signature can be " +
-            "reused for every file of the same kind, since the signed params only cover timestamp and folder.")
-    @ApiResponse(responseCode = "200", description = "Signed upload parameters granted")
+    @Operation(summary = "Presign image upload", description = "Returns a short-lived R2 URL so the browser can upload the image " +
+            "(card, banner or gallery) directly, bypassing the body size limit of serverless platforms. The returned contentType " +
+            "must be echoed verbatim in the PUT header, otherwise R2 rejects the upload with SignatureDoesNotMatch.")
+    @ApiResponse(responseCode = "200", description = "Presigned upload granted")
     @PostMapping(value = "/media/image/presign", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SignedImageUploadResponse> presignImage(@Valid @RequestBody ImagePresignRequest request) {
-        var folder = "games/" + gameService.slugify(request.name()) + "/" + folderSuffix(request.kind());
-        return ResponseEntity.ok(imageService.signUpload(folder));
+    public ResponseEntity<PresignedUploadResponse> presignImage(@Valid @RequestBody ImagePresignRequest request) {
+        var slug = gameService.slugify(request.name());
+        return ResponseEntity.ok(r2StorageService.presignImage(slug, folderSuffix(request.kind()), request.contentType()));
     }
 
     @Operation(summary = "Create a new game with pre-uploaded media", description = "Creates a game whose media was already uploaded " +
-            "directly to Cloudinary and R2. Use this variant when the files exceed the platform body limit and cannot travel " +
+            "directly to R2. Use this variant when the files exceed the platform body limit and cannot travel " +
             "as multipart through the frontend server.")
     @ApiResponse(responseCode = "201", description = "Game created successfully")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -177,7 +174,7 @@ public class GameController {
     }
 
     @Operation(summary = "Update a game with pre-uploaded media", description = "Updates a game whose media was already uploaded " +
-            "directly to Cloudinary and R2. Media fields left null or blank keep their current value.")
+            "directly to R2. Media fields left null or blank keep their current value.")
     @ApiResponse(responseCode = "200", description = "Game updated successfully")
     @ApiResponse(responseCode = "404", description = "Game not found")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -199,9 +196,10 @@ public class GameController {
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) throws java.io.IOException {
         assertCanModify(id);
-        var imageUrl = imageService.store(file, "games/" + gameService.slugify(gameService.findById(id).getName()) + "/card");
-        var game = gameService.updateImage(id, imageUrl);
-        return ResponseEntity.ok(gameMapper.toResponse(game));
+        var game = gameService.findById(id);
+        var imageUrl = r2StorageService.storeImage(file, gameService.slugify(game.getName()), "card");
+        var updated = gameService.updateImage(id, imageUrl);
+        return ResponseEntity.ok(gameMapper.toResponse(updated));
     }
 
     @Operation(summary = "Upload game banner image", description = "Uploads a banner image for the specified game")
@@ -212,9 +210,10 @@ public class GameController {
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) throws java.io.IOException {
         assertCanModify(id);
-        var bannerUrl = imageService.store(file, "games/" + gameService.slugify(gameService.findById(id).getName()) + "/banner");
-        var game = gameService.updateBannerUrl(id, bannerUrl);
-        return ResponseEntity.ok(gameMapper.toResponse(game));
+        var game = gameService.findById(id);
+        var bannerUrl = r2StorageService.storeImage(file, gameService.slugify(game.getName()), "banner");
+        var updated = gameService.updateBannerUrl(id, bannerUrl);
+        return ResponseEntity.ok(gameMapper.toResponse(updated));
     }
 
     @Operation(summary = "Set game video URL", description = "Sets the video (trailer) URL for the specified game")
