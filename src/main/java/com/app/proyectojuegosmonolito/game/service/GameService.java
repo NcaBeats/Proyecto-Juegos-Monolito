@@ -173,11 +173,17 @@ public class GameService {
                                 MultipartFile image, MultipartFile banner, MultipartFile video,
                                 List<MultipartFile> gallery) throws IOException {
         var current = findById(id);
+        // Se lee antes de update(): current y game son la misma instancia gestionada,
+        // asi que leerlo despues devolveria la URL nueva y no habria trailer previo.
+        var previousVideoUrl = current.getVideoUrl();
         var game = update(id, request, categories);
 
         String effectiveVideoUrl = request.videoUrl();
         if (video != null && !video.isEmpty()) {
             effectiveVideoUrl = storeVideo(video, request.name());
+            // update() solo puede descartar trailers cuando la URL viene en el request.
+            // Aqui la URL cambia despues, asi que el descarte se pide en este camino.
+            discardReplacedTrailer(previousVideoUrl, effectiveVideoUrl);
         }
         if (effectiveVideoUrl == null || effectiveVideoUrl.isBlank()) {
             effectiveVideoUrl = current.getVideoUrl();
@@ -212,14 +218,15 @@ public class GameService {
     }
 
     /**
-     * Store the trailer video to Cloudflare R2 (primary).
-     * The relative /uploads path is kept in the DB; the frontend resolves it to R2.
+     * Sube el trailer a Cloudflare R2 y devuelve la ruta relativa que se persiste en
+     * la entidad; el frontend la resuelve contra el host publico del bucket. La clave
+     * la elige el servicio de storage e incluye la huella del contenido, asi que
+     * re-subir el trailer produce una URL distinta sin tocar nada mas.
      */
     private String storeVideo(MultipartFile video, String name) throws IOException {
-        String slug = slugify(name);
-        String url = r2StorageService.storeVideo(video, slug);
-        log.info("Stored video to R2: {}", url);
-        return "/uploads/games/" + slug + "/trailer.mp4";
+        var key = r2StorageService.storeVideo(video, slugify(name));
+        log.info("Stored video to R2 key={}", key);
+        return r2StorageService.publicPath(key);
     }
 
     @Transactional(readOnly = true)
@@ -236,6 +243,7 @@ public class GameService {
     public Game update(Long id, GameRequest request, List<Category> categories) {
         log.info("Updating game {}: name={}, originalPrice={}, discountPercent={}", id, request.name(), request.originalPrice(), request.discountPercent());
         var game = findById(id);
+        var previousVideoUrl = game.getVideoUrl();
         var effectiveVideoUrl = request.videoUrl();
         if (effectiveVideoUrl == null || effectiveVideoUrl.isBlank()) {
             effectiveVideoUrl = game.getVideoUrl();
@@ -244,6 +252,7 @@ public class GameService {
                 request.description(), request.state(), request.launchDate(), categories,
                 game.getImageUrl(), game.getBannerUrl(), effectiveVideoUrl,
                 request.minimumSpecs(), request.recommendedSpecs());
+        discardReplacedTrailer(previousVideoUrl, effectiveVideoUrl);
         log.info("Updated game {}", game.getId());
         return game;
     }
@@ -318,7 +327,6 @@ public class GameService {
         var bannerUrl = game.getBannerUrl();
         var videoUrl = game.getVideoUrl();
         var galleryUrls = game.getGallery().stream().map(GameImage::getUrl).toList();
-        var slug = game.getName() == null ? null : slugify(game.getName());
 
         gameRepository.deleteById(id);
 
@@ -330,16 +338,44 @@ public class GameService {
             deleteQuietly(imageUrl, "image");
             deleteQuietly(bannerUrl, "banner");
             galleryUrls.forEach(url -> deleteQuietly(url, "gallery"));
-            if (videoUrl != null && slug != null) {
-                try {
-                    r2StorageService.deleteVideo(slug);
-                } catch (RuntimeException e) {
-                    log.warn("Could not delete trailer of game {}: {}", id, e.getMessage());
-                }
-            }
+            deleteTrailerQuietly(videoUrl);
         });
 
         log.info("Deleted game {}", id);
+    }
+
+    /**
+     * Borra el trailer al que apunta una URL, sea absoluta o relativa y tenga o no
+     * query string. La clave se deriva de la URL persistida y no del slug, porque
+     * con huella del contenido el trailer de un juego ya no vive en una clave fija.
+     */
+    private void deleteTrailerQuietly(String videoUrl) {
+        var key = r2StorageService.keyOf(videoUrl);
+        if (key == null) {
+            return;
+        }
+        try {
+            r2StorageService.deleteTrailer(key);
+        } catch (RuntimeException e) {
+            log.warn("Could not delete trailer {}: {}", key, e.getMessage());
+        }
+    }
+
+    /**
+     * Limpia el trailer que quedo reemplazado. Las claves llevan la huella del
+     * contenido, asi que cada re-subida deja el objeto anterior huerfano: sin esto
+     * el bucket acumularia copias de 90 MB de cada trailer que se haya editado.
+     * Se difiere al commit porque R2 no participa de la transaccion: borrar el
+     * archivo viejo antes de confirmar dejaria la fila apuntando al peor.
+     */
+    private void discardReplacedTrailer(String previousVideoUrl, String newVideoUrl) {
+        var previousKey = r2StorageService.keyOf(previousVideoUrl);
+        var newKey = r2StorageService.keyOf(newVideoUrl);
+        if (previousKey == null || previousKey.equals(newKey)) {
+            return;
+        }
+        log.info("Discarding replaced trailer {} -> {}", previousKey, newKey);
+        afterCommit(() -> deleteTrailerQuietly(previousVideoUrl));
     }
 
     private void afterCommit(Runnable action) {

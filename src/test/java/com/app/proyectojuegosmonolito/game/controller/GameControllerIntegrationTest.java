@@ -212,7 +212,7 @@ class GameControllerIntegrationTest {
 
     @Test
     void presignVideo_shouldReturn200WithSignedUrl() throws Exception {
-        var body = new VideoPresignRequest("Half-Life 3", "video/mp4");
+        var body = new VideoPresignRequest("Half-Life 3", "video/mp4", null);
 
         mockMvc.perform(post("/api/v1/games/media/video/presign")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -229,7 +229,7 @@ class GameControllerIntegrationTest {
 
     @Test
     void presignVideo_shouldSignTheContentTypeHeader() throws Exception {
-        var body = new VideoPresignRequest("Cyberpunk", "video/webm");
+        var body = new VideoPresignRequest("Cyberpunk", "video/webm", null);
 
         mockMvc.perform(post("/api/v1/games/media/video/presign")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -238,13 +238,69 @@ class GameControllerIntegrationTest {
                 .andExpect(status().isOk())
                 // Si el content-type no fuera signed, R2 aceptaria cualquier header
                 // en el PUT y la allowlist del backend seria evadible desde el cliente.
-                .andExpect(jsonPath("$.uploadUrl").value(org.hamcrest.Matchers.containsString("SignedHeaders=content-type")))
+                // Los signed headers van en orden alfabetico y URL-encoded, y a
+                // content-type se le suma cache-control: ambos tienen que viajar
+                // firmados o el header no se guarda.
+                .andExpect(jsonPath("$.uploadUrl").value(org.hamcrest.Matchers.containsString(
+                        "X-Amz-SignedHeaders=cache-control%3Bcontent-type")))
                 .andExpect(jsonPath("$.contentType").value("video/webm"));
     }
 
     @Test
+    void presignVideo_shouldSignTheCacheControlHeader() throws Exception {
+        var body = new VideoPresignRequest("Cyberpunk", "video/mp4", null);
+
+        mockMvc.perform(post("/api/v1/games/media/video/presign")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isOk())
+                // R2 solo persiste un Cache-Control que el servidor haya firmado. Si
+                // no estuviera entre los signed headers, el navegador podria omitirlo
+                // y el trailer se guardaria sin cachear, sin error visible.
+                .andExpect(jsonPath("$.uploadUrl").value(org.hamcrest.Matchers.containsString(
+                        "X-Amz-SignedHeaders=cache-control%3Bcontent-type")))
+                // El valor vuelve al cliente para que reenvie exactamente el mismo
+                // string; duplicar la constante en el frontend es como aparecen los
+                // 403 SignatureDoesNotMatch.
+                .andExpect(jsonPath("$.cacheControl").value(
+                        "public, max-age=31536000, immutable"));
+    }
+
+    @Test
+    void presignVideo_withFingerprint_shouldUseVersionedKey() throws Exception {
+        var body = new VideoPresignRequest("Grand Theft Auto V", "video/mp4", "a1b2c3d4");
+
+        mockMvc.perform(post("/api/v1/games/media/video/presign")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isOk())
+                // La version viaja en el nombre del archivo, no en un query param:
+                // asi el navegador guarda la respuesta como inmutable sin pedirla de nuevo.
+                .andExpect(jsonPath("$.key").value("grand-theft-auto-v/trailer-a1b2c3d4.mp4"))
+                .andExpect(jsonPath("$.publicPath").value(
+                        "/uploads/games/grand-theft-auto-v/trailer-a1b2c3d4.mp4"))
+                .andExpect(jsonPath("$.cacheControl").value(
+                        "public, max-age=31536000, immutable"));
+    }
+
+    @Test
+    void presignVideo_withMalformedFingerprint_shouldReturn400() throws Exception {
+        var body = new VideoPresignRequest("Grand Theft Auto V", "video/mp4", "../../evil");
+
+        mockMvc.perform(post("/api/v1/games/media/video/presign")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                // La huella se interpola en la clave, asi que un valor no validado
+                // permitiria escribir fuera del directorio del juego.
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void presignVideo_withDisallowedContentType_shouldReturn400() throws Exception {
-        var body = new VideoPresignRequest("Hack", "application/x-msdownload");
+        var body = new VideoPresignRequest("Hack", "application/x-msdownload", null);
 
         mockMvc.perform(post("/api/v1/games/media/video/presign")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -255,7 +311,7 @@ class GameControllerIntegrationTest {
 
     @Test
     void presignVideo_withBlankName_shouldReturn400() throws Exception {
-        var body = new VideoPresignRequest("  ", "video/mp4");
+        var body = new VideoPresignRequest("  ", "video/mp4", null);
 
         mockMvc.perform(post("/api/v1/games/media/video/presign")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -267,7 +323,7 @@ class GameControllerIntegrationTest {
     @Test
     void presignVideo_whenAuthenticatedAsClient_shouldReturn403() throws Exception {
         var cliente = createCliente();
-        var body = new VideoPresignRequest("Hack", "video/mp4");
+        var body = new VideoPresignRequest("Hack", "video/mp4", null);
 
         mockMvc.perform(post("/api/v1/games/media/video/presign")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -279,7 +335,7 @@ class GameControllerIntegrationTest {
 
     @Test
     void presignVideo_withoutToken_shouldReturn401() throws Exception {
-        var body = new VideoPresignRequest("Hack", "video/mp4");
+        var body = new VideoPresignRequest("Hack", "video/mp4", null);
 
         mockMvc.perform(post("/api/v1/games/media/video/presign")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -316,8 +372,25 @@ class GameControllerIntegrationTest {
                 .andExpect(jsonPath("$.key").value(org.hamcrest.Matchers.endsWith("." + contentType.substring(6))))
                 .andExpect(jsonPath("$.publicPath").value(org.hamcrest.Matchers.containsString(expectedKeyPrefix)))
                 .andExpect(jsonPath("$.contentType").value(contentType))
+                .andExpect(jsonPath("$.cacheControl").value("public, max-age=31536000, immutable"))
                 .andExpect(jsonPath("$.expiresInSeconds").value(900))
                 .andExpect(jsonPath("$.uploadUrl").value(org.hamcrest.Matchers.containsString("X-Amz-Signature")));
+    }
+
+    @Test
+    void presignImage_shouldSignTheCacheControlHeader() throws Exception {
+        var body = new ImagePresignRequest("Half-Life 3", "image", "image/png");
+
+        mockMvc.perform(post("/api/v1/games/media/image/presign")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isOk())
+                // La clave de imagen ya lleva un UUID, asi que es unica por version y
+                // admite immutable; lo que falta es que R2 lo firme para que se guarde.
+                .andExpect(jsonPath("$.uploadUrl").value(org.hamcrest.Matchers.containsString(
+                        "X-Amz-SignedHeaders=cache-control%3Bcontent-type")))
+                .andExpect(jsonPath("$.cacheControl").value("public, max-age=31536000, immutable"));
     }
 
     @Test

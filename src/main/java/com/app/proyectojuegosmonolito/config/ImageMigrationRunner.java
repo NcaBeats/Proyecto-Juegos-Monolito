@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Runner temporal (detras de {@code app.migrate.images=true}) que deja el catalogo
@@ -35,7 +36,9 @@ import java.util.Locale;
  *       trailers de la primer version del seed viven en slugs abreviados
  *       ({@code gta-v}, {@code ac-shadows}...) mientras las imagenes usan el slug
  *       completo; este runner copia server-side el objeto a
- *       {@code {slug}/trailer.mp4} y actualiza {@code videoUrl}.</li>
+ *       {@code {slug}/trailer.mp4} y actualiza {@code videoUrl}. Los trailers que
+ *       ya traen huella en la clave ({@code {slug}/trailer-a1b2c3d4.mp4}) se
+ *       dejan intactos: su version ya viaja en el nombre.</li>
  * </ul>
  * Regla de mapeo de imagenes (misma que usa el seed):
  * {@code imageUrl -> {slug}/card/{archivo}}, {@code bannerUrl -> {slug}/banner/{archivo}},
@@ -49,6 +52,16 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class ImageMigrationRunner implements ApplicationRunner {
 
+    /** Trailer con huella de contenido en la clave, p.ej. {@code slug/trailer-a1b2c3d4.mp4}. */
+    private static final Pattern FINGERPRINTED_TRAILER = Pattern.compile("/trailer-[0-9a-f]{8}\\.mp4$");
+
+    /**
+     * Los trailers con huella en la clave ya son canonicos: la version viaja en el
+     * nombre y cada objeto es unico. Aplanarlos a {slug}/trailer.mp4 seria
+     * retroceder, y ademas dejaria un header immutable sobre una clave que la
+     * siguiente subida sobrescribe, que es exactamente el caches stale que la
+     * huella evita.
+     */
     private final GameService gameService;
     private final BlogService blogService;
     private final R2StorageService r2StorageService;
@@ -155,9 +168,12 @@ public class ImageMigrationRunner implements ApplicationRunner {
         if (videoUrl == null || videoUrl.isBlank()) {
             return MigrationOutcome.none();
         }
-        String destKey = slug + "/trailer.mp4";
         String sourceKey = keyOf(videoUrl);
-        if (sourceKey == null || sourceKey.equals(destKey)) {
+        if (sourceKey == null || FINGERPRINTED_TRAILER.matcher(sourceKey).find()) {
+            return MigrationOutcome.none();
+        }
+        String destKey = slug + "/trailer.mp4";
+        if (sourceKey.equals(destKey)) {
             return MigrationOutcome.none();
         }
 

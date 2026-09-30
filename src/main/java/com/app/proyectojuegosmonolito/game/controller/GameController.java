@@ -135,18 +135,19 @@ public class GameController {
     }
 
     @Operation(summary = "Presign trailer upload", description = "Returns a short-lived R2 URL so the browser can upload the trailer " +
-            "directly, bypassing the body size limit of serverless platforms. The returned contentType must be echoed " +
-            "verbatim in the PUT header, otherwise R2 rejects the upload with SignatureDoesNotMatch.")
+            "directly, bypassing the body size limit of serverless platforms. The returned contentType and cacheControl must be echoed " +
+            "verbatim in the PUT headers, otherwise R2 rejects the upload with SignatureDoesNotMatch.")
     @ApiResponse(responseCode = "200", description = "Presigned upload granted")
     @PostMapping(value = "/media/video/presign", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PresignedUploadResponse> presignVideo(@Valid @RequestBody VideoPresignRequest request) {
         var slug = gameService.slugify(request.name());
-        return ResponseEntity.ok(r2StorageService.presignVideo(slug, request.contentType()));
+        return ResponseEntity.ok(
+                r2StorageService.presignVideo(slug, request.contentType(), request.fingerprint()));
     }
 
     @Operation(summary = "Presign image upload", description = "Returns a short-lived R2 URL so the browser can upload the image " +
             "(card, banner or gallery) directly, bypassing the body size limit of serverless platforms. The returned contentType " +
-            "must be echoed verbatim in the PUT header, otherwise R2 rejects the upload with SignatureDoesNotMatch.")
+            "and cacheControl must be echoed verbatim in the PUT headers, otherwise R2 rejects the upload with SignatureDoesNotMatch.")
     @ApiResponse(responseCode = "200", description = "Presigned upload granted")
     @PostMapping(value = "/media/image/presign", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PresignedUploadResponse> presignImage(@Valid @RequestBody ImagePresignRequest request) {
