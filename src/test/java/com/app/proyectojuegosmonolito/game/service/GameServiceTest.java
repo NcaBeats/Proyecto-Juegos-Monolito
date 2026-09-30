@@ -169,12 +169,16 @@ class GameServiceTest {
         var game = game(1L, "Shadow Blade", BigDecimal.ONE);
         game.setImageUrl("https://pub-test.r2.dev/shadow-blade/card.jpg");
         game.setBannerUrl("https://pub-test.r2.dev/shadow-blade/banner.jpg");
-        game.setVideoUrl("https://pub-test.r2.dev/shadow-blade/trailer.mp4");
+        game.setVideoUrl("https://pub-test.r2.dev/shadow-blade/trailer-a1b2c3d4.mp4");
         game.getGallery().add(GameImage.builder().game(game)
                 .url("https://pub-test.r2.dev/shadow-blade/gallery/1.jpg")
                 .position(0).build());
         when(gameRepository.existsById(1L)).thenReturn(true);
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+        // El trailer se borra por clave, no por slug: con huella en el nombre, el
+        // slug ya no identifica el objeto.
+        when(r2StorageService.keyOf(game.getVideoUrl()))
+                .thenReturn("shadow-blade/trailer-a1b2c3d4.mp4");
 
         gameService.delete(1L);
 
@@ -182,7 +186,22 @@ class GameServiceTest {
         verify(r2StorageService).deleteImage(game.getImageUrl());
         verify(r2StorageService).deleteImage(game.getBannerUrl());
         verify(r2StorageService).deleteImage(game.getGallery().getFirst().getUrl());
-        verify(r2StorageService).deleteVideo("shadow-blade");
+        verify(r2StorageService).deleteTrailer("shadow-blade/trailer-a1b2c3d4.mp4");
+    }
+
+    @Test
+    void delete_shouldSurviveAFailingTrailerCleanup() {
+        var game = game(1L, "Shadow Blade", BigDecimal.ONE);
+        game.setVideoUrl("https://pub-test.r2.dev/shadow-blade/trailer.mp4");
+        when(gameRepository.existsById(1L)).thenReturn(true);
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+        when(r2StorageService.keyOf(game.getVideoUrl())).thenReturn("shadow-blade/trailer.mp4");
+        doThrow(new RuntimeException("r2 caido")).when(r2StorageService).deleteTrailer(anyString());
+
+        // La fila ya esta borrada: un almacen caido no debe hacer fallar el borrado.
+        assertThatNoException().isThrownBy(() -> gameService.delete(1L));
+
+        verify(gameRepository).deleteById(1L);
     }
 
     @Test
