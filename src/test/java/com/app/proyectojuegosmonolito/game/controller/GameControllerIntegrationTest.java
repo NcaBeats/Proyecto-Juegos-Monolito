@@ -7,11 +7,10 @@ import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.dto.GameWithMediaRequest;
 import com.app.proyectojuegosmonolito.game.dto.ImagePresignRequest;
-import com.app.proyectojuegosmonolito.game.dto.SignedImageUploadResponse;
 import com.app.proyectojuegosmonolito.game.dto.VideoPresignRequest;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
-import com.app.proyectojuegosmonolito.game.service.ImageService;
+import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
@@ -35,12 +34,11 @@ import static com.app.proyectojuegosmonolito.game.GameFixtures.*;
 import static com.app.proyectojuegosmonolito.account.user.UserFixtures.profile;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.mockito.ArgumentCaptor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @SpringBootTest
@@ -62,8 +60,8 @@ class GameControllerIntegrationTest {
     @Autowired
     private UserService userService;
 
-    @MockitoBean
-    private ImageService imageService;
+    @MockitoSpyBean
+    private R2StorageService r2StorageService;
 
     private User createAdmin() {
         var admin = User.builder()
@@ -130,7 +128,8 @@ class GameControllerIntegrationTest {
 
     @Test
     void create_shouldReturn201() throws Exception {
-        when(imageService.store(any(MultipartFile.class), anyString())).thenReturn("https://example.com/img.png");
+        doReturn("https://example.com/img.png")
+                .when(r2StorageService).storeImage(any(MultipartFile.class), anyString(), anyString());
         var admin = createAdmin();
         var metadata = new MockMultipartFile("metadata", null, MediaType.APPLICATION_JSON_VALUE,
                 objectMapper.writeValueAsBytes(new GameRequest("Nuevo Juego", new BigDecimal("29.99"), 10, "Descripción",
@@ -288,46 +287,53 @@ class GameControllerIntegrationTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    // --- Presign de imagen contra Cloudinary ---
+    // --- Presign de imagen contra R2 ---
 
     @Test
-    void presignImage_kindImage_shouldUseCardFolder() throws Exception {
-        assertPresignImageFolder("image", "Half-Life 3", "games/half-life-3/card");
+    void presignImage_kindImage_shouldUseCardKey() throws Exception {
+        assertPresignImageKey("image", "Half-Life 3", "half-life-3/card/", "image/png");
     }
 
     @Test
-    void presignImage_kindBanner_shouldUseBannerFolder() throws Exception {
-        assertPresignImageFolder("banner", "Half-Life 3", "games/half-life-3/banner");
+    void presignImage_kindBanner_shouldUseBannerKey() throws Exception {
+        assertPresignImageKey("banner", "Half-Life 3", "half-life-3/banner/", "image/webp");
     }
 
     @Test
-    void presignImage_kindGallery_shouldUseGalleryFolder() throws Exception {
-        assertPresignImageFolder("gallery", "Half-Life 3", "games/half-life-3/gallery");
+    void presignImage_kindGallery_shouldUseGalleryKey() throws Exception {
+        assertPresignImageKey("gallery", "Half-Life 3", "half-life-3/gallery/", "image/avif");
     }
 
-    private void assertPresignImageFolder(String kind, String name, String expectedFolder) throws Exception {
-        when(imageService.signUpload(anyString())).thenReturn(new SignedImageUploadResponse(
-                "https://api.cloudinary.com/v1_1/test-cloud/image/upload",
-                "test-cloud", "000000000000000", 1_700_000_000L, "deadbeef", expectedFolder));
-
-        var body = new ImagePresignRequest(name, kind);
+    private void assertPresignImageKey(String kind, String name, String expectedKeyPrefix, String contentType) throws Exception {
+        var body = new ImagePresignRequest(name, kind, contentType);
 
         mockMvc.perform(post("/api/v1/games/media/image/presign")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(body))
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.cloudName").value("test-cloud"))
-                .andExpect(jsonPath("$.signature").value("deadbeef"));
-
-        var folderCaptor = ArgumentCaptor.forClass(String.class);
-        org.mockito.Mockito.verify(imageService).signUpload(folderCaptor.capture());
-        org.assertj.core.api.Assertions.assertThat(folderCaptor.getValue()).isEqualTo(expectedFolder);
+                .andExpect(jsonPath("$.key").value(org.hamcrest.Matchers.startsWith(expectedKeyPrefix)))
+                .andExpect(jsonPath("$.key").value(org.hamcrest.Matchers.endsWith("." + contentType.substring(6))))
+                .andExpect(jsonPath("$.publicPath").value(org.hamcrest.Matchers.containsString(expectedKeyPrefix)))
+                .andExpect(jsonPath("$.contentType").value(contentType))
+                .andExpect(jsonPath("$.expiresInSeconds").value(900))
+                .andExpect(jsonPath("$.uploadUrl").value(org.hamcrest.Matchers.containsString("X-Amz-Signature")));
     }
 
     @Test
     void presignImage_withInvalidKind_shouldReturn400() throws Exception {
-        var body = new ImagePresignRequest("Half-Life 3", "trailer");
+        var body = new ImagePresignRequest("Half-Life 3", "trailer", "image/png");
+
+        mockMvc.perform(post("/api/v1/games/media/image/presign")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void presignImage_withDisallowedContentType_shouldReturn400() throws Exception {
+        var body = new ImagePresignRequest("Half-Life 3", "image", "application/x-msdownload");
 
         mockMvc.perform(post("/api/v1/games/media/image/presign")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -339,7 +345,7 @@ class GameControllerIntegrationTest {
     @Test
     void presignImage_whenAuthenticatedAsClient_shouldReturn403() throws Exception {
         var cliente = createCliente();
-        var body = new ImagePresignRequest("Hack", "image");
+        var body = new ImagePresignRequest("Hack", "image", "image/png");
 
         mockMvc.perform(post("/api/v1/games/media/image/presign")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -359,10 +365,10 @@ class GameControllerIntegrationTest {
                 GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action"),
                 null, null,
                 "/uploads/games/juego-con-media/trailer.mp4", null,
-                "https://res.cloudinary.com/test/image/upload/card.jpg",
-                "https://res.cloudinary.com/test/image/upload/banner.jpg",
-                List.of("https://res.cloudinary.com/test/image/upload/gal1.jpg",
-                        "https://res.cloudinary.com/test/image/upload/gal2.jpg"));
+                "https://pub-test.r2.dev/card.jpg",
+                "https://pub-test.r2.dev/banner.jpg",
+                List.of("https://pub-test.r2.dev/gal1.jpg",
+                        "https://pub-test.r2.dev/gal2.jpg"));
 
         mockMvc.perform(post("/api/v1/games")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -372,8 +378,8 @@ class GameControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Juego Con Media"))
                 .andExpect(jsonPath("$.videoUrl").value("/uploads/games/juego-con-media/trailer.mp4"))
-                .andExpect(jsonPath("$.imageUrl").value("https://res.cloudinary.com/test/image/upload/card.jpg"))
-                .andExpect(jsonPath("$.bannerUrl").value("https://res.cloudinary.com/test/image/upload/banner.jpg"))
+                .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/card.jpg"))
+                .andExpect(jsonPath("$.bannerUrl").value("https://pub-test.r2.dev/banner.jpg"))
                 .andExpect(jsonPath("$.galleryUrls.length()").value(2));
     }
 
@@ -399,7 +405,7 @@ class GameControllerIntegrationTest {
         var admin = createAdmin();
         // Regresion: antes este endpoint borraba el videoUrl cuando el body lo omitia.
         saved.setVideoUrl("/uploads/games/previo/trailer.mp4");
-        saved.setImageUrl("https://res.cloudinary.com/test/image/upload/previa.jpg");
+        saved.setImageUrl("https://pub-test.r2.dev/previa.jpg");
         gameRepository.saveAndFlush(saved);
 
         var body = new GameWithMediaRequest(
@@ -416,7 +422,7 @@ class GameControllerIntegrationTest {
                 .andExpect(jsonPath("$.name").value("Juego Con Media"))
                 .andExpect(jsonPath("$.originalPrice").value(49.99))
                 .andExpect(jsonPath("$.videoUrl").value("/uploads/games/previo/trailer.mp4"))
-                .andExpect(jsonPath("$.imageUrl").value("https://res.cloudinary.com/test/image/upload/previa.jpg"));
+                .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/previa.jpg"));
     }
 
     @Test
@@ -429,8 +435,8 @@ class GameControllerIntegrationTest {
                 GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action"),
                 null, null,
                 "/uploads/games/nuevo/trailer.mp4", null,
-                "https://res.cloudinary.com/test/image/upload/nueva.jpg", null,
-                List.of("https://res.cloudinary.com/test/image/upload/nueva-gal.jpg"));
+                "https://pub-test.r2.dev/nueva.jpg", null,
+                List.of("https://pub-test.r2.dev/nueva-gal.jpg"));
 
         mockMvc.perform(put("/api/v1/games/{id}", saved.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -439,7 +445,7 @@ class GameControllerIntegrationTest {
                                 .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.videoUrl").value("/uploads/games/nuevo/trailer.mp4"))
-                .andExpect(jsonPath("$.imageUrl").value("https://res.cloudinary.com/test/image/upload/nueva.jpg"))
+                .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/nueva.jpg"))
                 .andExpect(jsonPath("$.galleryUrls.length()").value(1));
     }
 }

@@ -4,11 +4,13 @@ import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
@@ -21,6 +23,9 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     Page<Game> findBySeller_IdAndNameContainingIgnoreCase(Long sellerId, String name, Pageable pageable);
     boolean existsByIdAndSeller_Id(Long id, Long sellerId);
     long countByState(GameState state);
+
+    @Query("SELECT DISTINCT g FROM Game g LEFT JOIN FETCH g.gallery")
+    List<Game> findAllWithGallery();
 
     @Query("""
             SELECT COALESCE(SUM(g.originalPrice * (100 - g.discountPercent) / 100), 0)

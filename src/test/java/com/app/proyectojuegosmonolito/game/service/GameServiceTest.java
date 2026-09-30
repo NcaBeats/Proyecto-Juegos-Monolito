@@ -33,9 +33,6 @@ class GameServiceTest {
     private GameRepository gameRepository;
 
     @Mock
-    private ImageService imageService;
-
-    @Mock
     private R2StorageService r2StorageService;
 
     @InjectMocks
@@ -168,13 +165,13 @@ class GameServiceTest {
     }
 
     @Test
-    void delete_shouldCleanUpCloudinaryImagesAndTheR2Trailer() {
+    void delete_shouldCleanUpImagesAndTheR2Trailer() {
         var game = game(1L, "Shadow Blade", BigDecimal.ONE);
-        game.setImageUrl("https://res.cloudinary.com/demo/image/upload/games/shadow-blade/card.jpg");
-        game.setBannerUrl("https://res.cloudinary.com/demo/image/upload/games/shadow-blade/banner.jpg");
+        game.setImageUrl("https://pub-test.r2.dev/shadow-blade/card.jpg");
+        game.setBannerUrl("https://pub-test.r2.dev/shadow-blade/banner.jpg");
         game.setVideoUrl("https://pub-test.r2.dev/shadow-blade/trailer.mp4");
         game.getGallery().add(GameImage.builder().game(game)
-                .url("https://res.cloudinary.com/demo/image/upload/games/shadow-blade/gallery/1.jpg")
+                .url("https://pub-test.r2.dev/shadow-blade/gallery/1.jpg")
                 .position(0).build());
         when(gameRepository.existsById(1L)).thenReturn(true);
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
@@ -182,19 +179,19 @@ class GameServiceTest {
         gameService.delete(1L);
 
         verify(gameRepository).deleteById(1L);
-        verify(imageService).delete(game.getImageUrl());
-        verify(imageService).delete(game.getBannerUrl());
-        verify(imageService).delete(game.getGallery().getFirst().getUrl());
+        verify(r2StorageService).deleteImage(game.getImageUrl());
+        verify(r2StorageService).deleteImage(game.getBannerUrl());
+        verify(r2StorageService).deleteImage(game.getGallery().getFirst().getUrl());
         verify(r2StorageService).deleteVideo("shadow-blade");
     }
 
     @Test
     void delete_shouldSucceedEvenIfMediaCleanupFails() {
         var game = game(1L, "Shadow Blade", BigDecimal.ONE);
-        game.setImageUrl("https://res.cloudinary.com/demo/image/upload/games/shadow-blade/card.jpg");
+        game.setImageUrl("https://pub-test.r2.dev/shadow-blade/card.jpg");
         when(gameRepository.existsById(1L)).thenReturn(true);
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
-        doThrow(new RuntimeException("cloudinary caido")).when(imageService).delete(anyString());
+        doThrow(new RuntimeException("r2 caido")).when(r2StorageService).deleteImage(anyString());
 
         // El juego ya esta borrado en base de datos: un almacen caido no debe
         // dejar el borrado a medias ni propagar el error.
