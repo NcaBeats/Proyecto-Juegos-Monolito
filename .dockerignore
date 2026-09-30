@@ -2,8 +2,7 @@ target/
 .idea/
 .git/
 .gitignore
-.env
-.env.prod
+.env*
 application-local.yaml
 *.iml
 HELP.md

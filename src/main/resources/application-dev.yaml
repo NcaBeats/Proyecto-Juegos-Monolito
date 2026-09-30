@@ -4,9 +4,9 @@ spring:
   config:
     import: "optional:file:.env[.properties]"
   datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME:proyecto_juegos}
-    username: ${DB_USER:nico}
-    password: ${DB_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     show-sql: true
 
@@ -14,8 +14,8 @@ app:
   seed:
     enabled: true
   jwt:
-    secret: ${KEY_JWT_SECRET}
-    expiration: ${KEY_JWT_EXPIRATION:3600000}
+    secret: ${APP_JWT_SECRET}
+    expiration: ${APP_JWT_EXPIRATION:3600000}
   cloudinary:
     url: ${CLOUDINARY_URL}
 
