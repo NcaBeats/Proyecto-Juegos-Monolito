@@ -3,9 +3,12 @@ services:
     image: 'postgres:17-alpine'
     container_name: '${CONTAINER_NAME:-postgres-container}'
     environment:
-      - 'POSTGRES_DB=${DB_NAME:-proyecto_juegos}'
-      - 'POSTGRES_PASSWORD=${DB_PASSWORD:?falta DB_PASSWORD en .env}'
-      - 'POSTGRES_USER=${DB_USER:-nico}'
+      # El nombre de la base no es secreto ni varia entre entornos, asi que no
+      # merece ser una variable. Usuario y password si se interpolan desde las
+      # mismas variables que consume la app, para que exista una sola fuente.
+      - 'POSTGRES_DB=proyecto_juegos'
+      - 'POSTGRES_PASSWORD=${SPRING_DATASOURCE_PASSWORD:?falta SPRING_DATASOURCE_PASSWORD en .env}'
+      - 'POSTGRES_USER=${SPRING_DATASOURCE_USERNAME:-nico}'
     ports:
       - '5432:5432'
     volumes:
@@ -23,7 +26,10 @@ services:
     environment:
       - 'PORT=8080'
       - 'SPRING_PROFILES_ACTIVE=dev'
-      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${DB_NAME:-proyecto_juegos}'
+      # Dentro de la red de compose el host es el nombre del servicio, no
+      # localhost. Esta linea sobrescribe la que llega por env_file, que trae
+      # el host de tu maquina. Mismo nombre de variable, valor por entorno.
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/proyecto_juegos'
 
 volumes:
   postgres-data:

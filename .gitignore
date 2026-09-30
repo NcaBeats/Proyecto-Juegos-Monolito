@@ -34,7 +34,6 @@ build/
 
 ### Environment ###
 .env
-.env.prod
 
 ### Logs ###
 logs.txt

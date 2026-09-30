@@ -1,17 +1,24 @@
 spring:
   jpa:
     show-sql: false
+  # Sin default a proposito: el perfil base declara un localhost, asi que omitir
+  # estas variables haria que la app arrancara apuntandose a si misma y fallara
+  # al abrir la conexion, sin decir que variable falta.
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
 app:
   jwt:
-    secret: ${KEY_JWT_SECRET}
-    expiration: ${KEY_JWT_EXPIRATION}
+    secret: ${APP_JWT_SECRET}
+    expiration: ${APP_JWT_EXPIRATION}
   cors:
     # Sin default a proposito: el perfil base declara localhost, asi que omitir
     # esta variable en produccion dejaria al backend aceptando solo el origen
     # equivocado y todos los requests del frontend fallarian por CORS. Que
     # falle el arranque es mas facil de diagnosticar que un 403 silencioso.
-    allowed-origins: ${CORS_ALLOWED_ORIGINS}
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS}
 
 
 logging:

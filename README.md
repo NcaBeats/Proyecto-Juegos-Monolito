@@ -70,45 +70,93 @@ docker compose up -d postgres
 La app arranca en `http://localhost:9090` (configurable con la env var `PORT`).
 **Necesita Java 25 en la PC.**
 
-> **Env vars obligatorias** para el perfil `dev`: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`
-> y `R2_SECRET_ACCESS_KEY`. `CLOUDINARY_URL` trae valor por defecto en `application-dev.yaml`
-> (lo mismo aplica a Docker, ya resuelto en `compose.yaml`).
+> **Configuración:** todas las variables viven en `.env` (gitignored). Copiá `.env.example`
+> y completalo: ahí está documentada cada variable, qué hace y de dónde sale su valor
+> en producción.
 
 ## Variables de entorno
 
-| Variable | Obligatoria | Descripción |
-|----------|-------------|-------------|
-| `PORT` | No | Puerto HTTP (default `9090`) |
-| `DB_NAME` / `DB_USER` / `DB_PASSWORD` | No | Conexión a Postgres (defaults locales) |
-| `KEY_JWT_SECRET` | Sí (prod) | Secreto del JWT |
-| `KEY_JWT_EXPIRATION` | No | Expiración del JWT en ms (default `3600000`) |
-| `CLOUDINARY_URL` | Sí | URL de Cloudinary para imágenes |
-| `R2_ACCOUNT_ID` | Sí | Cuenta Cloudflare R2 (trailers/videos) |
-| `R2_ACCESS_KEY_ID` | Sí | Access Key de R2 |
-| `R2_SECRET_ACCESS_KEY` | Sí | Secret Key de R2 |
-| `R2_BUCKET` | No | Bucket R2 (default `trailers`) |
-| `R2_PUBLIC_BASE_URL` | No | Base URL pública de R2 |
+Los nombres son **los mismos** en local y en producción; lo que cambia es el valor. El prefijo
+indica quién es el dueño: `SPRING_*` el framework, `APP_*` la aplicación, y sin prefijo un
+proveedor externo.
 
-> Para **correr los tests** (Testcontainers) alcanza con valores dummy en `CLOUDINARY_URL`
-> y `R2_*`: el arranque solo valida que no estén vacíos; durante los tests no se suben archivos.
+### Desarrollo local — `.env` (11 variables)
+
+| Variable | Para qué |
+|----------|----------|
+| `SPRING_DATASOURCE_URL` | Conexión a Postgres. Local: tu máquina. Docker: `compose.yaml` la sobrescribe con el host `postgres` |
+| `SPRING_DATASOURCE_USERNAME` | Usuario de Postgres |
+| `SPRING_DATASOURCE_PASSWORD` | Contraseña de Postgres |
+| `APP_JWT_SECRET` | Clave de firma de los JWT (HS256, mínimo 256 bits) |
+| `APP_JWT_EXPIRATION` | Vigencia del token en ms (default `3600000`) |
+| `CLOUDINARY_URL` | Imágenes de juegos y categorías: firma los uploads y borra la media |
+| `R2_ACCOUNT_ID` | Cuenta de Cloudflare R2 (trailers) |
+| `R2_ACCESS_KEY_ID` | Access Key de R2 |
+| `R2_SECRET_ACCESS_KEY` | Secret Key de R2 |
+| `R2_BUCKET` | Bucket de R2 (default `trailers`) |
+| `APP_CORS_ALLOWED_ORIGINS` | Orígenes del navegador permitidos: separados por comas y **sin barra final** |
+
+Tres variables **no** van en `.env` porque no son configuración sino banderas de arranque:
+`SPRING_PROFILES_ACTIVE` (la pone `compose.yaml` o el plugin de Maven), `APP_SEED_ENABLED`
+(el perfil `dev` lo fuerza a `true`) y `R2_PUBLIC_BASE_URL` (vive como default en
+`application.yaml`, porque no es secreta ni cambia entre entornos).
+
+`APP_CORS_ALLOWED_ORIGINS` acepta una lista explícita, nunca `*`: `allowCredentials` está
+activo y el navegador rechaza esa combinación.
+
+### Producción — panel de Render (13 variables)
+
+El panel de Render **es** el almacén de secretos: los valores de producción no van en ningún
+archivo del repo. De las 11 de `.env`, solo 2 conservan el mismo valor
+(`APP_JWT_EXPIRATION` y `R2_BUCKET`); 8 lo cambian seguro, y una no
+(`R2_ACCOUNT_ID`) depende de si la rotación de keys fue dentro de la misma cuenta.
+
+| Variable | De dónde sale el valor |
+|----------|----------------------|
+| `SPRING_PROFILES_ACTIVE` | Literal `prod` |
+| `SPRING_DATASOURCE_URL` | Panel de la DB → *Internal DB URL*, en formato JDBC |
+| `SPRING_DATASOURCE_USERNAME` | Panel de la DB |
+| `SPRING_DATASOURCE_PASSWORD` | Panel de la DB. **No reutilizar la de local** |
+| `APP_JWT_SECRET` | Generado por vos. **No reutilizar la de local** |
+| `APP_JWT_EXPIRATION` | `3600000` |
+| `APP_CORS_ALLOWED_ORIGINS` | Literal: el dominio de Vercel |
+| `APP_SEED_ENABLED` | `true` siembra catálogo y admin de arranque; `false` deja la DB vacía |
+| `CLOUDINARY_URL` | Dashboard de Cloudinary. **No reutilizar la de local** |
+| `R2_ACCOUNT_ID` | Dashboard de Cloudflare. Igual salvo que la rotación fuera a otra cuenta |
+| `R2_ACCESS_KEY_ID` | Dashboard de Cloudflare. Nuevo junto con el secret |
+| `R2_SECRET_ACCESS_KEY` | Dashboard de Cloudflare. **No reutilizar la de local** |
+| `R2_BUCKET` | `trailers` (tiene default en el código) |
+
+Las cuatro marcadas son secretos: **no pueden reutilizar el valor de local**. Si se filtran
+las claves de esta máquina, quien las tenga puede firmar tokens de ADMIN, entrar a la base o
+borrar la media de producción.
+
+`application-prod.yaml` declara el datasource, el JWT y el CORS **sin default**, así que una
+variable faltante hace fallar el arranque con un mensaje que la nombra. En cambio
+`CLOUDINARY_URL` y las de R2 tienen default vacío: si faltan, la app **arranca igual** y
+falla recién al subir el primer archivo. Revisá los logs del primer deploy, no solo el health check.
+
+> Con `APP_SEED_ENABLED=true` el seed corre **una sola vez**: `DataInitializer` está guardado
+> con `if (gameService.count() == 0)`, así que reiniciar el contenedor no lo vuelve a ejecutar
+> ni choca con el `UNIQUE` del email. Es seguro dejarlo activo en Render.
+>
+> Ojo igual con el admin de arranque: `player1@gmail.com` / `pass123` están hardcodeados en
+> `DataInitializer.java` y son públicos en el repo. **Cambiá esa contraseña apenas el primer
+> deploy esté arriba, antes de compartir la URL.** El endpoint `PUT /api/v1/users/password`
+> también invalida los tokens ya emitidos de ese usuario.
 
 ## Tests
 
 Los tests de integración usan **Testcontainers** (levantan un Postgres en Docker sobre la marcha).
-Requisito: **Docker Desktop corriendo** + las env vars de arriba.
+Requisito: **Docker Desktop corriendo**. No hace falta definir ninguna variable: el perfil `test`
+trae valores ficticios para JWT, Cloudinary y R2, y el datasource lo construye el contenedor.
 
 ```bash
 # PowerShell
-$env:CLOUDINARY_URL = "cloudinary://key:secret@cloud"
-$env:R2_ACCOUNT_ID = "dummy-account"
-$env:R2_ACCESS_KEY_ID = "dummy"
-$env:R2_SECRET_ACCESS_KEY = "dummy"
-.\mvnw.cmd test
+.\mvnw.cmd clean test
 
 # Bash / Linux / macOS
-CLOUDINARY_URL="cloudinary://key:secret@cloud" \
-R2_ACCOUNT_ID="dummy" R2_ACCESS_KEY_ID="dummy" R2_SECRET_ACCESS_KEY="dummy" \
-./mvnw test
+./mvnw clean test
 ```
 
 **Nota:** el contexto Spring se comparte entre clases de test (mismo Postgres de Testcontainers).
