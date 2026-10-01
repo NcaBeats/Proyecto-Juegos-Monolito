@@ -200,6 +200,12 @@ public class R2StorageService {
         return url;
     }
 
+    /**
+     * Borra una imagen de R2 a partir de su URL. Las URLs que no pertenecen a este
+     * bucket (p.ej. Cloudinary legacy durante la transicion) se ignoran.
+     *
+     * @return {@code true} si el objeto pertenecia al bucket y existia.
+     */
     public boolean deleteImage(String url) {
         if (url == null || url.isBlank()) {
             return false;

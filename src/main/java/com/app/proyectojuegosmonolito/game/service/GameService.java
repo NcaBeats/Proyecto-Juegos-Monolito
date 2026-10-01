@@ -75,7 +75,7 @@ public class GameService {
         return gameRepository.findAll(pageable);
     }
 
-}
+    @Transactional(readOnly = true)
     public Page<Game> findDiscounted(Pageable pageable) {
         log.info("Fetching discounted games with pageable: {}", pageable);
         return gameRepository.findByDiscountPercentGreaterThan(0, pageable);
