@@ -13,10 +13,6 @@ spring:
 app:
   seed:
     enabled: true
-  # Runner temporal de migracion Cloudinary -> R2 (solo dev). Se desactiva
-  # exportando APP_MIGRATE_IMAGES=false o al eliminar el runner.
-  migrate:
-    images: ${APP_MIGRATE_IMAGES:true}
   jwt:
     secret: ${APP_JWT_SECRET}
     expiration: ${APP_JWT_EXPIRATION:3600000}

@@ -24,10 +24,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     boolean existsByIdAndSeller_Id(Long id, Long sellerId);
     long countByState(GameState state);
 
-    @Query("SELECT DISTINCT g FROM Game g LEFT JOIN FETCH g.gallery")
-    List<Game> findAllWithGallery();
-
-    @Query("""
+}
             SELECT COALESCE(SUM(g.originalPrice * (100 - g.discountPercent) / 100), 0)
             FROM Game g
             WHERE g.state = :state
