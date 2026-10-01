@@ -49,15 +49,6 @@ app:
     secret-access-key: ${R2_SECRET_ACCESS_KEY:}
     bucket: ${R2_BUCKET:trailers}
     public-base-url: ${R2_PUBLIC_BASE_URL:https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev}
-    # Las imagenes ya viven en keys con UUID y los trailers en keys con huella
-    # del contenido, asi que ninguna URL se reutiliza: ambos pueden cachearse
-    # un ano sin revalidar. Cambiar un archivo implica cambiar su URL, por eso
-    # immutable es seguro aca y no en un bucket con keys fijas.
-    cache-control-image: "${R2_CACHE_CONTROL_IMAGE:public, max-age=31536000, immutable}"
-    cache-control-video: "${R2_CACHE_CONTROL_VIDEO:public, max-age=31536000, immutable}"
-    # Normalizacion de una vez para los objetos ya subidos (keys sin huella y
-    # objetos sin Cache-Control). Idempotente: correrla dos veces no cambia nada.
-    normalize-media: ${APP_R2_NORMALIZE_MEDIA:false}
 
   jpa:
     hibernate:
