@@ -76,11 +76,6 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public java.util.List<Game> findAllWithGallery() {
-        return gameRepository.findAllWithGallery();
-    }
-
-    @Transactional(readOnly = true)
     public Page<Game> findDiscounted(Pageable pageable) {
         log.info("Fetching discounted games with pageable: {}", pageable);
         return gameRepository.findByDiscountPercentGreaterThan(0, pageable);

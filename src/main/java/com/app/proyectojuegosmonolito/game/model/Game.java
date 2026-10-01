@@ -73,7 +73,7 @@ public class Game {
     @JoinColumn(name = "seller_id")
     private User seller;
 
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy("position ASC")
     @Builder.Default
     private List<GameImage> gallery = new ArrayList<>();

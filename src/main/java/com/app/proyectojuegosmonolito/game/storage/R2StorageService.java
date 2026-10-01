@@ -11,10 +11,7 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
@@ -201,73 +198,6 @@ public class R2StorageService {
         String url = publicBaseUrl + "/" + key;
         log.info("Uploaded image to R2 bucket={} key={} ({} bytes)", bucket, key, file.getSize());
         return url;
-    }
-
-    /**
-     * Sube bytes ya obtenidos (usado por el runner de migracion Cloudinary -&gt; R2).
-     */
-    public String storeImageBytes(String key, byte[] bytes, String contentType) {
-        s3Client.putObject(
-                PutObjectRequest.builder()
-                        .bucket(bucket)
-                        .key(key)
-                        .contentType(contentType)
-                        .build(),
-                RequestBody.fromBytes(bytes)
-        );
-        String url = publicBaseUrl + "/" + key;
-        log.info("Uploaded image bytes to R2 bucket={} key={} ({} bytes)", bucket, key, bytes.length);
-        return url;
-    }
-
-    /**
-     * URL publica de una key dentro del bucket.
-     */
-    public String publicUrl(String key) {
-        return publicBaseUrl + "/" + key;
-    }
-
-    /**
-     * Copia server-side un objeto dentro del bucket (S3 CopyObject). Usado por el
-     * runner de consolidacion para unificar los trailers bajo el slug canonical del
-     * juego sin mover bytes por el servidor.
-     *
-     * @return {@code true} si la copia se completo; {@code false} si el origen no
-     *         existe o Cloudflare no respondio.
-     */
-    public boolean copyObject(String sourceKey, String destKey) {
-        try {
-            s3Client.copyObject(CopyObjectRequest.builder()
-                    .sourceBucket(bucket)
-                    .sourceKey(sourceKey)
-                    .destinationBucket(bucket)
-                    .destinationKey(destKey)
-                    .build());
-            log.info("Copied R2 object bucket={} {} -> {}", bucket, sourceKey, destKey);
-            return true;
-        } catch (SdkException e) {
-            log.warn("Could not copy R2 object bucket={} {} -> {}: {}", bucket, sourceKey, destKey, e.getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Comprueba si un objeto ya existe en el bucket (usado por el runner para saltar
-     * objetos ya migrados). Ante un error no concluyente devuelve {@code false}.
-     */
-    public boolean imageExists(String key) {
-        try {
-            s3Client.headObject(HeadObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(key)
-                    .build());
-            return true;
-        } catch (NoSuchKeyException e) {
-            return false;
-        } catch (SdkException e) {
-            log.warn("Could not check existence of R2 bucket={} key={}: {}", bucket, key, e.getMessage());
-            return false;
-        }
     }
 
     /**
