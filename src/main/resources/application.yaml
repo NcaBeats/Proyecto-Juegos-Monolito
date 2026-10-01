@@ -29,6 +29,11 @@ spring:
   jackson:
     find-and-add-modules: true
 
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+
 app:
   seed:
     enabled: ${APP_SEED_ENABLED:false}
@@ -49,11 +54,6 @@ app:
     secret-access-key: ${R2_SECRET_ACCESS_KEY:}
     bucket: ${R2_BUCKET:trailers}
     public-base-url: ${R2_PUBLIC_BASE_URL:https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev}
-
-  jpa:
-    hibernate:
-      ddl-auto: none
-    open-in-view: false
 
 management:
   endpoints:
