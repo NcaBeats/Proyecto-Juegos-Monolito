@@ -112,7 +112,7 @@ public class R2StorageService {
         return new PresignedUploadResponse(
                 presigned.url().toString(),
                 key,
-                "/uploads/games/" + key,
+                publicBaseUrl + "/" + key,
                 contentType,
                 PRESIGN_TTL.toSeconds()
         );

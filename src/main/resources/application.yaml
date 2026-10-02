@@ -38,6 +38,14 @@ app:
   seed:
     enabled: ${APP_SEED_ENABLED:false}
 
+  media:
+    normalize:
+      # Runner de una pasada que reescribe a URL absoluta las filas que todavia
+      # guardan la ruta legacy /uploads/games/{slug}/trailer.mp4. Es idempotente.
+      # Prendelo una vez (APP_MEDIA_NORMALIZE_ENABLED=true), revisá la linea de
+      # log "MediaUrlNormalizer: found=... rewritten=...", y apagalo.
+      enabled: ${APP_MEDIA_NORMALIZE_ENABLED:false}
+
   cors:
     allowed-origins: "${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000}"
 

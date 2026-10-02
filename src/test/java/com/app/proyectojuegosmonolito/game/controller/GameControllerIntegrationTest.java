@@ -220,7 +220,7 @@ class GameControllerIntegrationTest {
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.key").value("half-life-3/trailer.mp4"))
-                .andExpect(jsonPath("$.publicPath").value("/uploads/games/half-life-3/trailer.mp4"))
+                .andExpect(jsonPath("$.publicPath").value("https://pub-test.r2.dev/half-life-3/trailer.mp4"))
                 .andExpect(jsonPath("$.contentType").value("video/mp4"))
                 .andExpect(jsonPath("$.expiresInSeconds").value(900))
                 .andExpect(jsonPath("$.uploadUrl").value(org.hamcrest.Matchers.containsString("X-Amz-Signature")))
@@ -364,7 +364,7 @@ class GameControllerIntegrationTest {
                 "Juego Con Media", new BigDecimal("29.99"), 10, "Descripción",
                 GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action"),
                 null, null,
-                "/uploads/games/juego-con-media/trailer.mp4", null,
+                "https://pub-test.r2.dev/juego-con-media/trailer.mp4", null,
                 "https://pub-test.r2.dev/card.jpg",
                 "https://pub-test.r2.dev/banner.jpg",
                 List.of("https://pub-test.r2.dev/gal1.jpg",
@@ -377,7 +377,7 @@ class GameControllerIntegrationTest {
                                 .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Juego Con Media"))
-                .andExpect(jsonPath("$.videoUrl").value("/uploads/games/juego-con-media/trailer.mp4"))
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/juego-con-media/trailer.mp4"))
                 .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/card.jpg"))
                 .andExpect(jsonPath("$.bannerUrl").value("https://pub-test.r2.dev/banner.jpg"))
                 .andExpect(jsonPath("$.galleryUrls.length()").value(2));
@@ -404,7 +404,7 @@ class GameControllerIntegrationTest {
         var saved = gameRepository.save(game());
         var admin = createAdmin();
         // Regresion: antes este endpoint borraba el videoUrl cuando el body lo omitia.
-        saved.setVideoUrl("/uploads/games/previo/trailer.mp4");
+        saved.setVideoUrl("https://pub-test.r2.dev/previo/trailer.mp4");
         saved.setImageUrl("https://pub-test.r2.dev/previa.jpg");
         gameRepository.saveAndFlush(saved);
 
@@ -421,7 +421,7 @@ class GameControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Juego Con Media"))
                 .andExpect(jsonPath("$.originalPrice").value(49.99))
-                .andExpect(jsonPath("$.videoUrl").value("/uploads/games/previo/trailer.mp4"))
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/previo/trailer.mp4"))
                 .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/previa.jpg"));
     }
 
@@ -434,7 +434,7 @@ class GameControllerIntegrationTest {
                 "Juego Con Media", new BigDecimal("49.99"), 20, "Nueva desc",
                 GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action"),
                 null, null,
-                "/uploads/games/nuevo/trailer.mp4", null,
+                "https://pub-test.r2.dev/nuevo/trailer.mp4", null,
                 "https://pub-test.r2.dev/nueva.jpg", null,
                 List.of("https://pub-test.r2.dev/nueva-gal.jpg"));
 
@@ -444,7 +444,7 @@ class GameControllerIntegrationTest {
                         .with(jwt().jwt(b -> b.subject(admin.getId().toString()))
                                 .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.videoUrl").value("/uploads/games/nuevo/trailer.mp4"))
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/nuevo/trailer.mp4"))
                 .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/nueva.jpg"))
                 .andExpect(jsonPath("$.galleryUrls.length()").value(1));
     }
