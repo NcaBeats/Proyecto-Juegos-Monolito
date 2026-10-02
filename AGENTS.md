@@ -20,6 +20,7 @@
 docker compose up -d        # dev Postgres only (reads .env)
 ```
 - Deploy to prod is **Render/Railway only** (builds `Dockerfile`, env vars typed directly in the Render dashboard — there is NO prod env file in the repo). There is NO `compose.prod.yaml`.
+- **Obsolete env vars still sitting in the Render panel** (safe to delete, nothing reads them): `APP_MIGRATE_IMAGES` (its `ImageMigrationRunner` was removed; replaced by `APP_MEDIA_NORMALIZE_ENABLED`) and `CLOUDINARY_URL` (all media lives in R2). `R2_PUBLIC_BASE_URL` is NOT obsolete — Render has no such var, so it resolves from the `application.yaml` default, which already points at the prod bucket.
 
 ## Profiles — activated EXTERNALLY (no `spring.profiles.active` in `application.yaml`)
 - **dev** — via the `spring-boot-maven-plugin` `<profiles>` in `pom.xml`, so it ONLY applies to `./mvnw spring-boot:run`. Running the main class from IntelliJ requires `SPRING_PROFILES_ACTIVE=dev` env var in the Run Configuration. `application-dev.yaml` reads the whole local config from `.env` (via `spring.config.import: "optional:file:.env[.properties]"`) for `spring.datasource.*` (3 vars), `app.jwt.secret` and `app.jwt.expiration`. The R2 vars and `CLOUDINARY_URL` (legacy, unused) resolve through `application.yaml` with empty defaults. **Those placeholders have NO default on purpose**: if `.env` is missing or incomplete the app fails at boot naming the variable, instead of silently connecting to a wrong localhost. The `dev` profile also forces `app.seed.enabled: true` and `SPRING_DATASOURCE_*` defaults are overridden by the env var of the same name.
@@ -28,8 +29,20 @@ docker compose up -d        # dev Postgres only (reads .env)
 - `DataInitializer` (`config/`) is `@ConditionalOnProperty("app.seed.enabled", havingValue = "true")` (NOT `@Profile("dev")`): seeds 44 games, 9 categories, player1 (ADMIN, $200), player2 (CLIENTE, $50), broke_player (CLIENTE). All users have full profile data (RUN, name, region, etc.). The `dev` profile forces it to `true`; in prod set `APP_SEED_ENABLED` explicitly — `false` starts with an EMPTY DB and NO ADMIN (promote one via SQL, since `POST /api/v1/users` is ADMIN-only), `true` creates player1 with a known password that must be changed immediately.
 - **R2 env-precedence gotcha (real incident 2026-09-30)**: Spring resolves the `app.r2.*` placeholders from **OS env vars BEFORE** the `.env` import, so a stale `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` in the shell/IDE env silently overrides `.env` → **every S3 call returns `401 Unauthorized`** (fixed by clearing them). `.env` is the single source of truth: `Remove-Item Env:R2_ACCESS_KEY_ID, Env:R2_SECRET_ACCESS_KEY` before `mvnw spring-boot:run`.
 
+## Media: invariante de URLs absolutas
+- **Toda URL de media persistida es absoluta** (`https?://`): `game.video_url`, `game.image_url`, `game.banner_url`, `game_image.url`. Nunca rutas relativas.
+- El contrato vive en `game/model/MediaUrl.java`. `GameService.requireAbsoluteMedia()` + `MediaUrl.requireAbsolute()` validan en **los 10 caminos de escritura** (`create`, `update`, `updateWithFiles`, `applyMediaUrls`, `updateImage/BannerUrl/VideoUrl`, `assignBanner`, `addGalleryImage`, `replaceGallery`). Rechazo estricto → **400**, no normalización silenciosa.
+- **null/vacío sigue siendo válido** y significa "no cambiar" en la edición parcial (`applyMediaUrls`, `update`). El guardián valida el valor **entrante**, nunca el que ya estaba guardado: si no, editar el precio de un juego con video legacy daría 400 por un dato que el admin no está tocando.
+- `GameService.saveAll()` queda **deliberadamente sin validar** — es el único método que persiste sin pasar por el guardián, porque `MediaUrlNormalizer` necesita escribir justo las filas que incumplen la regla. Si le agregás validación, el runner deja de poder hacer su trabajo.
+- `MediaUrlNormalizer` (`config/`, `CommandLineRunner`, `@Order(1)`) es el runner de una pasada: gateado por `app.media.normalize.enabled` (default `false`), idempotente, y **reporta `found=N rewritten=M` en una línea de log**. No sube/borrá nada en R2: solo reescribe el string, porque lo que se guarda es `LEGACY_TRAILER_PREFIX` + la clave exacta del bucket. Si `R2_PUBLIC_BASE_URL` está vacío → log `ERROR` y skip (preferimos fallar a escribir una URL que no resuelve).
+- Los efectos en borrado son **ninguno**: `deleteVideo` usa slug (no URL) y `deleteImage` solo deriva key de URLs absolutas.
+- El campo `PresignedUploadResponse.publicPath` **es una URL absoluta** pese al nombre. No se renombró a propósito: hacerlo rompería el frontend viejo y obligaría a desplegar ambos a la vez.
+- El frontend ya **no resuelve** rutas de media: `lib/media.ts` solo valida el invariante y lanza si recibe una ruta. `NEXT_PUBLIC_R2_PUBLIC_BASE_URL` es obsoleta.
+- **Tests**: `MediaUrlTest` (contrato), `MediaUrlNormalizerIntegrationTest` (el seguro funciona), y en `GameServiceTest` los `*_whenRelativePath_shouldReject`. `application-test.yaml` define `public-base-url: https://pub-test.r2.dev`, así que los asserts usan ese dominio.
+- El perfil `dev` **no** activa el runner (default `false` en `application.yaml`): en una base creada con el código actual no hay nada que normalizar.
+
 ## Auth & Security
-- JWT via `spring-boot-starter-oauth2-resource-server` (Nimbus) — **no jjwt**
+JWT via `spring-boot-starter-oauth2-resource-server` (Nimbus) — **no jjwt**
 - HMAC-SHA256: `NimbusJwtEncoder.withSecretKey(secret).algorithm(MacAlgorithm.HS256)`; `@Value("${app.jwt.secret}")`
 - `Role` enum (ADMIN/VENTEDOR/CLIENTE), default CLIENTE, assigned in `UserService.create()`
 - `JwtAuthenticationConverter` maps claim `"role"` → `ROLE_<role>`; tokens without claim → `ROLE_null`
