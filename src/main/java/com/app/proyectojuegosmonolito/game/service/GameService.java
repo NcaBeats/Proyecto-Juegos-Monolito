@@ -117,6 +117,18 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
+    public Page<Game> findFreeToPlay(Pageable pageable) {
+        log.info("Fetching free-to-play games with pageable: {}", pageable);
+        return gameRepository.findFreeToPlay(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Game> findComingSoon(Pageable pageable) {
+        log.info("Fetching coming soon games with pageable: {}", pageable);
+        return gameRepository.findByState(GameState.COMING_SOON, pageable);
+    }
+
+    @Transactional(readOnly = true)
     public Page<Game> findByCategory(String categoryName, Pageable pageable) {
         log.info("Fetching games by category '{}' with pageable: {}", categoryName, pageable);
         return gameRepository.findByCategories_Name(categoryName, pageable);
@@ -284,16 +296,6 @@ public class GameService {
     }
 
     @Transactional
-    public Game updateBannerUrl(Long id, String bannerUrl) {
-        MediaUrl.requireAbsolute(bannerUrl, "bannerUrl");
-        log.info("Updating banner for game {}: {}", id, bannerUrl);
-        var game = findById(id);
-        game.setBannerUrl(bannerUrl);
-        log.info("Updated banner for game {}", game.getId());
-        return game;
-    }
-
-    @Transactional
     public Game updateVideoUrl(Long id, String videoUrl) {
         MediaUrl.requireAbsolute(videoUrl, "videoUrl");
         log.info("Updating video for game {}: {}", id, videoUrl);
@@ -310,6 +312,8 @@ public class GameService {
      */
     @Transactional
     public Game applyMediaUrls(Long id, String imageUrl, String bannerUrl, List<String> galleryUrls) {
+        // Todo se valida antes de tocar el repositorio: una URL invalida tiene
+        // que ser 400 sin gastar una query.
         MediaUrl.requireAbsolute(imageUrl, "imageUrl");
         MediaUrl.requireAbsolute(bannerUrl, "bannerUrl");
         if (galleryUrls != null) {
@@ -322,16 +326,10 @@ public class GameService {
         if (bannerUrl != null && !bannerUrl.isBlank()) {
             game.setBannerUrl(bannerUrl);
         }
+        // replaceGallery es el unico lugar que sabe como se reconstruye la
+        // galeria (position = indice, createdAt = now, cascade por game).
         if (galleryUrls != null && !galleryUrls.isEmpty()) {
-            game.getGallery().clear();
-            for (int i = 0; i < galleryUrls.size(); i++) {
-                game.getGallery().add(GameImage.builder()
-                        .game(game)
-                        .url(galleryUrls.get(i))
-                        .position(i)
-                        .createdAt(Instant.now())
-                        .build());
-            }
+            replaceGallery(id, galleryUrls);
         }
         log.info("Applied media urls to game {}: image={} banner={} gallery={}",
                 id, imageUrl, bannerUrl, galleryUrls == null ? 0 : galleryUrls.size());
@@ -409,21 +407,6 @@ public class GameService {
     }
 
     @Transactional
-    public Game addGalleryImage(Long id, String url, Integer position) {
-        MediaUrl.requireAbsolute(url, "galleryUrl");
-        log.info("Adding gallery image to game {} at position {}: {}", id, position, url);
-        var game = findById(id);
-        var image = GameImage.builder()
-                .game(game)
-                .url(url)
-                .position(position)
-                .createdAt(Instant.now())
-                .build();
-        game.getGallery().add(image);
-        return game;
-    }
-
-    @Transactional
     public Game replaceGallery(Long id, List<String> urls) {
         urls.forEach(url -> MediaUrl.requireAbsolute(url, "galleryUrls"));
         log.info("Replacing gallery for game {} with {} images", id, urls.size());
@@ -441,12 +424,18 @@ public class GameService {
         return game;
     }
 
+    /**
+     * Ownership check. Deliberadamente lanza {@link EntityNotFoundException} y no
+     * {@code SecurityException}: la convencion BOLA del proyecto es 404 para no
+     * filtrar que el id existe, y {@code SecurityException} no lo maneja
+     * {@code GlobalExceptionHandler} (caia en el catch-all y salia 500).
+     */
     public void assertCanModify(Game game, User user) {
         if (user.getRole() == Role.ADMIN) {
             return;
         }
         if (game.getSeller() == null || !game.getSeller().getId().equals(user.getId())) {
-            throw new SecurityException("User " + user.getId() + " is not authorized to modify game " + game.getId());
+            throw new EntityNotFoundException("Game not found: " + game.getId());
         }
     }
 }

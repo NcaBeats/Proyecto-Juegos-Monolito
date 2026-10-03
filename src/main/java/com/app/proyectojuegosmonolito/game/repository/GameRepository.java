@@ -28,4 +28,12 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             WHERE g.state = :state
             """)
     BigDecimal sumDiscountedPriceByState(@Param("state") GameState state);
+
+    @Query("""
+            SELECT g FROM Game g
+            WHERE g.originalPrice IS NULL OR g.originalPrice.signum() = 0
+            """)
+    Page<Game> findFreeToPlay(Pageable pageable);
+
+    Page<Game> findByState(GameState state, Pageable pageable);
 }

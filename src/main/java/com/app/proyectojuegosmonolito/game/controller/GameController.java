@@ -80,6 +80,20 @@ public class GameController {
         return ResponseEntity.ok(gameService.findBannerGames(pageable).map(gameMapper::toResponse));
     }
 
+    @Operation(summary = "Get free-to-play games", description = "Returns a paginated list of free-to-play games")
+    @ApiResponse(responseCode = "200", description = "List of free-to-play games retrieved successfully")
+    @GetMapping("/free-to-play")
+    public ResponseEntity<Page<GameResponse>> findFreeToPlay(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(gameService.findFreeToPlay(pageable).map(gameMapper::toResponse));
+    }
+
+    @Operation(summary = "Get coming soon games", description = "Returns a paginated list of coming soon games")
+    @ApiResponse(responseCode = "200", description = "List of coming soon games retrieved successfully")
+    @GetMapping("/coming-soon")
+    public ResponseEntity<Page<GameResponse>> findComingSoon(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(gameService.findComingSoon(pageable).map(gameMapper::toResponse));
+    }
+
     @Operation(summary = "Get game stats", description = "Returns counts and catalog value for all or a given game state")
     @ApiResponse(responseCode = "200", description = "Stats retrieved successfully")
     @GetMapping("/stats")
@@ -212,7 +226,7 @@ public class GameController {
         assertCanModify(id);
         var game = gameService.findById(id);
         var bannerUrl = r2StorageService.storeImage(file, gameService.slugify(game.getName()), "banner");
-        var updated = gameService.updateBannerUrl(id, bannerUrl);
+        var updated = gameService.assignBanner(id, bannerUrl);
         return ResponseEntity.ok(gameMapper.toResponse(updated));
     }
 
@@ -223,6 +237,7 @@ public class GameController {
     public ResponseEntity<GameResponse> uploadVideo(
             @PathVariable Long id,
             @Valid @RequestBody VideoUrlRequest request) {
+        assertCanModify(id);
         var game = gameService.updateVideoUrl(id, request.videoUrl());
         return ResponseEntity.ok(gameMapper.toResponse(game));
     }
