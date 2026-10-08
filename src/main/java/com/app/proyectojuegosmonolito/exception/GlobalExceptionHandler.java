@@ -22,8 +22,6 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-import java.net.URI;
-
 @Slf4j
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -33,7 +31,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleNotFound(EntityNotFoundException ex) {
         log.warn("Entity not found: {}", sanitize(ex.getMessage()));
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "Resource not found.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Not Found");
         return problem;
     }
@@ -42,7 +39,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleBusiness(BusinessException ex) {
         log.warn("Business rule violation: {}", sanitize(ex.getMessage()));
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Bad Request");
         problem.setProperty("code", ex.getCode());
         return problem;
@@ -52,7 +48,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleMissingHeader(MissingRequestHeaderException ex) {
         log.warn("Missing request header: {}", ex.getHeaderName());
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Bad request.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Bad Request");
         return problem;
     }
@@ -61,7 +56,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
         log.warn("Unsupported media type: {}", ex.getContentType());
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported media type.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Unsupported Media Type");
         return problem;
     }
@@ -70,7 +64,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleMissingPart(Exception ex) {
         log.warn("Invalid multipart request: {}", sanitize(ex.getMessage()));
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid multipart request.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Bad Request");
         return problem;
     }
@@ -82,7 +75,6 @@ public class GlobalExceptionHandler {
                 .toList();
         log.warn("Validation error: {}", errors);
         var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Validation Error");
         problem.setDetail("Invalid request content.");
         problem.setProperty("errors", errors);
@@ -93,7 +85,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleAuthentication(AuthenticationException ex) {
         log.warn("Authentication failed");
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Unauthorized");
         return problem;
     }
@@ -102,7 +93,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleUnreadable(HttpMessageNotReadableException ex) {
         log.warn("Malformed request body: {}", ex.getMessage());
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Malformed request body.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Bad Request");
         return problem;
     }
@@ -111,7 +101,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         log.warn("Type mismatch for parameter {}: {}", ex.getName(), sanitize(String.valueOf(ex.getValue())));
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid argument type.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Bad Request");
         return problem;
     }
@@ -120,7 +109,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         log.warn("Method not supported: {}", ex.getMessage());
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.METHOD_NOT_ALLOWED, "Method not allowed.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Method Not Allowed");
         return problem;
     }
@@ -129,7 +117,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleNoResource(NoResourceFoundException ex) {
         log.warn("Resource not found: {}", ex.getResourcePath());
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "Resource not found.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Not Found");
         return problem;
     }
@@ -138,7 +125,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleBadRequest(IllegalArgumentException ex) {
         log.warn("Bad request: {}", sanitize(ex.getMessage()));
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Bad request.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Bad Request");
         return problem;
     }
@@ -147,7 +133,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleDataIntegrity(DataIntegrityViolationException ex) {
         log.warn("Data integrity violation: {}", ex.getMessage());
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Database constraint violation.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Conflict");
         return problem;
     }
@@ -156,7 +141,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleOptimisticLock(Exception ex) {
         log.warn("Optimistic lock conflict: {}", ex.getMessage());
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Concurrent modification detected. Please retry.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Conflict");
         return problem;
     }
@@ -165,7 +149,6 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleGeneral(Exception ex) {
         log.error("Unexpected error", ex);
         var problem = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
-        problem.setType(URI.create("about:blank"));
         problem.setTitle("Internal Server Error");
         return problem;
     }

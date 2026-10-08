@@ -11,7 +11,6 @@ public class ProfileMapper {
         return new ProfileResponse(
                 profile.getUserId(),
                 profile.getNickname(),
-                profile.getAvatarImage(),
                 profile.getBio(),
                 profile.getVisibility(),
                 profile.getRun(),

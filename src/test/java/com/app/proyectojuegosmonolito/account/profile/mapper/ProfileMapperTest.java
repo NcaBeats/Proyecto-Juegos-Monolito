@@ -18,13 +18,13 @@ class ProfileMapperTest {
         var createdAt = Instant.parse("2026-01-01T00:00:00Z");
         var profile = Profile.builder()
                 .userId(1L).nickname("nick")
-                .avatarImage("avatar.png").bio("bio")
+                .bio("bio")
                 .visibility(Visibility.PUBLIC).createdAt(createdAt)
                 .build();
 
         var result = mapper.toResponse(profile);
 
-        assertThat(result).isEqualTo(new ProfileResponse(1L, "nick", "avatar.png", "bio",
+        assertThat(result).isEqualTo(new ProfileResponse(1L, "nick", "bio",
                 Visibility.PUBLIC, null, null, null, null, null, null, null, createdAt));
     }
 }

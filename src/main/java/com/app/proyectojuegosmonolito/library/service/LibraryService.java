@@ -4,7 +4,6 @@ import com.app.proyectojuegosmonolito.game.service.GameService;
 import com.app.proyectojuegosmonolito.library.model.Library;
 import com.app.proyectojuegosmonolito.library.repository.LibraryRepository;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
+import com.app.proyectojuegosmonolito.common.RepositoryUtils;
 
 @Slf4j
 @Service
@@ -58,11 +58,7 @@ public class LibraryService {
     @Transactional
     public void removeByGame(Long userId, Long gameId) {
         log.info("Removing game {} from user {}'s library", gameId, userId);
-        var lib = libraryRepository.findByUser_IdAndGame_Id(userId, gameId)
-                .orElseThrow(() -> {
-                    log.warn("Game {} not found in library for user {}", gameId, userId);
-                    return new EntityNotFoundException("Game not found in library: " + gameId);
-                });
+        var lib = RepositoryUtils.orNotFound(libraryRepository.findByUser_IdAndGame_Id(userId, gameId), "Game in library", gameId);
         libraryRepository.delete(lib);
         log.info("Removed game {} from user {}'s library", gameId, userId);
     }

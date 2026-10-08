@@ -67,13 +67,13 @@ anyRequest                        → authenticated (any role)
 ### Security hardening (OWASP Top 10 audit — 2026-08)
 Implemented:
 - **H1** POST `/api/v1/users` → ADMIN only (was permitAll — anyone could create an admin-role user)
-- **H3** password min 8 chars (`@Size(min=8)` in `RegisterRequest` + `UserRequestCreate`)
+- **H2** rate limiting on `/api/v1/auth/login`: `LoginAttemptLimiter` (`security/service`) counts failures per-email **and** per-IP in a `ConcurrentHashMap` with a sliding window, and `AuthController` consults it before authenticating. Tunables `app.security.login.max-per-email` (5), `max-per-ip` (20), `window-ms` (900000). **Single-instance only**, same caveat as `TokenVersionCache`: in-process state, so N replicas need Redis.
 - **M1/L1/L2** `GlobalExceptionHandler` returns generic details ("Resource not found.", "Bad request.") and `sanitize()` strips `\r\n` from all logged values; `UserService.update` logs sanitized username
 - **M3** optional OWASP plugin: `./mvnw verify -Pdependency-check` (`org.owasp:dependency-check-maven:12.1.0`, `failBuildOnCVSS > 7`, HTML report in `target/`)
 Already solid, no action: BCrypt, HS256 Nimbus (no alg-confusion), no raw SQL/@Query, Bean Validation, SpringDoc/actuator off in prod, no SSRF surface, generic 500s
 
 Known debt (explicitly deferred, not urgent):
-- **H2** no rate limiting on `/api/v1/auth/login` (brute-force surface) — add resilience4j / bucket4j before public exposure
+- **H3** password length is `@Size(min = 4, max = 10)` in all five DTOs, via `validation/PasswordRules.MIN/MAX` (one source; mirrored by `PASSWORD_MIN/MAX` in the frontend's `schemas/password.schema.ts`). Four characters is weak for BCrypt and ten is an odd ceiling — raise both constants when you do. **Careful**: `DataInitializer` seeds the test users with `pass123` (7 chars), so a minimum above 7 locks them out of login until the seed changes too.
 
 ### Purchase idempotency (L3 — Idempotency-Key)
 - `POST /api/v1/purchases` **requires** the `Idempotency-Key` header (missing → 400 via `MissingRequestHeaderException`). `PurchaseService.create(userId, key, items)` looks up `purchaseRepository.findByUser_IdAndIdempotencyKey` first and replays the existing purchase (no wallet deduction, no library re-add) on a match; otherwise creates with `idempotency_key` set.

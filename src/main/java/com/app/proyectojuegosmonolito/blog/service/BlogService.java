@@ -1,6 +1,7 @@
 package com.app.proyectojuegosmonolito.blog.service;
 
 import com.app.proyectojuegosmonolito.blog.model.Blog;
+import com.app.proyectojuegosmonolito.common.RepositoryUtils;
 import com.app.proyectojuegosmonolito.blog.repository.BlogRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +27,7 @@ public class BlogService {
     @Transactional(readOnly = true)
     public Blog findById(Long id) {
         log.info("Fetching blog by id: {}", id);
-        return blogRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Blog not found: {}", id);
-                    return new EntityNotFoundException("Blog not found: " + id);
-                });
+        return RepositoryUtils.findOrThrow(blogRepository, id, "Blog");
     }
 
     @Transactional

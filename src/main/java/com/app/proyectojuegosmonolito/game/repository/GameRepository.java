@@ -31,9 +31,11 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
     @Query("""
             SELECT g FROM Game g
-            WHERE g.originalPrice IS NULL OR g.originalPrice.signum() = 0
+            WHERE g.originalPrice IS NULL OR g.originalPrice = 0
             """)
     Page<Game> findFreeToPlay(Pageable pageable);
 
     Page<Game> findByState(GameState state, Pageable pageable);
+
+    Page<Game> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

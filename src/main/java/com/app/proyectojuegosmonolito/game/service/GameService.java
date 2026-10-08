@@ -129,6 +129,12 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
+    public Page<Game> findRecent(Pageable pageable) {
+        log.info("Fetching recent games with pageable: {}", pageable);
+        return gameRepository.findAllByOrderByCreatedAtDesc(pageable);
+    }
+
+    @Transactional(readOnly = true)
     public Page<Game> findByCategory(String categoryName, Pageable pageable) {
         log.info("Fetching games by category '{}' with pageable: {}", categoryName, pageable);
         return gameRepository.findByCategories_Name(categoryName, pageable);

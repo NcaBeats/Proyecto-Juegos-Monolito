@@ -8,6 +8,7 @@ import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.dto.GameWithMediaRequest;
 import com.app.proyectojuegosmonolito.game.dto.ImagePresignRequest;
 import com.app.proyectojuegosmonolito.game.dto.VideoPresignRequest;
+import com.app.proyectojuegosmonolito.game.dto.VideoUrlRequest;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
 import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import static com.app.proyectojuegosmonolito.game.GameFixtures.*;
 import static com.app.proyectojuegosmonolito.account.user.UserFixtures.profile;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -447,5 +449,74 @@ class GameControllerIntegrationTest {
                 .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/nuevo/trailer.mp4"))
                 .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/nueva.jpg"))
                 .andExpect(jsonPath("$.galleryUrls.length()").value(1));
+    }
+
+    // --- BOLA: PUT /{id}/video es el endpoint que se olvidó de assertCanModify,
+    //     y por eso no tenia ninguna cobertura. SecurityConfig abre PUT
+    //     /api/v1/games/** a VENDEDOR, asi que sin el check cualquier vendedor
+    //     pisaba el trailer de otro. La convencion del proyecto es 404 (no 403)
+    //     para no filtrar que el id existe.
+
+    @Test
+    void updateVideo_whenSellerOwnsGame_shouldReturn200() throws Exception {
+        var vendedor = createVendedor("vendedor-dueno@test.com");
+        var game = gameRepository.save(game());
+        game.setSeller(vendedor);
+        gameRepository.save(game);
+        var body = new VideoUrlRequest("https://pub-test.r2.dev/mio/trailer.mp4");
+
+        mockMvc.perform(put("/api/v1/games/{id}/video", game.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().jwt(b -> b.subject(vendedor.getId().toString()))
+                                .authorities(new SimpleGrantedAuthority("ROLE_VENDEDOR"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/mio/trailer.mp4"));
+    }
+
+    @Test
+    void updateVideo_whenAnotherSeller_shouldReturn404AndNotTouchTheGame() throws Exception {
+        var dueno = createVendedor("vendedor-dueno2@test.com");
+        var intruso = createVendedor("vendedor-intruso@test.com");
+        var game = gameRepository.save(game());
+        game.setSeller(dueno);
+        game.setVideoUrl("https://pub-test.r2.dev/del-dueno/trailer.mp4");
+        gameRepository.save(game);
+        var body = new VideoUrlRequest("https://pub-test.r2.dev/mio/trailer.mp4");
+
+        mockMvc.perform(put("/api/v1/games/{id}/video", game.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().jwt(b -> b.subject(intruso.getId().toString()))
+                                .authorities(new SimpleGrantedAuthority("ROLE_VENDEDOR"))))
+                .andExpect(status().isNotFound());
+
+        assertThat(gameRepository.findById(game.getId()).orElseThrow().getVideoUrl())
+                .isEqualTo("https://pub-test.r2.dev/del-dueno/trailer.mp4");
+    }
+
+    @Test
+    void updateVideo_whenAdmin_shouldReturn200() throws Exception {
+        var game = gameRepository.save(game());
+        var admin = createAdmin();
+        var body = new VideoUrlRequest("https://pub-test.r2.dev/admin/trailer.mp4");
+
+        mockMvc.perform(put("/api/v1/games/{id}/video", game.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().jwt(b -> b.subject(admin.getId().toString()))
+                                .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/admin/trailer.mp4"));
+    }
+
+    private User createVendedor(String email) {
+        var vendedor = User.builder()
+                .email(email)
+                .password("pass123")
+                .role(Role.VENDEDOR)
+                .createdAt(java.time.Instant.now())
+                .build();
+        return userService.create(vendedor, profile(vendedor));
     }
 }

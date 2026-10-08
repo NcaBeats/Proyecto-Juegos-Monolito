@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.app.proyectojuegosmonolito.common.RepositoryUtils;
 
 @Slf4j
 @Service
@@ -19,11 +20,7 @@ public class ProfileService {
 
     public Profile findByUserId(Long userId) {
         log.info("Fetching profile for user: {}", userId);
-        return profileRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.warn("Profile not found for user: {}", userId);
-                    return new EntityNotFoundException("Profile not found: " + userId);
-                });
+        return RepositoryUtils.findOrThrow(profileRepository, userId, "Profile");
     }
 
     public Profile findByUserIdPublic(Long userId) {
@@ -35,15 +32,14 @@ public class ProfileService {
         return profile;
     }
 
+    /**
+     * Patch parcial: los campos ausentes se dejan intactos. Lo usan tanto el
+     * self-service como la edicion de admin; antes eran dos metodos con el
+     * mismo cuerpo y la unica diferencia era la linea de log.
+     */
     @Transactional
     public Profile update(Long userId, ProfilePatchRequest request) {
         log.info("Updating profile for user {}", userId);
-        return updateById(userId, request);
-    }
-
-    @Transactional
-    public Profile updateById(Long userId, ProfilePatchRequest request) {
-        log.info("Admin updating profile for user {}", userId);
         var profile = findByUserId(userId);
         if (request.run() != null) profile.setRun(request.run());
         if (request.nickname() != null) profile.setNickname(request.nickname());
@@ -56,7 +52,7 @@ public class ProfileService {
         if (request.comuna() != null) profile.setComuna(request.comuna());
         if (request.address() != null) profile.setAddress(request.address());
         var saved = profileRepository.save(profile);
-        log.info("Admin updated profile for user {}", userId);
+        log.info("Updated profile for user {}", userId);
         return saved;
     }
 }

@@ -1,6 +1,7 @@
 package com.app.proyectojuegosmonolito.game.service;
 
 import com.app.proyectojuegosmonolito.game.model.Category;
+import com.app.proyectojuegosmonolito.common.RepositoryUtils;
 import com.app.proyectojuegosmonolito.game.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +31,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public Category findById(Long id) {
         log.info("Fetching category by id: {}", id);
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Category not found: {}", id);
-                    return new EntityNotFoundException("Category not found: " + id);
-                });
+        return RepositoryUtils.findOrThrow(categoryRepository, id, "Category");
     }
 
     @Transactional(readOnly = true)

@@ -94,6 +94,13 @@ public class GameController {
         return ResponseEntity.ok(gameService.findComingSoon(pageable).map(gameMapper::toResponse));
     }
 
+    @Operation(summary = "Get recently added games", description = "Returns a paginated list of games ordered by creation date (newest first)")
+    @ApiResponse(responseCode = "200", description = "List of recent games retrieved successfully")
+    @GetMapping("/recent")
+    public ResponseEntity<Page<GameResponse>> findRecent(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(gameService.findRecent(pageable).map(gameMapper::toResponse));
+    }
+
     @Operation(summary = "Get game stats", description = "Returns counts and catalog value for all or a given game state")
     @ApiResponse(responseCode = "200", description = "Stats retrieved successfully")
     @GetMapping("/stats")

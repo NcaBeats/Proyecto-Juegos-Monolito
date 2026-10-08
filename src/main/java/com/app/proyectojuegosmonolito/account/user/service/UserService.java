@@ -8,7 +8,6 @@ import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.wallet.model.Wallet;
 import com.app.proyectojuegosmonolito.account.user.repository.UserRepository;
 import com.app.proyectojuegosmonolito.exception.BusinessException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +19,7 @@ import java.time.Instant;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.app.proyectojuegosmonolito.common.RepositoryUtils;
 
 @Slf4j
 @Service
@@ -28,11 +28,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final TokenVersionCache tokenVersionCache;
-
-    @Transactional
-    public User create(User user) {
-        return create(user, null);
-    }
 
     @Transactional
     public User create(User user, Profile profile) {
@@ -65,20 +60,12 @@ public class UserService {
 
     public User findById(Long id) {
         log.info("Fetching user by id: {}", id);
-        return userRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("User not found: {}", id);
-                    return new EntityNotFoundException("User not found: " + id);
-                });
+        return RepositoryUtils.findOrThrow(userRepository, id, "User");
     }
 
     public User findByEmail (String email) {
         log.info("Fetching user by email: {}", email);
-        return userRepository.findByEmailAndDeletedAtIsNull(email)
-                .orElseThrow(() -> {
-                    log.warn("User not found with email: {}", email);
-                    return new EntityNotFoundException("User not found: " + email);
-                });
+        return RepositoryUtils.orNotFound(userRepository.findByEmailAndDeletedAtIsNull(email), "User", email);
     }
 
     public Optional<User> findOptionalByEmail(String email) {
@@ -98,10 +85,7 @@ public class UserService {
 
     @Transactional
     public User update(Long id, String email) {
-        var userEntity = userRepository.findById(id).orElseThrow(() -> {
-            log.warn("User not found: {}", id);
-            return new EntityNotFoundException("User not found: " + id);
-        });
+        var userEntity = RepositoryUtils.findOrThrow(userRepository, id, "User");
         log.info("Updating user {}: email={}", id, email.replaceAll("[\\r\\n]", " "));
         userEntity.update(email);
         log.info("Updated user {}", userEntity.getId());
@@ -110,10 +94,7 @@ public class UserService {
 
     @Transactional
     public User adminUpdate(Long id, AdminUserUpdateRequest request) {
-        var user = userRepository.findById(id).orElseThrow(() -> {
-            log.warn("User not found for admin update: {}", id);
-            return new EntityNotFoundException("User not found: " + id);
-        });
+        var user = RepositoryUtils.findOrThrow(userRepository, id, "User");
 
         if (request.email() != null && !request.email().isBlank()) {
             user.setEmail(request.email());
@@ -132,10 +113,7 @@ public class UserService {
 
     @Transactional
     public void updatePassword (Long id, String currentPassword, String newPassword) {
-        var user = userRepository.findById(id).orElseThrow(() -> {
-            log.warn("User not found with id: {}", id);
-            return new EntityNotFoundException("User not found: " + id);
-        });
+        var user = RepositoryUtils.findOrThrow(userRepository, id, "User");
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IllegalArgumentException("Current password is incorrect");
         }
@@ -145,10 +123,7 @@ public class UserService {
 
     @Transactional
     public int revokeAllTokens(Long id) {
-        var user = userRepository.findById(id).orElseThrow(() -> {
-            log.warn("User not found with id: {}", id);
-            return new EntityNotFoundException("User not found: " + id);
-        });
+        var user = RepositoryUtils.findOrThrow(userRepository, id, "User");
         return incrementTokenVersion(user);
     }
 
@@ -166,10 +141,7 @@ public class UserService {
 
     @Transactional
     public void delete(Long id) {
-        var user = userRepository.findById(id).orElseThrow(() -> {
-            log.warn("Attempted to delete non-existent user: {}", id);
-            return new EntityNotFoundException("User not found: " + id);
-        });
+        var user = RepositoryUtils.findOrThrow(userRepository, id, "User");
         if (user.getRole() == Role.ADMIN) {
             log.warn("Attempted to delete admin account: {}", id);
             throw new IllegalArgumentException("The admin account cannot be deleted");
