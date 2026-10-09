@@ -38,4 +38,13 @@ public class Blog {
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    public Blog update(String title, String excerpt, String content, String coverImage, String category) {
+        this.title = title;
+        this.excerpt = excerpt;
+        this.content = content;
+        this.coverImage = coverImage;
+        this.category = category;
+        return this;
+    }
 }

@@ -38,6 +38,15 @@ public class BlogService {
     }
 
     @Transactional
+    public Blog update(Long id, String title, String excerpt, String content, String coverImage, String category) {
+        log.info("Updating blog {}: title={}", id, title);
+        var blog = findById(id);
+        blog.update(title, excerpt, content, coverImage, category);
+        log.info("Updated blog {}", blog.getId());
+        return blog;
+    }
+
+    @Transactional
     public void delete(Long id) {
         if (!blogRepository.existsById(id)) {
             log.warn("Attempted to delete non-existent blog: {}", id);

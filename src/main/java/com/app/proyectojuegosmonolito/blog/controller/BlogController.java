@@ -57,4 +57,13 @@ public class BlogController {
         blogService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Update a blog", description = "Updates an existing blog by its ID (ADMIN only)")
+    @ApiResponse(responseCode = "200", description = "Blog updated successfully")
+    @ApiResponse(responseCode = "404", description = "Blog not found")
+    @PutMapping("/{id}")
+    public ResponseEntity<BlogResponse> update(@PathVariable Long id, @Valid @RequestBody BlogRequest request) {
+        var blog = blogService.update(id, request.title(), request.excerpt(), request.content(), request.coverImage(), request.category());
+        return ResponseEntity.ok(blogMapper.toResponse(blog));
+    }
 }
