@@ -3,7 +3,7 @@ package com.app.proyectojuegosmonolito.game.service;
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.common.RepositoryUtils;
-import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
+import com.app.proyectojuegosmonolito.common.storage.R2StorageService;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
 import com.app.proyectojuegosmonolito.game.model.Category;

@@ -1,6 +1,5 @@
-package com.app.proyectojuegosmonolito.game.storage;
+package com.app.proyectojuegosmonolito.common.storage;
 
-import com.app.proyectojuegosmonolito.game.dto.PresignedUploadResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
