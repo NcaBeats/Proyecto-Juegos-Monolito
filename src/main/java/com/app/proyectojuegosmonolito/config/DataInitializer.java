@@ -14,6 +14,7 @@ import com.app.proyectojuegosmonolito.account.profile.model.Profile;
 import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import com.app.proyectojuegosmonolito.blog.model.Blog;
+import com.app.proyectojuegosmonolito.blog.model.BlogCategory;
 import com.app.proyectojuegosmonolito.blog.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -986,7 +987,7 @@ public class DataInitializer implements CommandLineRunner {
                         + "Other notable winners include Best RPG for an epic adventure with hundreds of hours of content, Best Action for a tight and responsive combat system, and Best Indie for a small team that punched well above its weight.\n\n"
                         + "These awards reflect an industry in great health, with diverse voices and bold creative visions finding success. As we look forward to 2026, the future of gaming has never looked brighter.")
                 .coverImage("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/blogs/game-awards-2025-the-best-games-of-the-year/cover.webp")
-                .category("Events")
+                .category(BlogCategory.EVENTS)
                 .publishedAt(blogsNow)
                 .createdAt(blogsNow)
                 .build());
@@ -1002,7 +1003,7 @@ public class DataInitializer implements CommandLineRunner {
                         + "Supergiant Games demonstrates that small teams can create masterpieces. With titles like Bastion, Transistor, Pyre, and Hades, the studio has consistently delivered innovative gameplay, stunning art direction, and unforgettable music. Their work is a testament to the power of focused creative vision.\n\n"
                         + "These studios share common traits: a clear creative vision, respect for their audience, willingness to take risks, and talented teams that have grown together over many years. The future of gaming depends on continuing to support and nurture such studios, both large and small.")
                 .coverImage("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/blogs/the-best-video-game-development-studios/cover.avif")
-                .category("Industry")
+                .category(BlogCategory.INDUSTRY)
                 .publishedAt(blogsNow)
                 .createdAt(blogsNow)
                 .build());
@@ -1018,7 +1019,7 @@ public class DataInitializer implements CommandLineRunner {
                         + "Brazil Game Show in October has grown to become the largest gaming event in the Americas. Held in São Paulo, BGS attracts hundreds of thousands of passionate Brazilian gamers and features a mix of AAA titles, indie games, and esports tournaments.\n\n"
                         + "Beyond these major events, there are countless indie showcases, digital events, and publisher-specific streams throughout the year. The gaming calendar is more distributed than ever, giving players a constant stream of news and demos to look forward to.")
                 .coverImage("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/blogs/upcoming-gaming-events-in-2026/cover.webp")
-                .category("Events")
+                .category(BlogCategory.EVENTS)
                 .publishedAt(blogsNow)
                 .createdAt(blogsNow)
                 .build());

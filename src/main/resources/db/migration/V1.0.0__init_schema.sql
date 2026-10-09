@@ -151,7 +151,7 @@ CREATE TABLE "public"."blog" (
     "excerpt"       varchar(500) NOT NULL,
     "content"       text NOT NULL,
     "cover_image"   varchar(500),
-    "category"      varchar(50),
+    "category"      varchar(50) CHECK ("category" IN ('EVENTS', 'INDUSTRY', 'NEWS', 'REVIEWS', 'GUIDES', 'INTERVIEWS')),
     "published_at"  timestamp NOT NULL,
     "created_at"    timestamp NOT NULL,
     PRIMARY KEY ("id")

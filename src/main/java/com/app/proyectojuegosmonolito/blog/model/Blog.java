@@ -30,8 +30,9 @@ public class Blog {
     @Column(name = "cover_image", length = 500)
     private String coverImage;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 50)
-    private String category;
+    private BlogCategory category;
 
     @Column(name = "published_at", nullable = false)
     private Instant publishedAt;
@@ -39,7 +40,7 @@ public class Blog {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    public Blog update(String title, String excerpt, String content, String coverImage, String category) {
+    public Blog update(String title, String excerpt, String content, String coverImage, BlogCategory category) {
         this.title = title;
         this.excerpt = excerpt;
         this.content = content;

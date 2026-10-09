@@ -1,6 +1,7 @@
 package com.app.proyectojuegosmonolito.blog.service;
 
 import com.app.proyectojuegosmonolito.blog.model.Blog;
+import com.app.proyectojuegosmonolito.blog.model.BlogCategory;
 import com.app.proyectojuegosmonolito.common.RepositoryUtils;
 import com.app.proyectojuegosmonolito.blog.repository.BlogRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,7 +39,7 @@ public class BlogService {
     }
 
     @Transactional
-    public Blog update(Long id, String title, String excerpt, String content, String coverImage, String category) {
+    public Blog update(Long id, String title, String excerpt, String content, String coverImage, BlogCategory category) {
         log.info("Updating blog {}: title={}", id, title);
         var blog = findById(id);
         blog.update(title, excerpt, content, coverImage, category);
