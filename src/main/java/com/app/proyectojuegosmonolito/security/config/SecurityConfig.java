@@ -92,6 +92,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/blogs").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/blogs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/blogs").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/blogs/media/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/blogs/{id}/cover").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/blogs/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/blogs/**").hasRole("ADMIN")
                         // Contacts: public to create, ADMIN only to list

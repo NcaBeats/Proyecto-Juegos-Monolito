@@ -7,4 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BlogRepository extends JpaRepository<Blog, Long> {
     Page<Blog> findByOrderByPublishedAtDesc(Pageable pageable);
+
+    Page<Blog> findByTitleContainingIgnoreCaseOrExcerptContainingIgnoreCaseOrContentContainingIgnoreCaseOrderByPublishedAtDesc(
+            String title, String excerpt, String content, Pageable pageable);
 }
