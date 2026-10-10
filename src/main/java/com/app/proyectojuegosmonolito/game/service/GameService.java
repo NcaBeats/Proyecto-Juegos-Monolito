@@ -4,6 +4,7 @@ import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.common.RepositoryUtils;
 import com.app.proyectojuegosmonolito.common.storage.R2StorageService;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
 import com.app.proyectojuegosmonolito.game.model.Category;
@@ -144,6 +145,27 @@ public class GameService {
     public Page<Game> findByName(String name, Pageable pageable) {
         log.info("Fetching games by name '{}' with pageable: {}", name, pageable);
         return gameRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+
+    /**
+     * Busqueda combinable del catalogo. Los blanks equivalen a ausentes y el
+     * rango se valida antes de tocar el repositorio: un rango invalido tiene
+     * que ser 400 sin gastar una query.
+     */
+    @Transactional(readOnly = true)
+    public Page<Game> search(String name, String category, java.math.BigDecimal min, java.math.BigDecimal max, Pageable pageable) {
+        if ((min != null && min.signum() < 0) || (max != null && max.signum() < 0)) {
+            throw new BusinessException(BusinessException.INVALID_PRICE_RANGE, "Price bounds must be zero or positive");
+        }
+        if (min != null && max != null && min.compareTo(max) > 0) {
+            throw new BusinessException(BusinessException.INVALID_PRICE_RANGE, "minPrice must not be greater than maxPrice");
+        }
+        var effectiveName = (name == null || name.isBlank()) ? null : name.toLowerCase(Locale.ROOT);
+        var effectiveCategory = (category == null || category.isBlank()) ? null : category;
+        var pattern = effectiveName == null ? "%%" : "%" + effectiveName + "%";
+        log.info("Searching games by name='{}' category='{}' min={} max={} with pageable: {}",
+                effectiveName, effectiveCategory, min, max, pageable);
+        return gameRepository.search(pattern, effectiveCategory, min, max, pageable);
     }
 
     @Transactional(readOnly = true)

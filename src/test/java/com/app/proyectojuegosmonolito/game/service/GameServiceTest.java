@@ -6,6 +6,7 @@ import com.app.proyectojuegosmonolito.game.model.GameImage;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
 import com.app.proyectojuegosmonolito.common.storage.R2StorageService;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -97,6 +98,50 @@ class GameServiceTest {
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getContent().get(0).getDiscountPercent()).isEqualTo(50);
         verify(gameRepository).findByDiscountPercentGreaterThan(0, pageable);
+    }
+
+    @Test
+    void search_shouldDelegateFiltersToRepository() {
+        var pageable = PageRequest.of(0, 10);
+        var games = List.of(game(1L));
+        var page = new PageImpl<>(games, pageable, 1);
+        when(gameRepository.search("%alpha%", "Action", BigDecimal.ONE, BigDecimal.TEN, pageable)).thenReturn(page);
+
+        var result = gameService.search("Alpha", "Action", BigDecimal.ONE, BigDecimal.TEN, pageable);
+
+        assertThat(result.getContent()).hasSize(1);
+        verify(gameRepository).search("%alpha%", "Action", BigDecimal.ONE, BigDecimal.TEN, pageable);
+    }
+
+    @Test
+    void search_withBlankFilters_shouldPassNulls() {
+        var pageable = PageRequest.of(0, 10);
+        var page = new PageImpl<Game>(List.of(), pageable, 0);
+        when(gameRepository.search("%%", null, null, null, pageable)).thenReturn(page);
+
+        var result = gameService.search("  ", "", null, null, pageable);
+
+        assertThat(result.getTotalElements()).isZero();
+        verify(gameRepository).search("%%", null, null, null, pageable);
+    }
+
+    @Test
+    void search_whenMinGreaterThanMax_shouldThrowWithoutQuerying() {
+        var pageable = PageRequest.of(0, 10);
+
+        assertThatThrownBy(() -> gameService.search(null, null, new BigDecimal("20"), BigDecimal.TEN, pageable))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("minPrice");
+        verify(gameRepository, never()).search(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void search_withNegativeBound_shouldThrowWithoutQuerying() {
+        var pageable = PageRequest.of(0, 10);
+
+        assertThatThrownBy(() -> gameService.search(null, null, new BigDecimal("-1"), null, pageable))
+                .isInstanceOf(BusinessException.class);
+        verify(gameRepository, never()).search(any(), any(), any(), any(), any());
     }
 
     @Test

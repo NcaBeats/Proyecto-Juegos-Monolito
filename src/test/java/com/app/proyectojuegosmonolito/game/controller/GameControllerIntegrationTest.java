@@ -114,6 +114,63 @@ class GameControllerIntegrationTest {
     }
 
     @Test
+    void getAll_withMaxPrice_shouldFilterOnEffectivePrice() throws Exception {
+        gameRepository.saveAll(List.of(
+                game("Cheap", BigDecimal.TEN),
+                gameWithDiscount("Discounted", new BigDecimal("50"), 90),
+                game("Expensive", new BigDecimal("100"))));
+
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("maxPrice", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(2))
+                .andExpect(jsonPath("$.content.length()").value(2));
+    }
+
+    @Test
+    void getAll_withMaxPriceAndName_shouldApplyBothFilters() throws Exception {
+        gameRepository.saveAll(List.of(
+                game("Cheap", BigDecimal.TEN),
+                gameWithDiscount("Discounted", new BigDecimal("50"), 90)));
+
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("name", "discount")
+                        .param("maxPrice", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].name").value("Discounted"));
+    }
+
+    @Test
+    void getAll_whenMinGreaterThanMax_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("minPrice", "20")
+                        .param("maxPrice", "10"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_PRICE_RANGE"));
+    }
+
+    @Test
+    void getAll_withNegativeMinPrice_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("minPrice", "-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_PRICE_RANGE"));
+    }
+
+    @Test
+    void getAll_withNonNumericPrice_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("maxPrice", "abc"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void findDiscounted_shouldReturn200() throws Exception {
         gameRepository.save(gameWithDiscount("Discounted Game", BigDecimal.TEN, 50));
         gameRepository.save(game("Full Price Game", BigDecimal.TEN));
