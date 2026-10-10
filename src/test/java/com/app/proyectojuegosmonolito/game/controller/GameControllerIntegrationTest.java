@@ -144,6 +144,28 @@ class GameControllerIntegrationTest {
     }
 
     @Test
+    void getAll_withState_shouldFilterByState() throws Exception {
+        var coming = game("Coming Soon Game", BigDecimal.TEN);
+        coming.setState(GameState.COMING_SOON);
+        gameRepository.saveAll(List.of(game("Available Game", BigDecimal.TEN), coming));
+
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("state", "COMING_SOON"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].name").value("Coming Soon Game"));
+    }
+
+    @Test
+    void getAll_withInvalidState_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("state", "NOPE"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void getAll_whenMinGreaterThanMax_shouldReturn400() throws Exception {
         mockMvc.perform(get("/api/v1/games")
                         .with(jwt())

@@ -153,7 +153,7 @@ public class GameService {
      * que ser 400 sin gastar una query.
      */
     @Transactional(readOnly = true)
-    public Page<Game> search(String name, String category, java.math.BigDecimal min, java.math.BigDecimal max, Pageable pageable) {
+    public Page<Game> search(String name, String category, GameState state, java.math.BigDecimal min, java.math.BigDecimal max, Pageable pageable) {
         if ((min != null && min.signum() < 0) || (max != null && max.signum() < 0)) {
             throw new BusinessException(BusinessException.INVALID_PRICE_RANGE, "Price bounds must be zero or positive");
         }
@@ -162,10 +162,11 @@ public class GameService {
         }
         var effectiveName = (name == null || name.isBlank()) ? null : name.toLowerCase(Locale.ROOT);
         var effectiveCategory = (category == null || category.isBlank()) ? null : category;
+        var effectiveState = state == null ? null : state.name();
         var pattern = effectiveName == null ? "%%" : "%" + effectiveName + "%";
-        log.info("Searching games by name='{}' category='{}' min={} max={} with pageable: {}",
-                effectiveName, effectiveCategory, min, max, pageable);
-        return gameRepository.search(pattern, effectiveCategory, min, max, pageable);
+        log.info("Searching games by name='{}' category='{}' state={} min={} max={} with pageable: {}",
+                effectiveName, effectiveCategory, state, min, max, pageable);
+        return gameRepository.search(pattern, effectiveCategory, effectiveState, min, max, pageable);
     }
 
     @Transactional(readOnly = true)

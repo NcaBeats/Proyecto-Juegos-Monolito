@@ -105,43 +105,43 @@ class GameServiceTest {
         var pageable = PageRequest.of(0, 10);
         var games = List.of(game(1L));
         var page = new PageImpl<>(games, pageable, 1);
-        when(gameRepository.search("%alpha%", "Action", BigDecimal.ONE, BigDecimal.TEN, pageable)).thenReturn(page);
+        when(gameRepository.search("%alpha%", "Action", "COMING_SOON", BigDecimal.ONE, BigDecimal.TEN, pageable)).thenReturn(page);
 
-        var result = gameService.search("Alpha", "Action", BigDecimal.ONE, BigDecimal.TEN, pageable);
+        var result = gameService.search("Alpha", "Action", GameState.COMING_SOON, BigDecimal.ONE, BigDecimal.TEN, pageable);
 
         assertThat(result.getContent()).hasSize(1);
-        verify(gameRepository).search("%alpha%", "Action", BigDecimal.ONE, BigDecimal.TEN, pageable);
+        verify(gameRepository).search("%alpha%", "Action", "COMING_SOON", BigDecimal.ONE, BigDecimal.TEN, pageable);
     }
 
     @Test
     void search_withBlankFilters_shouldPassNulls() {
         var pageable = PageRequest.of(0, 10);
         var page = new PageImpl<Game>(List.of(), pageable, 0);
-        when(gameRepository.search("%%", null, null, null, pageable)).thenReturn(page);
+        when(gameRepository.search("%%", null, null, null, null, pageable)).thenReturn(page);
 
-        var result = gameService.search("  ", "", null, null, pageable);
+        var result = gameService.search("  ", "", null, null, null, pageable);
 
         assertThat(result.getTotalElements()).isZero();
-        verify(gameRepository).search("%%", null, null, null, pageable);
+        verify(gameRepository).search("%%", null, null, null, null, pageable);
     }
 
     @Test
     void search_whenMinGreaterThanMax_shouldThrowWithoutQuerying() {
         var pageable = PageRequest.of(0, 10);
 
-        assertThatThrownBy(() -> gameService.search(null, null, new BigDecimal("20"), BigDecimal.TEN, pageable))
+        assertThatThrownBy(() -> gameService.search(null, null, null, new BigDecimal("20"), BigDecimal.TEN, pageable))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("minPrice");
-        verify(gameRepository, never()).search(any(), any(), any(), any(), any());
+        verify(gameRepository, never()).search(any(), any(), any(), any(), any(), any());
     }
 
     @Test
     void search_withNegativeBound_shouldThrowWithoutQuerying() {
         var pageable = PageRequest.of(0, 10);
 
-        assertThatThrownBy(() -> gameService.search(null, null, new BigDecimal("-1"), null, pageable))
+        assertThatThrownBy(() -> gameService.search(null, null, null, new BigDecimal("-1"), null, pageable))
                 .isInstanceOf(BusinessException.class);
-        verify(gameRepository, never()).search(any(), any(), any(), any(), any());
+        verify(gameRepository, never()).search(any(), any(), any(), any(), any(), any());
     }
 
     @Test

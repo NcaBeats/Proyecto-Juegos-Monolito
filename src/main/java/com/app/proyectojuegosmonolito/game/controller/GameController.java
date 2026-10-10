@@ -50,19 +50,21 @@ public class GameController {
     private final UserService userService;
     private final SecurityContext securityContext;
 
-    @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category, name or effective price range (post-discount)")
+    @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category, name, state or effective price range (post-discount)")
     @ApiResponse(responseCode = "200", description = "List of games retrieved successfully")
     @GetMapping
     public ResponseEntity<Page<GameResponse>> findAll(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) GameState state,
             @RequestParam(required = false) java.math.BigDecimal minPrice,
             @RequestParam(required = false) java.math.BigDecimal maxPrice,
             @ParameterObject Pageable pageable) {
         if ((name != null && !name.isBlank())
                 || (category != null && !category.isBlank())
+                || state != null
                 || minPrice != null || maxPrice != null) {
-            return ResponseEntity.ok(gameService.search(name, category, minPrice, maxPrice, pageable).map(gameMapper::toResponse));
+            return ResponseEntity.ok(gameService.search(name, category, state, minPrice, maxPrice, pageable).map(gameMapper::toResponse));
         }
         return ResponseEntity.ok(gameService.findAll(pageable).map(gameMapper::toResponse));
     }

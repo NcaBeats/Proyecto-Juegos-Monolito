@@ -57,6 +57,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             SELECT DISTINCT g FROM Game g LEFT JOIN g.categories c
             WHERE LOWER(g.name) LIKE :pattern
               AND (:category IS NULL OR c.name = CAST(:category AS String))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
               AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
               AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
             """,
@@ -64,11 +65,13 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             SELECT COUNT(DISTINCT g) FROM Game g LEFT JOIN g.categories c
             WHERE LOWER(g.name) LIKE :pattern
               AND (:category IS NULL OR c.name = CAST(:category AS String))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
               AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
               AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
             """)
     Page<Game> search(@Param("pattern") String pattern,
                       @Param("category") String category,
+                      @Param("state") String state,
                       @Param("min") BigDecimal min,
                       @Param("max") BigDecimal max,
                       Pageable pageable);
