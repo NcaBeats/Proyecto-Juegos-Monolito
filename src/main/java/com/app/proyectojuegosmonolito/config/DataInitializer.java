@@ -1524,26 +1524,426 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedRegionsAndComunas() {
+        // XV Región de Arica y Parinacota
         var regionArica = regionRepository.save(Region.builder().nombre("Arica y Parinacota").build());
-        regionRepository.save(Region.builder().nombre("Tarapacá").build());
-        regionRepository.save(Region.builder().nombre("Antofagasta").build());
-        regionRepository.save(Region.builder().nombre("Atacama").build());
-        regionRepository.save(Region.builder().nombre("Coquimbo").build());
-        regionRepository.save(Region.builder().nombre("Valparaíso").build());
-        var regionSantiago = regionRepository.save(Region.builder().nombre("Metropolitana de Santiago").build());
-        regionRepository.save(Region.builder().nombre("O'Higgins").build());
-        regionRepository.save(Region.builder().nombre("Maule").build());
-        regionRepository.save(Region.builder().nombre("Ñuble").build());
-        var regionBiobio = regionRepository.save(Region.builder().nombre("Biobío").build());
-        regionRepository.save(Region.builder().nombre("Araucanía").build());
-        regionRepository.save(Region.builder().nombre("Los Ríos").build());
-        regionRepository.save(Region.builder().nombre("Los Lagos").build());
-        regionRepository.save(Region.builder().nombre("Aysén").build());
-        regionRepository.save(Region.builder().nombre("Magallanes").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Arica").region(regionArica).build(),
+                Comuna.builder().nombre("Camarones").region(regionArica).build(),
+                Comuna.builder().nombre("Putre").region(regionArica).build(),
+                Comuna.builder().nombre("General Lagos").region(regionArica).build()
+        ));
 
-        // Comunas de ejemplo para las regiones usadas en seeds
-        comunaRepository.save(Comuna.builder().nombre("Santiago").region(regionSantiago).build());
-        comunaRepository.save(Comuna.builder().nombre("Viña del Mar").region(regionRepository.findByNombre("Valparaíso").orElseThrow()).build());
-        comunaRepository.save(Comuna.builder().nombre("Concepción").region(regionBiobio).build());
+        // I Región de Tarapacá
+        var regionTarapaca = regionRepository.save(Region.builder().nombre("Tarapacá").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Iquique").region(regionTarapaca).build(),
+                Comuna.builder().nombre("Alto Hospicio").region(regionTarapaca).build(),
+                Comuna.builder().nombre("Pozo Almonte").region(regionTarapaca).build(),
+                Comuna.builder().nombre("Camiña").region(regionTarapaca).build(),
+                Comuna.builder().nombre("Colchane").region(regionTarapaca).build(),
+                Comuna.builder().nombre("Huara").region(regionTarapaca).build(),
+                Comuna.builder().nombre("Pica").region(regionTarapaca).build()
+        ));
+
+        // II Región de Antofagasta
+        var regionAntofagasta = regionRepository.save(Region.builder().nombre("Antofagasta").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Antofagasta").region(regionAntofagasta).build(),
+                Comuna.builder().nombre("Mejillones").region(regionAntofagasta).build(),
+                Comuna.builder().nombre("Sierra Gorda").region(regionAntofagasta).build(),
+                Comuna.builder().nombre("Taltal").region(regionAntofagasta).build(),
+                Comuna.builder().nombre("Calama").region(regionAntofagasta).build(),
+                Comuna.builder().nombre("Ollagüe").region(regionAntofagasta).build(),
+                Comuna.builder().nombre("San Pedro de Atacama").region(regionAntofagasta).build(),
+                Comuna.builder().nombre("Tocopilla").region(regionAntofagasta).build(),
+                Comuna.builder().nombre("María Elena").region(regionAntofagasta).build()
+        ));
+
+        // III Región de Atacama
+        var regionAtacama = regionRepository.save(Region.builder().nombre("Atacama").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Copiapó").region(regionAtacama).build(),
+                Comuna.builder().nombre("Caldera").region(regionAtacama).build(),
+                Comuna.builder().nombre("Tierra Amarilla").region(regionAtacama).build(),
+                Comuna.builder().nombre("Chañaral").region(regionAtacama).build(),
+                Comuna.builder().nombre("Diego de Almagro").region(regionAtacama).build(),
+                Comuna.builder().nombre("Vallenar").region(regionAtacama).build(),
+                Comuna.builder().nombre("Alto del Carmen").region(regionAtacama).build(),
+                Comuna.builder().nombre("Freirina").region(regionAtacama).build(),
+                Comuna.builder().nombre("Huasco").region(regionAtacama).build()
+        ));
+
+        // IV Región de Coquimbo
+        var regionCoquimbo = regionRepository.save(Region.builder().nombre("Coquimbo").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("La Serena").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Coquimbo").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Andacollo").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("La Higuera").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Paiguano").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Vicuña").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Illapel").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Canela").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Los Vilos").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Salamanca").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Ovalle").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Combarbalá").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Monte Patria").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Punitaqui").region(regionCoquimbo).build(),
+                Comuna.builder().nombre("Río Hurtado").region(regionCoquimbo).build()
+        ));
+
+        // V Región de Valparaíso
+        var regionValparaiso = regionRepository.save(Region.builder().nombre("Valparaíso").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Valparaíso").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Casablanca").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Concón").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Juan Fernández").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Puchuncaví").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Quintero").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Viña del Mar").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Isla de Pascua").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Los Andes").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Calle Larga").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Rinconada").region(regionValparaiso).build(),
+                Comuna.builder().nombre("San Esteban").region(regionValparaiso).build(),
+                Comuna.builder().nombre("La Ligua").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Cabildo").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Papudo").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Petorca").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Zapallar").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Quillota").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Calera").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Hijuelas").region(regionValparaiso).build(),
+                Comuna.builder().nombre("La Cruz").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Nogales").region(regionValparaiso).build(),
+                Comuna.builder().nombre("San Antonio").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Algarrobo").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Cartagena").region(regionValparaiso).build(),
+                Comuna.builder().nombre("El Quisco").region(regionValparaiso).build(),
+                Comuna.builder().nombre("El Tabo").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Santo Domingo").region(regionValparaiso).build(),
+                Comuna.builder().nombre("San Felipe").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Catemu").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Llaillay").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Panquehue").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Putaendo").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Santa María").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Quilpué").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Limache").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Olmué").region(regionValparaiso).build(),
+                Comuna.builder().nombre("Villa Alemana").region(regionValparaiso).build()
+        ));
+
+        // VI Región de O'Higgins
+        var regionOHiggins = regionRepository.save(Region.builder().nombre("O'Higgins").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Rancagua").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Codegua").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Coinco").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Coltauco").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Doñihue").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Graneros").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Las Cabras").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Machalí").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Malloa").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Mostazal").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Olivar").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Peumo").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Pichidegua").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Quinta de Tilcoco").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Rengo").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Requínoa").region(regionOHiggins).build(),
+                Comuna.builder().nombre("San Vicente").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Pichilemu").region(regionOHiggins).build(),
+                Comuna.builder().nombre("La Estrella").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Litueche").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Marchihue").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Navidad").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Paredones").region(regionOHiggins).build(),
+                Comuna.builder().nombre("San Fernando").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Chépica").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Chimbarongo").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Lolol").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Nancagua").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Palmilla").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Peralillo").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Placilla").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Pumanque").region(regionOHiggins).build(),
+                Comuna.builder().nombre("Santa Cruz").region(regionOHiggins).build()
+        ));
+
+        // VII Región del Maule
+        var regionMaule = regionRepository.save(Region.builder().nombre("Maule").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Talca").region(regionMaule).build(),
+                Comuna.builder().nombre("Constitución").region(regionMaule).build(),
+                Comuna.builder().nombre("Curepto").region(regionMaule).build(),
+                Comuna.builder().nombre("Empedrado").region(regionMaule).build(),
+                Comuna.builder().nombre("Maule").region(regionMaule).build(),
+                Comuna.builder().nombre("Pelarco").region(regionMaule).build(),
+                Comuna.builder().nombre("Pencahue").region(regionMaule).build(),
+                Comuna.builder().nombre("Río Claro").region(regionMaule).build(),
+                Comuna.builder().nombre("San Clemente").region(regionMaule).build(),
+                Comuna.builder().nombre("San Rafael").region(regionMaule).build(),
+                Comuna.builder().nombre("Cauquenes").region(regionMaule).build(),
+                Comuna.builder().nombre("Chanco").region(regionMaule).build(),
+                Comuna.builder().nombre("Pelluhue").region(regionMaule).build(),
+                Comuna.builder().nombre("Curicó").region(regionMaule).build(),
+                Comuna.builder().nombre("Hualañé").region(regionMaule).build(),
+                Comuna.builder().nombre("Licantén").region(regionMaule).build(),
+                Comuna.builder().nombre("Molina").region(regionMaule).build(),
+                Comuna.builder().nombre("Rauco").region(regionMaule).build(),
+                Comuna.builder().nombre("Romeral").region(regionMaule).build(),
+                Comuna.builder().nombre("Sagrada Familia").region(regionMaule).build(),
+                Comuna.builder().nombre("Teno").region(regionMaule).build(),
+                Comuna.builder().nombre("Vichuquén").region(regionMaule).build(),
+                Comuna.builder().nombre("Linares").region(regionMaule).build(),
+                Comuna.builder().nombre("Colbún").region(regionMaule).build(),
+                Comuna.builder().nombre("Longaví").region(regionMaule).build(),
+                Comuna.builder().nombre("Parral").region(regionMaule).build(),
+                Comuna.builder().nombre("Retiro").region(regionMaule).build(),
+                Comuna.builder().nombre("San Javier").region(regionMaule).build(),
+                Comuna.builder().nombre("Villa Alegre").region(regionMaule).build(),
+                Comuna.builder().nombre("Yerbas Buenas").region(regionMaule).build()
+        ));
+
+        // XVI Región de Ñuble
+        var regionNuble = regionRepository.save(Region.builder().nombre("Ñuble").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Cobquecura").region(regionNuble).build(),
+                Comuna.builder().nombre("Coelemu").region(regionNuble).build(),
+                Comuna.builder().nombre("Ninhue").region(regionNuble).build(),
+                Comuna.builder().nombre("Portezuelo").region(regionNuble).build(),
+                Comuna.builder().nombre("Quirihue").region(regionNuble).build(),
+                Comuna.builder().nombre("Ránquil").region(regionNuble).build(),
+                Comuna.builder().nombre("Treguaco").region(regionNuble).build(),
+                Comuna.builder().nombre("Bulnes").region(regionNuble).build(),
+                Comuna.builder().nombre("Chillán Viejo").region(regionNuble).build(),
+                Comuna.builder().nombre("Chillán").region(regionNuble).build(),
+                Comuna.builder().nombre("El Carmen").region(regionNuble).build(),
+                Comuna.builder().nombre("Pemuco").region(regionNuble).build(),
+                Comuna.builder().nombre("Pinto").region(regionNuble).build(),
+                Comuna.builder().nombre("Quillón").region(regionNuble).build(),
+                Comuna.builder().nombre("San Ignacio").region(regionNuble).build(),
+                Comuna.builder().nombre("Yungay").region(regionNuble).build(),
+                Comuna.builder().nombre("Coihueco").region(regionNuble).build(),
+                Comuna.builder().nombre("Ñiquén").region(regionNuble).build(),
+                Comuna.builder().nombre("San Carlos").region(regionNuble).build(),
+                Comuna.builder().nombre("San Fabián").region(regionNuble).build(),
+                Comuna.builder().nombre("San Nicolás").region(regionNuble).build()
+        ));
+
+        // VIII Región del Biobío
+        var regionBiobio = regionRepository.save(Region.builder().nombre("Biobío").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Concepción").region(regionBiobio).build(),
+                Comuna.builder().nombre("Coronel").region(regionBiobio).build(),
+                Comuna.builder().nombre("Chiguayante").region(regionBiobio).build(),
+                Comuna.builder().nombre("Florida").region(regionBiobio).build(),
+                Comuna.builder().nombre("Hualqui").region(regionBiobio).build(),
+                Comuna.builder().nombre("Lota").region(regionBiobio).build(),
+                Comuna.builder().nombre("Penco").region(regionBiobio).build(),
+                Comuna.builder().nombre("San Pedro de la Paz").region(regionBiobio).build(),
+                Comuna.builder().nombre("Santa Juana").region(regionBiobio).build(),
+                Comuna.builder().nombre("Talcahuano").region(regionBiobio).build(),
+                Comuna.builder().nombre("Tomé").region(regionBiobio).build(),
+                Comuna.builder().nombre("Hualpén").region(regionBiobio).build(),
+                Comuna.builder().nombre("Lebu").region(regionBiobio).build(),
+                Comuna.builder().nombre("Arauco").region(regionBiobio).build(),
+                Comuna.builder().nombre("Cañete").region(regionBiobio).build(),
+                Comuna.builder().nombre("Contulmo").region(regionBiobio).build(),
+                Comuna.builder().nombre("Curanilahue").region(regionBiobio).build(),
+                Comuna.builder().nombre("Los Álamos").region(regionBiobio).build(),
+                Comuna.builder().nombre("Tirúa").region(regionBiobio).build(),
+                Comuna.builder().nombre("Los Ángeles").region(regionBiobio).build(),
+                Comuna.builder().nombre("Antuco").region(regionBiobio).build(),
+                Comuna.builder().nombre("Cabrero").region(regionBiobio).build(),
+                Comuna.builder().nombre("Laja").region(regionBiobio).build(),
+                Comuna.builder().nombre("Mulchén").region(regionBiobio).build(),
+                Comuna.builder().nombre("Nacimiento").region(regionBiobio).build(),
+                Comuna.builder().nombre("Negrete").region(regionBiobio).build(),
+                Comuna.builder().nombre("Quilaco").region(regionBiobio).build(),
+                Comuna.builder().nombre("Quilleco").region(regionBiobio).build(),
+                Comuna.builder().nombre("San Rosendo").region(regionBiobio).build(),
+                Comuna.builder().nombre("Santa Bárbara").region(regionBiobio).build(),
+                Comuna.builder().nombre("Tucapel").region(regionBiobio).build(),
+                Comuna.builder().nombre("Yumbel").region(regionBiobio).build(),
+                Comuna.builder().nombre("Alto Biobío").region(regionBiobio).build()
+        ));
+
+        // IX Región de la Araucanía
+        var regionAraucania = regionRepository.save(Region.builder().nombre("Araucanía").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Temuco").region(regionAraucania).build(),
+                Comuna.builder().nombre("Carahue").region(regionAraucania).build(),
+                Comuna.builder().nombre("Cunco").region(regionAraucania).build(),
+                Comuna.builder().nombre("Curarrehue").region(regionAraucania).build(),
+                Comuna.builder().nombre("Freire").region(regionAraucania).build(),
+                Comuna.builder().nombre("Galvarino").region(regionAraucania).build(),
+                Comuna.builder().nombre("Gorbea").region(regionAraucania).build(),
+                Comuna.builder().nombre("Lautaro").region(regionAraucania).build(),
+                Comuna.builder().nombre("Loncoche").region(regionAraucania).build(),
+                Comuna.builder().nombre("Melipeuco").region(regionAraucania).build(),
+                Comuna.builder().nombre("Nueva Imperial").region(regionAraucania).build(),
+                Comuna.builder().nombre("Padre las Casas").region(regionAraucania).build(),
+                Comuna.builder().nombre("Perquenco").region(regionAraucania).build(),
+                Comuna.builder().nombre("Pitrufquén").region(regionAraucania).build(),
+                Comuna.builder().nombre("Pucón").region(regionAraucania).build(),
+                Comuna.builder().nombre("Saavedra").region(regionAraucania).build(),
+                Comuna.builder().nombre("Teodoro Schmidt").region(regionAraucania).build(),
+                Comuna.builder().nombre("Toltén").region(regionAraucania).build(),
+                Comuna.builder().nombre("Vilcún").region(regionAraucania).build(),
+                Comuna.builder().nombre("Villarrica").region(regionAraucania).build(),
+                Comuna.builder().nombre("Cholchol").region(regionAraucania).build(),
+                Comuna.builder().nombre("Angol").region(regionAraucania).build(),
+                Comuna.builder().nombre("Collipulli").region(regionAraucania).build(),
+                Comuna.builder().nombre("Curacautín").region(regionAraucania).build(),
+                Comuna.builder().nombre("Ercilla").region(regionAraucania).build(),
+                Comuna.builder().nombre("Lonquimay").region(regionAraucania).build(),
+                Comuna.builder().nombre("Los Sauces").region(regionAraucania).build(),
+                Comuna.builder().nombre("Lumaco").region(regionAraucania).build(),
+                Comuna.builder().nombre("Purén").region(regionAraucania).build(),
+                Comuna.builder().nombre("Renaico").region(regionAraucania).build(),
+                Comuna.builder().nombre("Traiguén").region(regionAraucania).build(),
+                Comuna.builder().nombre("Victoria").region(regionAraucania).build()
+        ));
+
+        // XIV Región de Los Ríos
+        var regionLosRios = regionRepository.save(Region.builder().nombre("Los Ríos").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Valdivia").region(regionLosRios).build(),
+                Comuna.builder().nombre("Corral").region(regionLosRios).build(),
+                Comuna.builder().nombre("Lanco").region(regionLosRios).build(),
+                Comuna.builder().nombre("Los Lagos").region(regionLosRios).build(),
+                Comuna.builder().nombre("Máfil").region(regionLosRios).build(),
+                Comuna.builder().nombre("Mariquina").region(regionLosRios).build(),
+                Comuna.builder().nombre("Paillaco").region(regionLosRios).build(),
+                Comuna.builder().nombre("Panguipulli").region(regionLosRios).build(),
+                Comuna.builder().nombre("La Unión").region(regionLosRios).build(),
+                Comuna.builder().nombre("Futrono").region(regionLosRios).build(),
+                Comuna.builder().nombre("Lago Ranco").region(regionLosRios).build(),
+                Comuna.builder().nombre("Río Bueno").region(regionLosRios).build()
+        ));
+
+        // X Región de Los Lagos
+        var regionLosLagos = regionRepository.save(Region.builder().nombre("Los Lagos").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Puerto Montt").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Calbuco").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Cochamó").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Fresia").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Frutillar").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Los Muermos").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Llanquihue").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Maullín").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Puerto Varas").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Castro").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Ancud").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Chonchi").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Curaco de Vélez").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Dalcahue").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Puqueldón").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Queilén").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Quellón").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Quemchi").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Quinchao").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Osorno").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Puerto Octay").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Purranque").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Puyehue").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Río Negro").region(regionLosLagos).build(),
+                Comuna.builder().nombre("San Juan de la Costa").region(regionLosLagos).build(),
+                Comuna.builder().nombre("San Pablo").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Chaitén").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Futaleufú").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Hualaihué").region(regionLosLagos).build(),
+                Comuna.builder().nombre("Palena").region(regionLosLagos).build()
+        ));
+
+        // XI Región de Aysén
+        var regionAysen = regionRepository.save(Region.builder().nombre("Aysén").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Coyhaique").region(regionAysen).build(),
+                Comuna.builder().nombre("Lago Verde").region(regionAysen).build(),
+                Comuna.builder().nombre("Aisén").region(regionAysen).build(),
+                Comuna.builder().nombre("Cisnes").region(regionAysen).build(),
+                Comuna.builder().nombre("Guaitecas").region(regionAysen).build(),
+                Comuna.builder().nombre("Cochrane").region(regionAysen).build(),
+                Comuna.builder().nombre("O'Higgins").region(regionAysen).build(),
+                Comuna.builder().nombre("Tortel").region(regionAysen).build(),
+                Comuna.builder().nombre("Chile Chico").region(regionAysen).build(),
+                Comuna.builder().nombre("Río Ibáñez").region(regionAysen).build()
+        ));
+
+        // XII Región de Magallanes
+        var regionMagallanes = regionRepository.save(Region.builder().nombre("Magallanes").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Punta Arenas").region(regionMagallanes).build(),
+                Comuna.builder().nombre("Laguna Blanca").region(regionMagallanes).build(),
+                Comuna.builder().nombre("Río Verde").region(regionMagallanes).build(),
+                Comuna.builder().nombre("San Gregorio").region(regionMagallanes).build(),
+                Comuna.builder().nombre("Cabo de Hornos").region(regionMagallanes).build(),
+                Comuna.builder().nombre("Antártica").region(regionMagallanes).build(),
+                Comuna.builder().nombre("Porvenir").region(regionMagallanes).build(),
+                Comuna.builder().nombre("Primavera").region(regionMagallanes).build(),
+                Comuna.builder().nombre("Timaukel").region(regionMagallanes).build(),
+                Comuna.builder().nombre("Natales").region(regionMagallanes).build(),
+                Comuna.builder().nombre("Torres del Paine").region(regionMagallanes).build()
+        ));
+
+        // RM Región Metropolitana de Santiago
+        var regionSantiago = regionRepository.save(Region.builder().nombre("Metropolitana de Santiago").build());
+        comunaRepository.saveAll(List.of(
+                Comuna.builder().nombre("Cerrillos").region(regionSantiago).build(),
+                Comuna.builder().nombre("Cerro Navia").region(regionSantiago).build(),
+                Comuna.builder().nombre("Conchalí").region(regionSantiago).build(),
+                Comuna.builder().nombre("El Bosque").region(regionSantiago).build(),
+                Comuna.builder().nombre("Estación Central").region(regionSantiago).build(),
+                Comuna.builder().nombre("Huechuraba").region(regionSantiago).build(),
+                Comuna.builder().nombre("Independencia").region(regionSantiago).build(),
+                Comuna.builder().nombre("La Cisterna").region(regionSantiago).build(),
+                Comuna.builder().nombre("La Florida").region(regionSantiago).build(),
+                Comuna.builder().nombre("La Granja").region(regionSantiago).build(),
+                Comuna.builder().nombre("La Pintana").region(regionSantiago).build(),
+                Comuna.builder().nombre("La Reina").region(regionSantiago).build(),
+                Comuna.builder().nombre("Las Condes").region(regionSantiago).build(),
+                Comuna.builder().nombre("Lo Barnechea").region(regionSantiago).build(),
+                Comuna.builder().nombre("Lo Espejo").region(regionSantiago).build(),
+                Comuna.builder().nombre("Lo Prado").region(regionSantiago).build(),
+                Comuna.builder().nombre("Macul").region(regionSantiago).build(),
+                Comuna.builder().nombre("Maipú").region(regionSantiago).build(),
+                Comuna.builder().nombre("Ñuñoa").region(regionSantiago).build(),
+                Comuna.builder().nombre("Pedro Aguirre Cerda").region(regionSantiago).build(),
+                Comuna.builder().nombre("Peñalolén").region(regionSantiago).build(),
+                Comuna.builder().nombre("Providencia").region(regionSantiago).build(),
+                Comuna.builder().nombre("Pudahuel").region(regionSantiago).build(),
+                Comuna.builder().nombre("Quilicura").region(regionSantiago).build(),
+                Comuna.builder().nombre("Quinta Normal").region(regionSantiago).build(),
+                Comuna.builder().nombre("Recoleta").region(regionSantiago).build(),
+                Comuna.builder().nombre("Renca").region(regionSantiago).build(),
+                Comuna.builder().nombre("San Joaquín").region(regionSantiago).build(),
+                Comuna.builder().nombre("San Miguel").region(regionSantiago).build(),
+                Comuna.builder().nombre("San Ramón").region(regionSantiago).build(),
+                Comuna.builder().nombre("Vitacura").region(regionSantiago).build(),
+                Comuna.builder().nombre("Puente Alto").region(regionSantiago).build(),
+                Comuna.builder().nombre("Pirque").region(regionSantiago).build(),
+                Comuna.builder().nombre("San José de Maipo").region(regionSantiago).build(),
+                Comuna.builder().nombre("Buin").region(regionSantiago).build(),
+                Comuna.builder().nombre("Calera de Tango").region(regionSantiago).build(),
+                Comuna.builder().nombre("Paine").region(regionSantiago).build(),
+                Comuna.builder().nombre("San Bernardo").region(regionSantiago).build(),
+                Comuna.builder().nombre("Alhué").region(regionSantiago).build(),
+                Comuna.builder().nombre("Curacaví").region(regionSantiago).build(),
+                Comuna.builder().nombre("María Pinto").region(regionSantiago).build(),
+                Comuna.builder().nombre("Melipilla").region(regionSantiago).build(),
+                Comuna.builder().nombre("San Pedro").region(regionSantiago).build(),
+                Comuna.builder().nombre("Talagante").region(regionSantiago).build(),
+                Comuna.builder().nombre("Colina").region(regionSantiago).build(),
+                Comuna.builder().nombre("Lampa").region(regionSantiago).build(),
+                Comuna.builder().nombre("Tiltil").region(regionSantiago).build(),
+                Comuna.builder().nombre("Santiago").region(regionSantiago).build()
+        ));
     }
 }
