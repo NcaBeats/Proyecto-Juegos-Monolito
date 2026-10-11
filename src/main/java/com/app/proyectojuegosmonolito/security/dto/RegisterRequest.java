@@ -1,7 +1,5 @@
 package com.app.proyectojuegosmonolito.security.dto;
 
-import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
-import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.validation.ValidEmailDomain;
 import com.app.proyectojuegosmonolito.account.profile.model.ValidRun;
 import com.app.proyectojuegosmonolito.validation.PasswordRules;
@@ -16,8 +14,7 @@ public record RegisterRequest(
         @NotBlank @Size(max = 50) String firstName,
         @NotBlank @Size(max = 100) String lastName,
         LocalDate birthDate,
-        @NotNull Region region,
-        @NotNull Comuna comuna,
+        @NotNull Long comunaId,
         @NotBlank @Size(max = 300) String address
 ) {
 }

@@ -2,15 +2,23 @@ package com.app.proyectojuegosmonolito.security.mapper;
 
 import com.app.proyectojuegosmonolito.security.dto.RegisterRequest;
 import com.app.proyectojuegosmonolito.account.user.model.User;
+import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Profile;
-import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
+import com.app.proyectojuegosmonolito.account.profile.repository.ComunaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
 @Component
 public class AuthMapper {
+
+    private final ComunaRepository comunaRepository;
+
+    public AuthMapper(ComunaRepository comunaRepository) {
+        this.comunaRepository = comunaRepository;
+    }
 
     public User toEntity(RegisterRequest request) {
         return User.builder()
@@ -20,6 +28,8 @@ public class AuthMapper {
     }
 
     public Profile toProfile(RegisterRequest request, User user) {
+        var comuna = comunaRepository.findById(request.comunaId())
+                .orElseThrow(() -> new EntityNotFoundException("Comuna not found: " + request.comunaId()));
         return Profile.builder()
                 .user(user)
                 .nickname(request.email())
@@ -27,8 +37,8 @@ public class AuthMapper {
                 .firstName(request.firstName())
                 .lastName(request.lastName())
                 .birthDate(request.birthDate())
-                .region(request.region())
-                .comuna(request.comuna())
+                .comuna(comuna)
+                .region(comuna.getRegion())
                 .address(request.address())
                 .visibility(Visibility.PUBLIC)
                 .createdAt(Instant.now())

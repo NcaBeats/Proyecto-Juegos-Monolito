@@ -1,7 +1,5 @@
 package com.app.proyectojuegosmonolito.account.profile.dto;
 
-import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
-import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.profile.model.ValidRun;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import jakarta.validation.constraints.Size;
@@ -16,7 +14,6 @@ public record ProfilePatchRequest(
         @Size(max = 50) String firstName,
         @Size(max = 100) String lastName,
         LocalDate birthDate,
-        Region region,
-        Comuna comuna,
+        Long comunaId,
         @Size(max = 300) String address
 ) {}

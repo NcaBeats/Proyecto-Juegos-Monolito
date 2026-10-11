@@ -99,6 +99,8 @@ public class SecurityConfig {
                         // Contacts: public to create, ADMIN only to list
                         .requestMatchers(HttpMethod.POST, "/api/v1/contacts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/contacts").hasRole("ADMIN")
+                        // Regions & Comunas: public read for catalog
+                        .requestMatchers(HttpMethod.GET, "/api/v1/regions/**").permitAll()
                         // Staff management: ADMIN and VENDEDOR (vendors only see their own catalog/orders)
                         .requestMatchers("/api/v1/manage/**").hasAnyRole("ADMIN", "VENDEDOR")
                         .anyRequest().authenticated()

@@ -1,8 +1,6 @@
 package com.app.proyectojuegosmonolito.security.controller;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
-import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
-import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.user.repository.UserRepository;
@@ -95,7 +93,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("new@gmail.com", "pass123", "190110222", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
+                                new RegisterRequest("new@gmail.com", "pass123", "190110222", "Test", "User", null, 1L, "Test 123"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").isNotEmpty());
     }
@@ -114,7 +112,7 @@ class AuthControllerIntegrationTest {
         mockMvc.perform(put("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("new@gmail.com", "pass123", "190110222", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
+                                new RegisterRequest("new@gmail.com", "pass123", "190110222", "Test", "User", null, 1L, "Test 123"))))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.title").value("Method Not Allowed"));
     }
@@ -152,7 +150,7 @@ class AuthControllerIntegrationTest {
         MvcResult result = mockMvc.perform(post("/api/v1/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new RegisterRequest("revoked@gmail.com", "pass123", "190110222", "Test", "User", null, Region.METROPOLITANA_DE_SANTIAGO, Comuna.SANTIAGO, "Test 123"))))
+                                new RegisterRequest("revoked@gmail.com", "pass123", "190110222", "Test", "User", null, 1L, "Test 123"))))
                 .andExpect(status().isCreated())
                 .andReturn();
         return objectMapper.readTree(result.getResponse().getContentAsString()).get("token").asText();

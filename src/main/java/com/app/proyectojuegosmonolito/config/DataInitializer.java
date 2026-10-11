@@ -9,10 +9,12 @@ import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.user.service.UserService;
 import com.app.proyectojuegosmonolito.account.wallet.service.WalletService;
-import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Profile;
 import com.app.proyectojuegosmonolito.account.profile.model.Region;
+import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
+import com.app.proyectojuegosmonolito.account.profile.repository.RegionRepository;
+import com.app.proyectojuegosmonolito.account.profile.repository.ComunaRepository;
 import com.app.proyectojuegosmonolito.blog.model.Blog;
 import com.app.proyectojuegosmonolito.blog.model.BlogCategory;
 import com.app.proyectojuegosmonolito.blog.service.BlogService;
@@ -40,10 +42,15 @@ public class DataInitializer implements CommandLineRunner {
     private final UserService userService;
     private final WalletService walletService;
     private final BlogService blogService;
+    private final RegionRepository regionRepository;
+    private final ComunaRepository comunaRepository;
 
     @Override
     @Transactional
     public void run(String @NonNull ... args) {
+        if (regionRepository.count() == 0) {
+            seedRegionsAndComunas();
+        }
         if (gameService.count() == 0) {
             seedCatalog();
             seedImages();
@@ -1027,6 +1034,13 @@ public class DataInitializer implements CommandLineRunner {
         // Users with full profile data
         var now = Instant.now();
 
+        var regionSantiago = regionRepository.findByNombre("Metropolitana de Santiago").orElseThrow();
+        var comunaSantiago = comunaRepository.findByNombreAndRegion_Id("Santiago", regionSantiago.getId()).orElseThrow();
+        var regionValparaiso = regionRepository.findByNombre("Valparaíso").orElseThrow();
+        var comunaVina = comunaRepository.findByNombreAndRegion_Id("Viña del Mar", regionValparaiso.getId()).orElseThrow();
+        var regionBiobio = regionRepository.findByNombre("Biobío").orElseThrow();
+        var comunaConcepcion = comunaRepository.findByNombreAndRegion_Id("Concepción", regionBiobio.getId()).orElseThrow();
+
         var player1 = userService.create(
                 User.builder()
                         .email("player1@gmail.com")
@@ -1039,8 +1053,8 @@ public class DataInitializer implements CommandLineRunner {
                         .firstName("Juan")
                         .lastName("Pérez")
                         .birthDate(LocalDate.of(2001, 10, 22))
-                        .region(Region.METROPOLITANA_DE_SANTIAGO)
-                        .comuna(Comuna.SANTIAGO)
+                        .region(regionSantiago)
+                        .comuna(comunaSantiago)
                         .address("Av. Libertador 1234")
                         .visibility(Visibility.PUBLIC)
                         .build()
@@ -1058,8 +1072,8 @@ public class DataInitializer implements CommandLineRunner {
                         .firstName("María")
                         .lastName("García")
                         .birthDate(LocalDate.of(1998, 5, 15))
-                        .region(Region.VALPARAISO)
-                        .comuna(Comuna.VIÑA_DEL_MAR)
+                        .region(regionValparaiso)
+                        .comuna(comunaVina)
                         .address("Calle Los Olivos 567")
                         .visibility(Visibility.PUBLIC)
                         .build()
@@ -1077,8 +1091,8 @@ public class DataInitializer implements CommandLineRunner {
                         .firstName("Carlos")
                         .lastName("Rodríguez")
                         .birthDate(LocalDate.of(2005, 3, 10))
-                        .region(Region.BIOBIO)
-                        .comuna(Comuna.CONCEPCION)
+                        .region(regionBiobio)
+                        .comuna(comunaConcepcion)
                         .address("Pasaje Las Flores 890")
                         .visibility(Visibility.PUBLIC)
                         .build()
@@ -1210,6 +1224,8 @@ public class DataInitializer implements CommandLineRunner {
         if (existing.isPresent()) {
             return existing.get();
         }
+        var region = regionRepository.findByNombre("Metropolitana de Santiago").orElseThrow();
+        var comuna = comunaRepository.findByNombreAndRegion_Id("Santiago", region.getId()).orElseThrow();
         return userService.create(
                 User.builder()
                         .email(email)
@@ -1222,8 +1238,8 @@ public class DataInitializer implements CommandLineRunner {
                         .firstName(firstName)
                         .lastName(lastName)
                         .birthDate(LocalDate.of(1990, 1, 1))
-                        .region(Region.METROPOLITANA_DE_SANTIAGO)
-                        .comuna(Comuna.SANTIAGO)
+                        .region(region)
+                        .comuna(comuna)
                         .address("Av. Vendedores 1234")
                         .visibility(Visibility.PUBLIC)
                         .build()
@@ -1505,5 +1521,29 @@ public class DataInitializer implements CommandLineRunner {
 
     private void seedGallery(String gameName, List<String> urls) {
         gameService.findByName(gameName).ifPresent(g -> gameService.replaceGallery(g.getId(), urls));
+    }
+
+    private void seedRegionsAndComunas() {
+        var regionArica = regionRepository.save(Region.builder().nombre("Arica y Parinacota").build());
+        regionRepository.save(Region.builder().nombre("Tarapacá").build());
+        regionRepository.save(Region.builder().nombre("Antofagasta").build());
+        regionRepository.save(Region.builder().nombre("Atacama").build());
+        regionRepository.save(Region.builder().nombre("Coquimbo").build());
+        regionRepository.save(Region.builder().nombre("Valparaíso").build());
+        var regionSantiago = regionRepository.save(Region.builder().nombre("Metropolitana de Santiago").build());
+        regionRepository.save(Region.builder().nombre("O'Higgins").build());
+        regionRepository.save(Region.builder().nombre("Maule").build());
+        regionRepository.save(Region.builder().nombre("Ñuble").build());
+        var regionBiobio = regionRepository.save(Region.builder().nombre("Biobío").build());
+        regionRepository.save(Region.builder().nombre("Araucanía").build());
+        regionRepository.save(Region.builder().nombre("Los Ríos").build());
+        regionRepository.save(Region.builder().nombre("Los Lagos").build());
+        regionRepository.save(Region.builder().nombre("Aysén").build());
+        regionRepository.save(Region.builder().nombre("Magallanes").build());
+
+        // Comunas de ejemplo para las regiones usadas en seeds
+        comunaRepository.save(Comuna.builder().nombre("Santiago").region(regionSantiago).build());
+        comunaRepository.save(Comuna.builder().nombre("Viña del Mar").region(regionRepository.findByNombre("Valparaíso").orElseThrow()).build());
+        comunaRepository.save(Comuna.builder().nombre("Concepción").region(regionBiobio).build());
     }
 }

@@ -54,12 +54,12 @@ public class Profile {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id", nullable = false)
     private Region region;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comuna_id", nullable = false)
     private Comuna comuna;
 
     @NotBlank

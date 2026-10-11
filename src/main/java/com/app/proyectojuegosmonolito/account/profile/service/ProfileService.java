@@ -1,9 +1,13 @@
 package com.app.proyectojuegosmonolito.account.profile.service;
 
 import com.app.proyectojuegosmonolito.account.profile.dto.ProfilePatchRequest;
+import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Profile;
+import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
+import com.app.proyectojuegosmonolito.account.profile.repository.ComunaRepository;
 import com.app.proyectojuegosmonolito.account.profile.repository.ProfileRepository;
+import com.app.proyectojuegosmonolito.account.profile.repository.RegionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,8 @@ import com.app.proyectojuegosmonolito.common.RepositoryUtils;
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
+    private final ComunaRepository comunaRepository;
+    private final RegionRepository regionRepository;
 
     public Profile findByUserId(Long userId) {
         log.info("Fetching profile for user: {}", userId);
@@ -48,11 +54,23 @@ public class ProfileService {
         if (request.firstName() != null) profile.setFirstName(request.firstName());
         if (request.lastName() != null) profile.setLastName(request.lastName());
         if (request.birthDate() != null) profile.setBirthDate(request.birthDate());
-        if (request.region() != null) profile.setRegion(request.region());
-        if (request.comuna() != null) profile.setComuna(request.comuna());
+        
+        // Resolver comuna por ID y derivar region
+        if (request.comunaId() != null) {
+            var comuna = comunaRepository.findById(request.comunaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Comuna not found: " + request.comunaId()));
+            profile.setComuna(comuna);
+            profile.setRegion(comuna.getRegion());
+        }
+        
         if (request.address() != null) profile.setAddress(request.address());
         var saved = profileRepository.save(profile);
         log.info("Updated profile for user {}", userId);
         return saved;
+    }
+
+    public Region findRegionById(Long id) {
+        return regionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Region not found: " + id));
     }
 }
