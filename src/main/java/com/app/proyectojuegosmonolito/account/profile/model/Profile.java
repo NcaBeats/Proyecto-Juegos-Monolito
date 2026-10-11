@@ -30,9 +30,6 @@ public class Profile {
     private String nickname;
 
     @Column(columnDefinition = "TEXT")
-    private String avatarImage;
-
-    @Column(columnDefinition = "TEXT")
     private String bio;
 
     @Enumerated(EnumType.STRING)
@@ -57,12 +54,12 @@ public class Profile {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id", nullable = false)
     private Region region;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comuna_id", nullable = false)
     private Comuna comuna;
 
     @NotBlank
@@ -72,23 +69,4 @@ public class Profile {
 
     @Column(nullable = false)
     private Instant createdAt;
-
-    public Profile update(String nickname, String avatarImage, String bio, Visibility visibility) {
-        this.nickname = nickname;
-        this.avatarImage = avatarImage;
-        this.bio = bio;
-        this.visibility = visibility;
-        return this;
-    }
-
-    public Profile updatePersonalInfo(String firstName, String lastName, LocalDate birthDate,
-                                      Region region, Comuna comuna, String address) {
-        if (firstName != null) this.firstName = firstName;
-        if (lastName != null) this.lastName = lastName;
-        if (birthDate != null) this.birthDate = birthDate;
-        if (region != null) this.region = region;
-        if (comuna != null) this.comuna = comuna;
-        if (address != null) this.address = address;
-        return this;
-    }
 }

@@ -3,13 +3,15 @@ package com.app.proyectojuegosmonolito.game.service;
 import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.common.RepositoryUtils;
-import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
+import com.app.proyectojuegosmonolito.common.storage.R2StorageService;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
 import com.app.proyectojuegosmonolito.game.model.Category;
 import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.game.model.GameImage;
 import com.app.proyectojuegosmonolito.game.model.GameState;
+import com.app.proyectojuegosmonolito.game.model.MediaUrl;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,7 @@ public class GameService {
 
     @Transactional
     public Game create(Game game) {
+        requireAbsoluteMedia(game);
         game.setCreatedAt(Instant.now());
         var saved = gameRepository.save(game);
         log.info("Created game: {} (id={})", saved.getName(), saved.getId());
@@ -47,7 +50,10 @@ public class GameService {
 
     /**
      * Persiste en bloque entidades posiblemente detached (merge). Lo usa el runner
-     * de migracion para reescribir URLs de media de todos los juegos de una pasada.
+     * de normalizacion de media para reescribir las URLs legacy de todos los juegos.
+     *
+     * <p>A proposito no valida la forma de las URLs: ese runner tiene que poder
+     * persistir precisamente las filas que todavia incumplen la invariante.
      */
     @Transactional
     public List<Game> saveAll(List<Game> games) {
@@ -57,6 +63,21 @@ public class GameService {
         var saved = gameRepository.saveAll(games);
         log.info("Saved {} games", saved.size());
         return saved;
+    }
+
+    /**
+     * Valida que toda la media de la entidad sea absoluta. Es el unico punto donde
+     * se decide si una URL puede entrar a la base, y por eso lo usan todos los
+     * caminos de escritura, incluidos los que reciben el string del cliente.
+     */
+    private void requireAbsoluteMedia(Game game) {
+        game.setImageUrl(MediaUrl.requireAbsolute(game.getImageUrl(), "imageUrl"));
+        game.setBannerUrl(MediaUrl.requireAbsolute(game.getBannerUrl(), "bannerUrl"));
+        game.setVideoUrl(MediaUrl.requireAbsolute(game.getVideoUrl(), "videoUrl"));
+        if (game.getGallery() != null) {
+            game.getGallery().forEach(img ->
+                    img.setUrl(MediaUrl.requireAbsolute(img.getUrl(), "galleryUrl")));
+        }
     }
 
     @Transactional(readOnly = true)
@@ -75,6 +96,15 @@ public class GameService {
         return gameRepository.findAll(pageable);
     }
 
+    /**
+     * Trae todos los juegos sin paginar. Lo usa el runner de normalizacion de
+     * media, que necesita recorrer el catalogo completo en una sola pasada.
+     */
+    @Transactional(readOnly = true)
+    public List<Game> findAll() {
+        return gameRepository.findAll();
+    }
+
     @Transactional(readOnly = true)
     public Page<Game> findDiscounted(Pageable pageable) {
         log.info("Fetching discounted games with pageable: {}", pageable);
@@ -88,6 +118,24 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
+    public Page<Game> findFreeToPlay(Pageable pageable) {
+        log.info("Fetching free-to-play games with pageable: {}", pageable);
+        return gameRepository.findFreeToPlay(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Game> findComingSoon(Pageable pageable) {
+        log.info("Fetching coming soon games with pageable: {}", pageable);
+        return gameRepository.findByState(GameState.COMING_SOON, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Game> findRecent(Pageable pageable) {
+        log.info("Fetching recent games with pageable: {}", pageable);
+        return gameRepository.findAllByOrderByCreatedAtDesc(pageable);
+    }
+
+    @Transactional(readOnly = true)
     public Page<Game> findByCategory(String categoryName, Pageable pageable) {
         log.info("Fetching games by category '{}' with pageable: {}", categoryName, pageable);
         return gameRepository.findByCategories_Name(categoryName, pageable);
@@ -97,6 +145,28 @@ public class GameService {
     public Page<Game> findByName(String name, Pageable pageable) {
         log.info("Fetching games by name '{}' with pageable: {}", name, pageable);
         return gameRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+
+    /**
+     * Busqueda combinable del catalogo. Los blanks equivalen a ausentes y el
+     * rango se valida antes de tocar el repositorio: un rango invalido tiene
+     * que ser 400 sin gastar una query.
+     */
+    @Transactional(readOnly = true)
+    public Page<Game> search(String name, String category, GameState state, java.math.BigDecimal min, java.math.BigDecimal max, Pageable pageable) {
+        if ((min != null && min.signum() < 0) || (max != null && max.signum() < 0)) {
+            throw new BusinessException(BusinessException.INVALID_PRICE_RANGE, "Price bounds must be zero or positive");
+        }
+        if (min != null && max != null && min.compareTo(max) > 0) {
+            throw new BusinessException(BusinessException.INVALID_PRICE_RANGE, "minPrice must not be greater than maxPrice");
+        }
+        var effectiveName = (name == null || name.isBlank()) ? null : name.toLowerCase(Locale.ROOT);
+        var effectiveCategory = (category == null || category.isBlank()) ? null : category;
+        var effectiveState = state == null ? null : state.name();
+        var pattern = effectiveName == null ? "%%" : "%" + effectiveName + "%";
+        log.info("Searching games by name='{}' category='{}' state={} min={} max={} with pageable: {}",
+                effectiveName, effectiveCategory, state, min, max, pageable);
+        return gameRepository.search(pattern, effectiveCategory, effectiveState, min, max, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -170,7 +240,7 @@ public class GameService {
         var current = findById(id);
         var game = update(id, request, categories);
 
-        String effectiveVideoUrl = request.videoUrl();
+        String effectiveVideoUrl = MediaUrl.requireAbsolute(request.videoUrl(), "videoUrl");
         if (video != null && !video.isEmpty()) {
             effectiveVideoUrl = storeVideo(video, request.name());
         }
@@ -207,14 +277,15 @@ public class GameService {
     }
 
     /**
-     * Store the trailer video to Cloudflare R2 (primary).
-     * The relative /uploads path is kept in the DB; the frontend resolves it to R2.
+     * Sube el trailer a Cloudflare R2 y devuelve la URL publica del objeto.
+     * Se persiste tal cual, como el resto de la media: todas las URLs de Game
+     * son absolutas (ver {@link MediaUrl#requireAbsolute}).
      */
     private String storeVideo(MultipartFile video, String name) throws IOException {
         String slug = slugify(name);
         String url = r2StorageService.storeVideo(video, slug);
         log.info("Stored video to R2: {}", url);
-        return "/uploads/games/" + slug + "/trailer.mp4";
+        return url;
     }
 
     @Transactional(readOnly = true)
@@ -231,7 +302,7 @@ public class GameService {
     public Game update(Long id, GameRequest request, List<Category> categories) {
         log.info("Updating game {}: name={}, originalPrice={}, discountPercent={}", id, request.name(), request.originalPrice(), request.discountPercent());
         var game = findById(id);
-        var effectiveVideoUrl = request.videoUrl();
+        var effectiveVideoUrl = MediaUrl.requireAbsolute(request.videoUrl(), "videoUrl");
         if (effectiveVideoUrl == null || effectiveVideoUrl.isBlank()) {
             effectiveVideoUrl = game.getVideoUrl();
         }
@@ -245,6 +316,7 @@ public class GameService {
 
     @Transactional
     public Game updateImage(Long id, String imageUrl) {
+        MediaUrl.requireAbsolute(imageUrl, "imageUrl");
         log.info("Updating image for game {}: {}", id, imageUrl);
         var game = findById(id);
         game.setImageUrl(imageUrl);
@@ -253,16 +325,8 @@ public class GameService {
     }
 
     @Transactional
-    public Game updateBannerUrl(Long id, String bannerUrl) {
-        log.info("Updating banner for game {}: {}", id, bannerUrl);
-        var game = findById(id);
-        game.setBannerUrl(bannerUrl);
-        log.info("Updated banner for game {}", game.getId());
-        return game;
-    }
-
-    @Transactional
     public Game updateVideoUrl(Long id, String videoUrl) {
+        MediaUrl.requireAbsolute(videoUrl, "videoUrl");
         log.info("Updating video for game {}: {}", id, videoUrl);
         var game = findById(id);
         game.setVideoUrl(videoUrl);
@@ -277,6 +341,13 @@ public class GameService {
      */
     @Transactional
     public Game applyMediaUrls(Long id, String imageUrl, String bannerUrl, List<String> galleryUrls) {
+        // Todo se valida antes de tocar el repositorio: una URL invalida tiene
+        // que ser 400 sin gastar una query.
+        MediaUrl.requireAbsolute(imageUrl, "imageUrl");
+        MediaUrl.requireAbsolute(bannerUrl, "bannerUrl");
+        if (galleryUrls != null) {
+            galleryUrls.forEach(url -> MediaUrl.requireAbsolute(url, "galleryUrls"));
+        }
         var game = findById(id);
         if (imageUrl != null && !imageUrl.isBlank()) {
             game.setImageUrl(imageUrl);
@@ -284,16 +355,10 @@ public class GameService {
         if (bannerUrl != null && !bannerUrl.isBlank()) {
             game.setBannerUrl(bannerUrl);
         }
+        // replaceGallery es el unico lugar que sabe como se reconstruye la
+        // galeria (position = indice, createdAt = now, cascade por game).
         if (galleryUrls != null && !galleryUrls.isEmpty()) {
-            game.getGallery().clear();
-            for (int i = 0; i < galleryUrls.size(); i++) {
-                game.getGallery().add(GameImage.builder()
-                        .game(game)
-                        .url(galleryUrls.get(i))
-                        .position(i)
-                        .createdAt(Instant.now())
-                        .build());
-            }
+            replaceGallery(id, galleryUrls);
         }
         log.info("Applied media urls to game {}: image={} banner={} gallery={}",
                 id, imageUrl, bannerUrl, galleryUrls == null ? 0 : galleryUrls.size());
@@ -363,6 +428,7 @@ public class GameService {
 
     @Transactional
     public Game assignBanner(Long id, String bannerUrl) {
+        MediaUrl.requireAbsolute(bannerUrl, "bannerUrl");
         log.info("Assigning banner to game {}: {}", id, bannerUrl);
         var game = findById(id);
         game.setBannerUrl(bannerUrl);
@@ -370,21 +436,8 @@ public class GameService {
     }
 
     @Transactional
-    public Game addGalleryImage(Long id, String url, Integer position) {
-        log.info("Adding gallery image to game {} at position {}: {}", id, position, url);
-        var game = findById(id);
-        var image = GameImage.builder()
-                .game(game)
-                .url(url)
-                .position(position)
-                .createdAt(Instant.now())
-                .build();
-        game.getGallery().add(image);
-        return game;
-    }
-
-    @Transactional
     public Game replaceGallery(Long id, List<String> urls) {
+        urls.forEach(url -> MediaUrl.requireAbsolute(url, "galleryUrls"));
         log.info("Replacing gallery for game {} with {} images", id, urls.size());
         var game = findById(id);
         game.getGallery().clear();
@@ -400,12 +453,18 @@ public class GameService {
         return game;
     }
 
+    /**
+     * Ownership check. Deliberadamente lanza {@link EntityNotFoundException} y no
+     * {@code SecurityException}: la convencion BOLA del proyecto es 404 para no
+     * filtrar que el id existe, y {@code SecurityException} no lo maneja
+     * {@code GlobalExceptionHandler} (caia en el catch-all y salia 500).
+     */
     public void assertCanModify(Game game, User user) {
         if (user.getRole() == Role.ADMIN) {
             return;
         }
         if (game.getSeller() == null || !game.getSeller().getId().equals(user.getId())) {
-            throw new SecurityException("User " + user.getId() + " is not authorized to modify game " + game.getId());
+            throw new EntityNotFoundException("Game not found: " + game.getId());
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.app.proyectojuegosmonolito.game.repository;
 
 import com.app.proyectojuegosmonolito.TestcontainersConfiguration;
+import com.app.proyectojuegosmonolito.game.model.Game;
+import com.app.proyectojuegosmonolito.game.model.GameState;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -12,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static com.app.proyectojuegosmonolito.game.GameFixtures.*;
+import static com.app.proyectojuegosmonolito.game.CategoryFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
@@ -21,6 +24,9 @@ class GameRepositoryIntegrationTest {
 
     @Autowired
     private GameRepository gameRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Test
     void saveAndFindById() {
@@ -57,5 +63,83 @@ class GameRepositoryIntegrationTest {
         gameRepository.deleteById(saved.getId());
 
         assertThat(gameRepository.findById(saved.getId())).isEmpty();
+    }
+
+    @Test
+    void search_byMaxPrice_shouldFilterOnEffectivePriceNotOriginal() {
+        gameRepository.saveAll(List.of(
+                game("Cheap", BigDecimal.TEN),
+                gameWithDiscount("Discounted", new BigDecimal("50"), 90),
+                game("Expensive", new BigDecimal("100"))));
+
+        var page = gameRepository.search("%%", null, null, null, BigDecimal.TEN, PageRequest.of(0, 10));
+
+        assertThat(page.getContent()).extracting(Game::getName)
+                .containsExactlyInAnyOrder("Cheap", "Discounted");
+        assertThat(page.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void search_byMinPrice_shouldExcludeCheaperGames() {
+        gameRepository.saveAll(List.of(
+                game("Cheap", BigDecimal.TEN),
+                game("Expensive", new BigDecimal("100"))));
+
+        var page = gameRepository.search("%%", null, null, new BigDecimal("50"), null, PageRequest.of(0, 10));
+
+        assertThat(page.getContent()).extracting(Game::getName).containsExactly("Expensive");
+        assertThat(page.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    void search_combinedWithName_shouldApplyBothFilters() {
+        gameRepository.saveAll(List.of(
+                game("Alpha", BigDecimal.TEN),
+                game("Alphabet", new BigDecimal("100"))));
+
+        var page = gameRepository.search("%alpha%", null, null, null, BigDecimal.TEN, PageRequest.of(0, 10));
+
+        assertThat(page.getContent()).extracting(Game::getName).containsExactly("Alpha");
+        assertThat(page.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    void search_withCategory_shouldReturnDistinctRows() {
+        var multi = game("Multi", BigDecimal.TEN);
+        multi.setCategories(List.of(
+                categoryRepository.save(category("Action")),
+                categoryRepository.save(category("Rpg"))));
+        gameRepository.save(multi);
+
+        var page = gameRepository.search("%%", null, null, null, null, PageRequest.of(0, 10));
+
+        assertThat(page.getContent()).hasSize(1);
+        assertThat(page.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    void search_byState_shouldReturnOnlyMatchingGames() {
+        var coming = game("Coming", BigDecimal.TEN);
+        coming.setState(GameState.COMING_SOON);
+        gameRepository.saveAll(List.of(game("Available", BigDecimal.TEN), coming));
+
+        var page = gameRepository.search("%%", null, GameState.COMING_SOON.name(), null, null, PageRequest.of(0, 10));
+
+        assertThat(page.getContent()).extracting(Game::getName).containsExactly("Coming");
+        assertThat(page.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    void search_byStateCombinedWithMaxPrice_shouldApplyBothFilters() {
+        var cheapComing = game("Cheap Coming", BigDecimal.TEN);
+        cheapComing.setState(GameState.COMING_SOON);
+        var expensiveComing = game("Expensive Coming", new BigDecimal("100"));
+        expensiveComing.setState(GameState.COMING_SOON);
+        gameRepository.saveAll(List.of(cheapComing, expensiveComing, game("Cheap Available", BigDecimal.TEN)));
+
+        var page = gameRepository.search("%%", null, GameState.COMING_SOON.name(), null, BigDecimal.TEN, PageRequest.of(0, 10));
+
+        assertThat(page.getContent()).extracting(Game::getName).containsExactly("Cheap Coming");
+        assertThat(page.getTotalElements()).isEqualTo(1);
     }
 }

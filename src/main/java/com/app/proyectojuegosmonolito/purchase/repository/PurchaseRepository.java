@@ -42,7 +42,4 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
     @EntityGraph(attributePaths = {"user", "items", "items.game"})
     Optional<Purchase> findByUser_IdAndIdempotencyKey(Long userId, String idempotencyKey);
-
-    @Transactional
-    void deleteByUser_Id(Long userId);
 }

@@ -104,7 +104,7 @@ Tres variables **no** van en `.env` porque no son configuración sino banderas d
 `APP_CORS_ALLOWED_ORIGINS` acepta una lista explícita, nunca `*`: `allowCredentials` está
 activo y el navegador rechaza esa combinación.
 
-### Producción — panel de Render (13 variables)
+### Producción — panel de Render (14 variables)
 
 El panel de Render **es** el almacén de secretos: los valores de producción no van en ningún
 archivo del repo. De las 11 de `.env`, solo 2 conservan el mismo valor
@@ -121,7 +121,6 @@ archivo del repo. De las 11 de `.env`, solo 2 conservan el mismo valor
 | `APP_JWT_EXPIRATION` | `3600000` |
 | `APP_CORS_ALLOWED_ORIGINS` | Literal: el dominio de Vercel |
 | `APP_SEED_ENABLED` | `true` siembra catálogo y admin de arranque; `false` deja la DB vacía |
-| `CLOUDINARY_URL` | Dashboard de Cloudinary. **No reutilizar la de local** |
 | `R2_ACCOUNT_ID` | Dashboard de Cloudflare. Igual salvo que la rotación fuera a otra cuenta |
 | `R2_ACCESS_KEY_ID` | Dashboard de Cloudflare. Nuevo junto con el secret |
 | `R2_SECRET_ACCESS_KEY` | Dashboard de Cloudflare. **No reutilizar la de local** |
@@ -130,6 +129,12 @@ archivo del repo. De las 11 de `.env`, solo 2 conservan el mismo valor
 Las cuatro marcadas son secretos: **no pueden reutilizar el valor de local**. Si se filtran
 las claves de esta máquina, quien las tenga puede firmar tokens de ADMIN, entrar a la base o
 borrar la media de producción.
+
+`R2_PUBLIC_BASE_URL` **no hace falta declararla**: el default de `application.yaml` ya apunta al
+bucket de producción, así que las URLs públicas se resuelven solas.
+
+Dos variables del panel quedaron obsoletas y se pueden borrar: `APP_MIGRATE_IMAGES` (su runner ya
+no existe; lo reemplaza `APP_MEDIA_NORMALIZE_ENABLED`) y `CLOUDINARY_URL` (el media vive entero en R2).
 
 `application-prod.yaml` declara el datasource, el JWT y el CORS **sin default**, así que una
 variable faltante hace fallar el arranque con un mensaje que la nombra. En cambio
@@ -161,48 +166,62 @@ canonical** del juego (derivado del nombre, p. ej. *Assassin's Creed Shadows* �
 La URL pública se resuelve contra `R2_PUBLIC_BASE_URL` (default en `application.yaml`, no va en `.env`).
 Los uploads **no pasan por el servidor**: el backend **presignea** la URL y el navegador sube directo a R2
 (presign de imagen `POST /api/v1/games/media/image/presign` y de video `POST /api/v1/games/media/video/presign`).
-El frontend guarda la `publicPath` resultante; `CLOUDINARY_URL` ya no se usa.
+El frontend guarda la `publicPath` resultante —que es la URL pública absoluta, pese al nombre histórico
+del campo—; `CLOUDINARY_URL` ya no se usa.
 
-### Runner de consolidación (`ImageMigrationRunner`)
+### Forma de las URLs de media
 
-Componente en `config/` — temporal pero **reutilizable** (no se elimina). Se activa cuando
-`app.migrate.images=true` y deja el catálogo cuadrado con R2 de forma **idempotente**, sin importar
-cuántas veces corra:
+**Todas las columnas de media son URLs absolutas**: `game.video_url`, `game.image_url`,
+`game.banner_url` y `game_image.url`. No hay rutas relativas.
 
-1. **Imágenes residuales de Cloudinary** → las trae desde Cloudinary al bucket R2 y reescribe la URL persistida
-   (juegos: card/banner/galería; blog: cover). Mapeo: `imageUrl→{slug}/card/{archivo}`,
-   `bannerUrl→{slug}/banner/{archivo}`, galería→`{slug}/gallery/{archivo}`, blog→`blogs/{slug}/cover.{ext}`.
-2. **Trailers en slugs antiguos** → copia server-side (S3 `CopyObject`) a `{slug}/trailer.mp4` y
-   reescribe `video_url` (caso real: la DB apuntaba los trailers a `gta-v`, `ac-shadows`… mientras las
-   imágenes ya usaban el slug completo; consolidado el 2026-09-30).
+El contrato vive en `game/model/MediaUrl.java` y `GameService` lo valida en los diez caminos de
+escritura (alta por JSON y por multipart, edición, banner, galería). Un valor null o vacío sigue
+siendo válido y significa "no cambiar". Una ruta relativa se rechaza con 400: el origen del
+problema no eran los datos, sino que la forma nunca se validaba y dos caminos de escritura
+producían convenciones distintas.
 
-El perfil `dev` lo activa por defecto (`app.migrate.images: ${APP_MIGRATE_IMAGES:true}`); en `test` no
-existe. En producción se corre **una sola vez** con la guía de abajo.
+### Runner de normalización (`MediaUrlNormalizer`)
 
-### Guía: correr la consolidación en producción (una sola vez)
+Componente en `config/` — se activa con `app.media.normalize.enabled` (por defecto `false`) y
+reescribe las filas que guardan la ruta legacy del trailer (`/uploads/games/{slug}/trailer.mp4`)
+a su URL pública. Es **idempotente** y **no toca R2**: solo reescribe el string, porque lo que se
+guarda es el prefijo seguido de la clave exacta dentro del bucket.
 
-1. En el panel de Render agregá la variable `APP_MIGRATE_IMAGES=true` (bandera de arranque como
-   `APP_SEED_ENABLED`; el binding relajado la resuelve sin tocar código).
+Es un seguro, no una migración pendiente: el servicio ya no emite rutas, así que en una base creada
+con el código actual no hay nada que hacer. Su valor real es twofold: dejar los datos antiguos en
+la forma nueva, y **reportar** cuántas filas encontró y reescribió.
+
+#### Guía: correrlo en producción (una sola vez)
+
+1. En el panel de Render agregá `APP_MEDIA_NORMALIZE_ENABLED=true`.
 2. Deploy (Manual Deploy → *Deploy latest image*, o un push). El runner corre al arrancar.
-3. Verificá — los logs del runner son `INFO` y prod loguea `WARN`, así que **validá por SQL y por URL**, no por logs:
+3. Leé la línea de log:
+   ```text
+   MediaUrlNormalizer: found=0 rewritten=0 (video=0 image=0 banner=0 gallery=0)
+   ```
+   Si `found` y `rewritten` son 0, la base ya estaba consistente (lo esperable: el 44 juegos del
+   seed guardan URLs absolutas). Un número mayor indica datos viejos que se acaba de corregir.
+4. **Quitá la variable** del panel y re-deployá para que no vuelva a correr en cada reinicio.
+5. Para confirmar de forma independiente:
    ```sql
    -- Debe devolver 0
    SELECT count(*) FROM game
-   WHERE image_url LIKE '%res.cloudinary.com%'
-      OR banner_url LIKE '%res.cloudinary.com%'
-      OR video_url LIKE '%res.cloudinary.com%';
-   SELECT count(*) FROM game_image WHERE url LIKE '%res.cloudinary.com%';
-   SELECT count(*) FROM blog WHERE cover_image LIKE '%res.cloudinary.com%';
-   -- Todos los video_url deben apuntar al slug canonical ({slug}/trailer.mp4):
-   SELECT id, video_url FROM game ORDER BY id;
+   WHERE video_url LIKE '/uploads/games/%'
+      OR image_url LIKE '/uploads/games/%'
+      OR banner_url LIKE '/uploads/games/%';
+   SELECT count(*) FROM game_image WHERE url LIKE '/uploads/games/%';
    ```
-   Y un HEAD sobre algunos trailers para confirmar 200 + `video/mp4`, p. ej.
-   `curl -I https://<R2_PUBLIC_BASE_URL>/assassin-s-creed-shadows/trailer.mp4`.
-4. Cuando esté consistente, **quitá `APP_MIGRATE_IMAGES`** del panel (o ponela en `false`) y re-deployá
-   para que el runner no vuelva a ejecutarse en cada reinicio.
-5. Los objetos huérfanos del bucket (`{slug-viejo}/trailer.mp4`, `.gitkeep`, marcadores de carpeta
-   vacíos) se borran a mano desde la consola de R2 o la API, **después** de confirmar que la DB ya no
-   los referencia.
+
+> Cuando `R2_PUBLIC_BASE_URL` está vacío el runner no hace nada y lo reporta en `ERROR`: antes
+> que escribir una URL que no resuelve, prefiere fallar.
+
+<details>
+<summary>Runner anterior (<code>ImageMigrationRunner</code>) — retirado</summary>
+
+Ya no existe en el código. Migraba las imágenes residuales de Cloudinary al bucket de R2 y
+consolidaba trailers en slugs antiguos (se ejecutó el 2026-09-30). Su bandera `APP_MIGRATE_IMAGES`
+quedó sin uso en el panel de Render y se puede borrar.
+</details>
 
 > **Si un arranque local devuelve `401 Unauthorized` contra R2**, hay una variable de entorno del SO
 > (`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`) pisando a `.env`: Spring resuelve las env vars con

@@ -78,13 +78,15 @@ class LoginAttemptLimiterTest {
 
     @Test
     void shouldResetTheCounter_afterTheWindowExpires() {
-        // Ventana de 1 ms: al expirar, el contador arranca de cero.
-        var limiter = limiter(2, 20, 1L);
+        // Ventana de 200 ms, no de 1: con 1 ms la ventana podia expirar antes del
+        // primer assert y el test fallaba de forma intermitente bajo carga. Margen
+        // suficiente para que el assert sea estable, y sleep holgadamente mayor.
+        var limiter = limiter(2, 20, 200L);
         limiter.onFailure(EMAIL, IP);
         limiter.onFailure(EMAIL, IP);
         assertThat(limiter.retryAfterSeconds(EMAIL, IP)).isPositive();
 
-        sleep(5);
+        sleep(400);
 
         assertThat(limiter.retryAfterSeconds(EMAIL, IP)).isZero();
     }

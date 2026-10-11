@@ -57,7 +57,7 @@ public class ProfileController {
     public ResponseEntity<ProfileResponse> updateProfileById(
             @PathVariable Long userId,
             @Valid @RequestBody ProfilePatchRequest request) {
-        var profile = profileService.updateById(userId, request);
+        var profile = profileService.update(userId, request);
         return ResponseEntity.ok(profileMapper.toResponse(profile));
     }
 }

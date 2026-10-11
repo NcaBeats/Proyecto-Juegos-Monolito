@@ -7,6 +7,8 @@ import com.app.proyectojuegosmonolito.account.user.model.Role;
 import com.app.proyectojuegosmonolito.account.user.model.User;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
 import com.app.proyectojuegosmonolito.account.wallet.model.Wallet;
+import com.app.proyectojuegosmonolito.account.profile.repository.RegionRepository;
+import com.app.proyectojuegosmonolito.account.profile.repository.ComunaRepository;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -54,7 +56,9 @@ public class UserFixtures {
                 .build();
     }
 
-    public static Profile profile(User user) {
+    public static Profile profile(User user, RegionRepository regionRepository, ComunaRepository comunaRepository) {
+        var region = regionRepository.findByNombre("Metropolitana de Santiago").orElseThrow();
+        var comuna = comunaRepository.findByNombreAndRegion_Id("Santiago", region.getId()).orElseThrow();
         return Profile.builder()
                 .userId(user.getId())
                 .user(user)
@@ -62,15 +66,17 @@ public class UserFixtures {
                 .run(generateUniqueRun())
                 .firstName("Test")
                 .lastName("User")
-                .region(Region.METROPOLITANA_DE_SANTIAGO)
-                .comuna(Comuna.SANTIAGO)
+                .region(region)
+                .comuna(comuna)
                 .address("Calle Test 123")
                 .visibility(Visibility.PUBLIC)
                 .createdAt(Instant.now())
                 .build();
     }
 
-    public static Profile profile(User user, String nickname, Visibility visibility) {
+    public static Profile profile(User user, String nickname, Visibility visibility, RegionRepository regionRepository, ComunaRepository comunaRepository) {
+        var region = regionRepository.findByNombre("Metropolitana de Santiago").orElseThrow();
+        var comuna = comunaRepository.findByNombreAndRegion_Id("Santiago", region.getId()).orElseThrow();
         return Profile.builder()
                 .userId(user.getId())
                 .user(user)
@@ -78,8 +84,8 @@ public class UserFixtures {
                 .run(generateUniqueRun())
                 .firstName("Test")
                 .lastName("User")
-                .region(Region.METROPOLITANA_DE_SANTIAGO)
-                .comuna(Comuna.SANTIAGO)
+                .region(region)
+                .comuna(comuna)
                 .address("Calle Test 123")
                 .visibility(visibility)
                 .createdAt(Instant.now())

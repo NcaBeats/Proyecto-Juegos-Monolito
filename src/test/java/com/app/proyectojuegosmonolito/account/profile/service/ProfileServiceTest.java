@@ -58,7 +58,6 @@ class ProfileServiceTest {
         assertThat(result.getNickname()).isEqualTo("newnick");
         assertThat(result.getBio()).isEqualTo("new bio");
         assertThat(result.getVisibility()).isEqualTo(Visibility.PRIVATE);
-        assertThat(result.getAvatarImage()).isNull();
         verify(profileRepository).save(profile);
     }
 }

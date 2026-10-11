@@ -8,9 +8,10 @@ import com.app.proyectojuegosmonolito.game.dto.GameRequest;
 import com.app.proyectojuegosmonolito.game.dto.GameWithMediaRequest;
 import com.app.proyectojuegosmonolito.game.dto.ImagePresignRequest;
 import com.app.proyectojuegosmonolito.game.dto.VideoPresignRequest;
+import com.app.proyectojuegosmonolito.game.dto.VideoUrlRequest;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
-import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
+import com.app.proyectojuegosmonolito.common.storage.R2StorageService;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import static com.app.proyectojuegosmonolito.game.GameFixtures.*;
 import static com.app.proyectojuegosmonolito.account.user.UserFixtures.profile;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -109,6 +111,85 @@ class GameControllerIntegrationTest {
                         .param("size", "2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements").value(3));
+    }
+
+    @Test
+    void getAll_withMaxPrice_shouldFilterOnEffectivePrice() throws Exception {
+        gameRepository.saveAll(List.of(
+                game("Cheap", BigDecimal.TEN),
+                gameWithDiscount("Discounted", new BigDecimal("50"), 90),
+                game("Expensive", new BigDecimal("100"))));
+
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("maxPrice", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(2))
+                .andExpect(jsonPath("$.content.length()").value(2));
+    }
+
+    @Test
+    void getAll_withMaxPriceAndName_shouldApplyBothFilters() throws Exception {
+        gameRepository.saveAll(List.of(
+                game("Cheap", BigDecimal.TEN),
+                gameWithDiscount("Discounted", new BigDecimal("50"), 90)));
+
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("name", "discount")
+                        .param("maxPrice", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].name").value("Discounted"));
+    }
+
+    @Test
+    void getAll_withState_shouldFilterByState() throws Exception {
+        var coming = game("Coming Soon Game", BigDecimal.TEN);
+        coming.setState(GameState.COMING_SOON);
+        gameRepository.saveAll(List.of(game("Available Game", BigDecimal.TEN), coming));
+
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("state", "COMING_SOON"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].name").value("Coming Soon Game"));
+    }
+
+    @Test
+    void getAll_withInvalidState_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("state", "NOPE"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getAll_whenMinGreaterThanMax_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("minPrice", "20")
+                        .param("maxPrice", "10"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_PRICE_RANGE"));
+    }
+
+    @Test
+    void getAll_withNegativeMinPrice_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("minPrice", "-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_PRICE_RANGE"));
+    }
+
+    @Test
+    void getAll_withNonNumericPrice_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/api/v1/games")
+                        .with(jwt())
+                        .param("maxPrice", "abc"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -220,7 +301,7 @@ class GameControllerIntegrationTest {
                         .with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.key").value("half-life-3/trailer.mp4"))
-                .andExpect(jsonPath("$.publicPath").value("/uploads/games/half-life-3/trailer.mp4"))
+                .andExpect(jsonPath("$.publicPath").value("https://pub-test.r2.dev/half-life-3/trailer.mp4"))
                 .andExpect(jsonPath("$.contentType").value("video/mp4"))
                 .andExpect(jsonPath("$.expiresInSeconds").value(900))
                 .andExpect(jsonPath("$.uploadUrl").value(org.hamcrest.Matchers.containsString("X-Amz-Signature")))
@@ -364,7 +445,7 @@ class GameControllerIntegrationTest {
                 "Juego Con Media", new BigDecimal("29.99"), 10, "Descripción",
                 GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action"),
                 null, null,
-                "/uploads/games/juego-con-media/trailer.mp4", null,
+                "https://pub-test.r2.dev/juego-con-media/trailer.mp4", null,
                 "https://pub-test.r2.dev/card.jpg",
                 "https://pub-test.r2.dev/banner.jpg",
                 List.of("https://pub-test.r2.dev/gal1.jpg",
@@ -377,7 +458,7 @@ class GameControllerIntegrationTest {
                                 .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Juego Con Media"))
-                .andExpect(jsonPath("$.videoUrl").value("/uploads/games/juego-con-media/trailer.mp4"))
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/juego-con-media/trailer.mp4"))
                 .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/card.jpg"))
                 .andExpect(jsonPath("$.bannerUrl").value("https://pub-test.r2.dev/banner.jpg"))
                 .andExpect(jsonPath("$.galleryUrls.length()").value(2));
@@ -404,7 +485,7 @@ class GameControllerIntegrationTest {
         var saved = gameRepository.save(game());
         var admin = createAdmin();
         // Regresion: antes este endpoint borraba el videoUrl cuando el body lo omitia.
-        saved.setVideoUrl("/uploads/games/previo/trailer.mp4");
+        saved.setVideoUrl("https://pub-test.r2.dev/previo/trailer.mp4");
         saved.setImageUrl("https://pub-test.r2.dev/previa.jpg");
         gameRepository.saveAndFlush(saved);
 
@@ -421,7 +502,7 @@ class GameControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Juego Con Media"))
                 .andExpect(jsonPath("$.originalPrice").value(49.99))
-                .andExpect(jsonPath("$.videoUrl").value("/uploads/games/previo/trailer.mp4"))
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/previo/trailer.mp4"))
                 .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/previa.jpg"));
     }
 
@@ -434,7 +515,7 @@ class GameControllerIntegrationTest {
                 "Juego Con Media", new BigDecimal("49.99"), 20, "Nueva desc",
                 GameState.AVAILABLE, LocalDate.of(2026, 12, 1), List.of("Action"),
                 null, null,
-                "/uploads/games/nuevo/trailer.mp4", null,
+                "https://pub-test.r2.dev/nuevo/trailer.mp4", null,
                 "https://pub-test.r2.dev/nueva.jpg", null,
                 List.of("https://pub-test.r2.dev/nueva-gal.jpg"));
 
@@ -444,8 +525,77 @@ class GameControllerIntegrationTest {
                         .with(jwt().jwt(b -> b.subject(admin.getId().toString()))
                                 .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.videoUrl").value("/uploads/games/nuevo/trailer.mp4"))
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/nuevo/trailer.mp4"))
                 .andExpect(jsonPath("$.imageUrl").value("https://pub-test.r2.dev/nueva.jpg"))
                 .andExpect(jsonPath("$.galleryUrls.length()").value(1));
+    }
+
+    // --- BOLA: PUT /{id}/video es el endpoint que se olvidó de assertCanModify,
+    //     y por eso no tenia ninguna cobertura. SecurityConfig abre PUT
+    //     /api/v1/games/** a VENDEDOR, asi que sin el check cualquier vendedor
+    //     pisaba el trailer de otro. La convencion del proyecto es 404 (no 403)
+    //     para no filtrar que el id existe.
+
+    @Test
+    void updateVideo_whenSellerOwnsGame_shouldReturn200() throws Exception {
+        var vendedor = createVendedor("vendedor-dueno@test.com");
+        var game = gameRepository.save(game());
+        game.setSeller(vendedor);
+        gameRepository.save(game);
+        var body = new VideoUrlRequest("https://pub-test.r2.dev/mio/trailer.mp4");
+
+        mockMvc.perform(put("/api/v1/games/{id}/video", game.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().jwt(b -> b.subject(vendedor.getId().toString()))
+                                .authorities(new SimpleGrantedAuthority("ROLE_VENDEDOR"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/mio/trailer.mp4"));
+    }
+
+    @Test
+    void updateVideo_whenAnotherSeller_shouldReturn404AndNotTouchTheGame() throws Exception {
+        var dueno = createVendedor("vendedor-dueno2@test.com");
+        var intruso = createVendedor("vendedor-intruso@test.com");
+        var game = gameRepository.save(game());
+        game.setSeller(dueno);
+        game.setVideoUrl("https://pub-test.r2.dev/del-dueno/trailer.mp4");
+        gameRepository.save(game);
+        var body = new VideoUrlRequest("https://pub-test.r2.dev/mio/trailer.mp4");
+
+        mockMvc.perform(put("/api/v1/games/{id}/video", game.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().jwt(b -> b.subject(intruso.getId().toString()))
+                                .authorities(new SimpleGrantedAuthority("ROLE_VENDEDOR"))))
+                .andExpect(status().isNotFound());
+
+        assertThat(gameRepository.findById(game.getId()).orElseThrow().getVideoUrl())
+                .isEqualTo("https://pub-test.r2.dev/del-dueno/trailer.mp4");
+    }
+
+    @Test
+    void updateVideo_whenAdmin_shouldReturn200() throws Exception {
+        var game = gameRepository.save(game());
+        var admin = createAdmin();
+        var body = new VideoUrlRequest("https://pub-test.r2.dev/admin/trailer.mp4");
+
+        mockMvc.perform(put("/api/v1/games/{id}/video", game.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(body))
+                        .with(jwt().jwt(b -> b.subject(admin.getId().toString()))
+                                .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.videoUrl").value("https://pub-test.r2.dev/admin/trailer.mp4"));
+    }
+
+    private User createVendedor(String email) {
+        var vendedor = User.builder()
+                .email(email)
+                .password("pass123")
+                .role(Role.VENDEDOR)
+                .createdAt(java.time.Instant.now())
+                .build();
+        return userService.create(vendedor, profile(vendedor));
     }
 }

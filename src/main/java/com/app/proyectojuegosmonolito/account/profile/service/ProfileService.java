@@ -1,9 +1,13 @@
 package com.app.proyectojuegosmonolito.account.profile.service;
 
 import com.app.proyectojuegosmonolito.account.profile.dto.ProfilePatchRequest;
+import com.app.proyectojuegosmonolito.account.profile.model.Comuna;
 import com.app.proyectojuegosmonolito.account.profile.model.Profile;
+import com.app.proyectojuegosmonolito.account.profile.model.Region;
 import com.app.proyectojuegosmonolito.account.profile.model.Visibility;
+import com.app.proyectojuegosmonolito.account.profile.repository.ComunaRepository;
 import com.app.proyectojuegosmonolito.account.profile.repository.ProfileRepository;
+import com.app.proyectojuegosmonolito.account.profile.repository.RegionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
+    private final ComunaRepository comunaRepository;
+    private final RegionRepository regionRepository;
 
     public Profile findByUserId(Long userId) {
         log.info("Fetching profile for user: {}", userId);
-        return profileRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.warn("Profile not found for user: {}", userId);
-                    return new EntityNotFoundException("Profile not found: " + userId);
-                });
+        return profileRepository.findByIdWithRegionAndComuna(userId)
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Profile not found: " + userId));
     }
 
     public Profile findByUserIdPublic(Long userId) {
@@ -35,15 +38,14 @@ public class ProfileService {
         return profile;
     }
 
+    /**
+     * Patch parcial: los campos ausentes se dejan intactos. Lo usan tanto el
+     * self-service como la edicion de admin; antes eran dos metodos con el
+     * mismo cuerpo y la unica diferencia era la linea de log.
+     */
     @Transactional
     public Profile update(Long userId, ProfilePatchRequest request) {
         log.info("Updating profile for user {}", userId);
-        return updateById(userId, request);
-    }
-
-    @Transactional
-    public Profile updateById(Long userId, ProfilePatchRequest request) {
-        log.info("Admin updating profile for user {}", userId);
         var profile = findByUserId(userId);
         if (request.run() != null) profile.setRun(request.run());
         if (request.nickname() != null) profile.setNickname(request.nickname());
@@ -52,11 +54,23 @@ public class ProfileService {
         if (request.firstName() != null) profile.setFirstName(request.firstName());
         if (request.lastName() != null) profile.setLastName(request.lastName());
         if (request.birthDate() != null) profile.setBirthDate(request.birthDate());
-        if (request.region() != null) profile.setRegion(request.region());
-        if (request.comuna() != null) profile.setComuna(request.comuna());
+        
+        // Resolver comuna por ID y derivar region
+        if (request.comunaId() != null) {
+            var comuna = comunaRepository.findById(request.comunaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Comuna not found: " + request.comunaId()));
+            profile.setComuna(comuna);
+            profile.setRegion(comuna.getRegion());
+        }
+        
         if (request.address() != null) profile.setAddress(request.address());
         var saved = profileRepository.save(profile);
-        log.info("Admin updated profile for user {}", userId);
+        log.info("Updated profile for user {}", userId);
         return saved;
+    }
+
+    public Region findRegionById(Long id) {
+        return regionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Region not found: " + id));
     }
 }

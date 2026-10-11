@@ -1,30 +1,28 @@
 package com.app.proyectojuegosmonolito.account.profile.model;
 
-import lombok.Getter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-public enum Region {
-    ARICA_Y_PARINACOTA("Arica y Parinacota"),
-    TARAPACA("Tarapacá"),
-    ANTOFAGASTA("Antofagasta"),
-    ATACAMA("Atacama"),
-    COQUIMBO("Coquimbo"),
-    VALPARAISO("Valparaíso"),
-    METROPOLITANA_DE_SANTIAGO("Metropolitana de Santiago"),
-    O_HIGGINS("O'Higgins"),
-    MAULE("Maule"),
-    NUBLE("Ñuble"),
-    BIOBIO("Biobío"),
-    ARAUCANIA("Araucanía"),
-    LOS_RIOS("Los Ríos"),
-    LOS_LAGOS("Los Lagos"),
-    AYSEN("Aysén"),
-    MAGALLANES("Magallanes");
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "region")
+public class Region {
 
-    private final String displayName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    Region(String displayName) {
-        this.displayName = displayName;
-    }
+    @Column(nullable = false, unique = true, length = 100)
+    private String nombre;
 
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Comuna> comunas = new ArrayList<>();
 }

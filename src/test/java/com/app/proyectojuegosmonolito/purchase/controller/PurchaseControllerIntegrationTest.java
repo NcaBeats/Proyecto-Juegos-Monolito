@@ -209,7 +209,7 @@ class PurchaseControllerIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.content[0].items[0].gameName").value(game.getName()));
         } finally {
-            purchaseRepository.deleteByUser_Id(user.getId());
+            purchaseRepository.deleteAll();
             libraryRepository.deleteByUser_Id(user.getId());
             gameRepository.delete(game);
             userService.delete(user.getId());

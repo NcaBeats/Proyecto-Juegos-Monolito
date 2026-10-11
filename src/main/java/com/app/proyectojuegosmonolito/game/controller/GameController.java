@@ -9,7 +9,7 @@ import com.app.proyectojuegosmonolito.game.dto.GameResponse;
 import com.app.proyectojuegosmonolito.game.dto.GameStatsResponse;
 import com.app.proyectojuegosmonolito.game.dto.GameWithMediaRequest;
 import com.app.proyectojuegosmonolito.game.dto.ImagePresignRequest;
-import com.app.proyectojuegosmonolito.game.dto.PresignedUploadResponse;
+import com.app.proyectojuegosmonolito.common.storage.PresignedUploadResponse;
 import com.app.proyectojuegosmonolito.game.dto.VideoPresignRequest;
 import com.app.proyectojuegosmonolito.game.dto.VideoUrlRequest;
 import com.app.proyectojuegosmonolito.game.mapper.GameMapper;
@@ -17,7 +17,7 @@ import com.app.proyectojuegosmonolito.game.model.Category;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.service.CategoryService;
 import com.app.proyectojuegosmonolito.game.service.GameService;
-import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
+import com.app.proyectojuegosmonolito.common.storage.R2StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,18 +50,21 @@ public class GameController {
     private final UserService userService;
     private final SecurityContext securityContext;
 
-    @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category or name")
+    @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category, name, state or effective price range (post-discount)")
     @ApiResponse(responseCode = "200", description = "List of games retrieved successfully")
     @GetMapping
     public ResponseEntity<Page<GameResponse>> findAll(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) GameState state,
+            @RequestParam(required = false) java.math.BigDecimal minPrice,
+            @RequestParam(required = false) java.math.BigDecimal maxPrice,
             @ParameterObject Pageable pageable) {
-        if (name != null && !name.isBlank()) {
-            return ResponseEntity.ok(gameService.findByName(name, pageable).map(gameMapper::toResponse));
-        }
-        if (category != null && !category.isBlank()) {
-            return ResponseEntity.ok(gameService.findByCategory(category, pageable).map(gameMapper::toResponse));
+        if ((name != null && !name.isBlank())
+                || (category != null && !category.isBlank())
+                || state != null
+                || minPrice != null || maxPrice != null) {
+            return ResponseEntity.ok(gameService.search(name, category, state, minPrice, maxPrice, pageable).map(gameMapper::toResponse));
         }
         return ResponseEntity.ok(gameService.findAll(pageable).map(gameMapper::toResponse));
     }
@@ -78,6 +81,27 @@ public class GameController {
     @GetMapping("/banners")
     public ResponseEntity<Page<GameResponse>> findBanners(@ParameterObject Pageable pageable) {
         return ResponseEntity.ok(gameService.findBannerGames(pageable).map(gameMapper::toResponse));
+    }
+
+    @Operation(summary = "Get free-to-play games", description = "Returns a paginated list of free-to-play games")
+    @ApiResponse(responseCode = "200", description = "List of free-to-play games retrieved successfully")
+    @GetMapping("/free-to-play")
+    public ResponseEntity<Page<GameResponse>> findFreeToPlay(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(gameService.findFreeToPlay(pageable).map(gameMapper::toResponse));
+    }
+
+    @Operation(summary = "Get coming soon games", description = "Returns a paginated list of coming soon games")
+    @ApiResponse(responseCode = "200", description = "List of coming soon games retrieved successfully")
+    @GetMapping("/coming-soon")
+    public ResponseEntity<Page<GameResponse>> findComingSoon(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(gameService.findComingSoon(pageable).map(gameMapper::toResponse));
+    }
+
+    @Operation(summary = "Get recently added games", description = "Returns a paginated list of games ordered by creation date (newest first)")
+    @ApiResponse(responseCode = "200", description = "List of recent games retrieved successfully")
+    @GetMapping("/recent")
+    public ResponseEntity<Page<GameResponse>> findRecent(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(gameService.findRecent(pageable).map(gameMapper::toResponse));
     }
 
     @Operation(summary = "Get game stats", description = "Returns counts and catalog value for all or a given game state")
@@ -212,7 +236,7 @@ public class GameController {
         assertCanModify(id);
         var game = gameService.findById(id);
         var bannerUrl = r2StorageService.storeImage(file, gameService.slugify(game.getName()), "banner");
-        var updated = gameService.updateBannerUrl(id, bannerUrl);
+        var updated = gameService.assignBanner(id, bannerUrl);
         return ResponseEntity.ok(gameMapper.toResponse(updated));
     }
 
@@ -223,6 +247,7 @@ public class GameController {
     public ResponseEntity<GameResponse> uploadVideo(
             @PathVariable Long id,
             @Valid @RequestBody VideoUrlRequest request) {
+        assertCanModify(id);
         var game = gameService.updateVideoUrl(id, request.videoUrl());
         return ResponseEntity.ok(gameMapper.toResponse(game));
     }

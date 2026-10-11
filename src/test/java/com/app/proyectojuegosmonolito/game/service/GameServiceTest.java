@@ -5,7 +5,8 @@ import com.app.proyectojuegosmonolito.game.model.Game;
 import com.app.proyectojuegosmonolito.game.model.GameImage;
 import com.app.proyectojuegosmonolito.game.model.GameState;
 import com.app.proyectojuegosmonolito.game.repository.GameRepository;
-import com.app.proyectojuegosmonolito.game.storage.R2StorageService;
+import com.app.proyectojuegosmonolito.common.storage.R2StorageService;
+import com.app.proyectojuegosmonolito.exception.BusinessException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,6 +101,50 @@ class GameServiceTest {
     }
 
     @Test
+    void search_shouldDelegateFiltersToRepository() {
+        var pageable = PageRequest.of(0, 10);
+        var games = List.of(game(1L));
+        var page = new PageImpl<>(games, pageable, 1);
+        when(gameRepository.search("%alpha%", "Action", "COMING_SOON", BigDecimal.ONE, BigDecimal.TEN, pageable)).thenReturn(page);
+
+        var result = gameService.search("Alpha", "Action", GameState.COMING_SOON, BigDecimal.ONE, BigDecimal.TEN, pageable);
+
+        assertThat(result.getContent()).hasSize(1);
+        verify(gameRepository).search("%alpha%", "Action", "COMING_SOON", BigDecimal.ONE, BigDecimal.TEN, pageable);
+    }
+
+    @Test
+    void search_withBlankFilters_shouldPassNulls() {
+        var pageable = PageRequest.of(0, 10);
+        var page = new PageImpl<Game>(List.of(), pageable, 0);
+        when(gameRepository.search("%%", null, null, null, null, pageable)).thenReturn(page);
+
+        var result = gameService.search("  ", "", null, null, null, pageable);
+
+        assertThat(result.getTotalElements()).isZero();
+        verify(gameRepository).search("%%", null, null, null, null, pageable);
+    }
+
+    @Test
+    void search_whenMinGreaterThanMax_shouldThrowWithoutQuerying() {
+        var pageable = PageRequest.of(0, 10);
+
+        assertThatThrownBy(() -> gameService.search(null, null, null, new BigDecimal("20"), BigDecimal.TEN, pageable))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("minPrice");
+        verify(gameRepository, never()).search(any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void search_withNegativeBound_shouldThrowWithoutQuerying() {
+        var pageable = PageRequest.of(0, 10);
+
+        assertThatThrownBy(() -> gameService.search(null, null, null, new BigDecimal("-1"), null, pageable))
+                .isInstanceOf(BusinessException.class);
+        verify(gameRepository, never()).search(any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
     void update_shouldModifyAndSave() {
         var game = game(1L, "Old", BigDecimal.ONE);
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
@@ -127,7 +172,7 @@ class GameServiceTest {
     @Test
     void update_whenVideoUrlOmitted_shouldPreserveExistingVideo() {
         var game = game(1L, "Old", BigDecimal.ONE);
-        game.setVideoUrl("/uploads/games/old/trailer.mp4");
+        game.setVideoUrl("https://pub-test.r2.dev/old/trailer.mp4");
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
 
         var request = new GameRequest("New Name", new BigDecimal("49.99"), 10,
@@ -136,22 +181,22 @@ class GameServiceTest {
 
         var result = gameService.update(1L, request, new ArrayList<>());
 
-        assertThat(result.getVideoUrl()).isEqualTo("/uploads/games/old/trailer.mp4");
+        assertThat(result.getVideoUrl()).isEqualTo("https://pub-test.r2.dev/old/trailer.mp4");
     }
 
     @Test
     void update_whenVideoUrlProvided_shouldReplaceExistingVideo() {
         var game = game(1L, "Old", BigDecimal.ONE);
-        game.setVideoUrl("/uploads/games/old/trailer.mp4");
+        game.setVideoUrl("https://pub-test.r2.dev/old/trailer.mp4");
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
 
         var request = new GameRequest("New Name", new BigDecimal("49.99"), 10,
                 "New desc", GameState.COMING_SOON, LocalDate.of(2027, 1, 1), List.of(),
-                "min specs", "rec specs", "/uploads/games/new/trailer.mp4", null);
+                "min specs", "rec specs", "https://pub-test.r2.dev/new/trailer.mp4", null);
 
         var result = gameService.update(1L, request, new ArrayList<>());
 
-        assertThat(result.getVideoUrl()).isEqualTo("/uploads/games/new/trailer.mp4");
+        assertThat(result.getVideoUrl()).isEqualTo("https://pub-test.r2.dev/new/trailer.mp4");
     }
 
     @Test
@@ -209,5 +254,69 @@ class GameServiceTest {
                 .hasMessageContaining("99");
 
         verify(gameRepository, never()).deleteById(any());
+    }
+
+    // --- Invariante: toda URL de media que entra al servicio debe ser absoluta ---
+
+    @Test
+    void updateVideoUrl_whenRelativePath_shouldReject() {
+        assertThatThrownBy(() -> gameService.updateVideoUrl(1L, "/uploads/games/old/trailer.mp4"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("videoUrl")
+                .hasMessageContaining("URL absoluta");
+    }
+
+    @Test
+    void updateImage_whenRelativePath_shouldReject() {
+        assertThatThrownBy(() -> gameService.updateImage(1L, "/uploads/games/old/card.jpg"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("imageUrl");
+    }
+
+    @Test
+    void assignBanner_whenRelativePath_shouldReject() {
+        assertThatThrownBy(() -> gameService.assignBanner(1L, "/uploads/games/old/banner.jpg"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("bannerUrl");
+    }
+
+    @Test
+    void replaceGallery_whenOneUrlIsRelative_shouldReject() {
+        assertThatThrownBy(() -> gameService.replaceGallery(1L,
+                List.of("https://pub-test.r2.dev/a.jpg", "/uploads/games/old/b.jpg")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("galleryUrls");
+    }
+
+    @Test
+    void applyMediaUrls_whenRelativeGallery_shouldReject() {
+        assertThatThrownBy(() -> gameService.applyMediaUrls(1L, null, null,
+                List.of("/uploads/games/old/b.jpg")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("galleryUrls");
+    }
+
+    /** Blank significa "no cambiar" en los endpoints de edicion parcial: debe seguir pasando. */
+    @Test
+    void applyMediaUrls_whenBlankMedia_shouldLeaveItIntact() {
+        var game = game(1L, "Old", BigDecimal.ONE);
+        game.setImageUrl("https://pub-test.r2.dev/previo.jpg");
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+
+        var result = gameService.applyMediaUrls(1L, "  ", "", List.of());
+
+        assertThat(result.getImageUrl()).isEqualTo("https://pub-test.r2.dev/previo.jpg");
+    }
+
+    @Test
+    void create_whenVideoUrlIsRelative_shouldReject() {
+        var game = game();
+        game.setVideoUrl("/uploads/games/nuevo/trailer.mp4");
+
+        assertThatThrownBy(() -> gameService.create(game))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("videoUrl");
+
+        verify(gameRepository, never()).save(any());
     }
 }

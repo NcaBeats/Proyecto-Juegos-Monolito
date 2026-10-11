@@ -57,6 +57,26 @@ CREATE TABLE "public"."user" (
 );
 
 -- =============================================
+-- REGION
+-- =============================================
+CREATE TABLE "public"."region" (
+    "id"            bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    "nombre"        varchar(100) NOT NULL UNIQUE,
+    PRIMARY KEY ("id")
+);
+
+-- =============================================
+-- COMUNA
+-- =============================================
+CREATE TABLE "public"."comuna" (
+    "id"            bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    "nombre"        varchar(100) NOT NULL UNIQUE,
+    "region_id"     bigint NOT NULL,
+    PRIMARY KEY ("id")
+);
+ALTER TABLE "public"."comuna" ADD CONSTRAINT "fk_comuna_region_id_region_id" FOREIGN KEY ("region_id") REFERENCES "public"."region"("id");
+
+-- =============================================
 -- PROFILE
 -- =============================================
 CREATE TABLE "public"."profile" (
@@ -69,8 +89,8 @@ CREATE TABLE "public"."profile" (
     "first_name"    varchar(50) NOT NULL,
     "last_name"     varchar(100) NOT NULL,
     "birth_date"    date,
-    "region"        varchar(50) NOT NULL,
-    "comuna"        varchar(50) NOT NULL,
+    "region_id"     bigint NOT NULL,
+    "comuna_id"     bigint NOT NULL,
     "address"       varchar(300) NOT NULL,
     "created_at"    timestamp NOT NULL,
     PRIMARY KEY ("user_id")
@@ -151,7 +171,7 @@ CREATE TABLE "public"."blog" (
     "excerpt"       varchar(500) NOT NULL,
     "content"       text NOT NULL,
     "cover_image"   varchar(500),
-    "category"      varchar(50),
+    "category"      varchar(50) CHECK ("category" IN ('EVENTS', 'INDUSTRY', 'NEWS', 'REVIEWS', 'GUIDES', 'INTERVIEWS')),
     "published_at"  timestamp NOT NULL,
     "created_at"    timestamp NOT NULL,
     PRIMARY KEY ("id")
@@ -163,6 +183,8 @@ CREATE TABLE "public"."blog" (
 ALTER TABLE "public"."library"           ADD CONSTRAINT "fk_library_user_id_user_id"             FOREIGN KEY ("user_id")     REFERENCES "public"."user"("id");
 ALTER TABLE "public"."wallet"            ADD CONSTRAINT "fk_wallet_user_id_user_id"              FOREIGN KEY ("user_id")     REFERENCES "public"."user"("id");
 ALTER TABLE "public"."profile"           ADD CONSTRAINT "fk_profile_user_id_user_id"             FOREIGN KEY ("user_id")     REFERENCES "public"."user"("id");
+ALTER TABLE "public"."profile"           ADD CONSTRAINT "fk_profile_region_id_region_id"         FOREIGN KEY ("region_id")   REFERENCES "public"."region"("id");
+ALTER TABLE "public"."profile"           ADD CONSTRAINT "fk_profile_comuna_id_comuna_id"         FOREIGN KEY ("comuna_id")   REFERENCES "public"."comuna"("id");
 ALTER TABLE "public"."library"           ADD CONSTRAINT "fk_library_game_id_game_id"             FOREIGN KEY ("game_id")     REFERENCES "public"."game"("id");
 ALTER TABLE "public"."purchase"          ADD CONSTRAINT "fk_purchase_user_id_user_id"            FOREIGN KEY ("user_id")     REFERENCES "public"."user"("id");
 ALTER TABLE "public"."purchase_item"     ADD CONSTRAINT "fk_purchase_item_purchase_id_purchase_id" FOREIGN KEY ("purchase_id") REFERENCES "public"."purchase"("id");
