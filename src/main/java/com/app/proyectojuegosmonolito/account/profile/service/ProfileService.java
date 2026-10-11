@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.app.proyectojuegosmonolito.common.RepositoryUtils;
 
 @Slf4j
 @Service
@@ -26,7 +25,8 @@ public class ProfileService {
 
     public Profile findByUserId(Long userId) {
         log.info("Fetching profile for user: {}", userId);
-        return RepositoryUtils.findOrThrow(profileRepository, userId, "Profile");
+        return profileRepository.findByIdWithRegionAndComuna(userId)
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Profile not found: " + userId));
     }
 
     public Profile findByUserIdPublic(Long userId) {
