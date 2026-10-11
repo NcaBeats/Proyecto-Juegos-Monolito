@@ -202,6 +202,24 @@ public class DataInitializer implements CommandLineRunner {
                 .build());
 
         gameService.create(Game.builder()
+                .name("Grand Theft Auto VI")
+                .originalPrice(new BigDecimal("79.99"))
+                .discountPercent(0)
+                .description("""
+                        Jason y Lucía siempre han sabido que tienen todas las de perder, pero, cuando un golpe que parecía fácil sale mal, se ven atrapados en el lado más oscuro del lugar más soleado de EE. UU., en medio de una conspiración criminal que se extiende por todo el estado de Leónida, y obligados a depender más que nunca el uno del otro si quieren salir con vida.""")
+                .state(GameState.COMING_SOON)
+                .launchDate(LocalDate.of(2026, 11, 19))
+                .imageUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-vi/card/cb5816fc-b5fc-46cb-9d9b-d995f3562fa1.avif")
+                .videoUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-vi/trailer.mp4")
+                .bannerUrl("https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-vi/banner/d7725c1e-3b05-46d4-aede-d099232ad58d.webp")
+                .minimumSpecs("""
+                        {"os": "Windows 10 64-bit", "processor": "AMD Ryzen 5 3600 / Intel Core i7-8700", "memory": "16 GB RAM", "graphics": "NVIDIA GeForce RTX 2060 / AMD Radeon RX 6600 XT", "storage": "150 GB SSD", "directX": "Version 12", "sound": "DirectX-compatible sound card", "rayTracing": "Not required", "additional": "SSD required; 1080p at low settings, 30 FPS target (estimated)"}""")
+                .recommendedSpecs("""
+                        {"os": "Windows 11 64-bit", "processor": "AMD Ryzen 7 5700X / Intel Core i7-12700", "memory": "32 GB RAM", "graphics": "NVIDIA GeForce RTX 4070 / AMD Radeon RX 7800 XT", "storage": "150 GB NVMe SSD", "directX": "Version 12", "sound": "DirectX-compatible sound card", "rayTracing": "Supported; performance dependent on settings", "additional": "1440p at high settings, 60 FPS target (estimated)"}""")
+                .categories(List.of(action, adventure, openWorld))
+                .build());
+
+        gameService.create(Game.builder()
                 .name("Battlefield 1")
                 .originalPrice(new BigDecimal("59.99"))
                 .discountPercent(75)
@@ -1174,6 +1192,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Futur", "Lab");
 
         assignSeller("Grand Theft Auto V", rockstar);
+        assignSeller("Grand Theft Auto VI", rockstar);
         assignSeller("Red Dead Redemption 2", rockstar);
         assignSeller("Assassin's Creed Shadows", ubisoft);
         assignSeller("Cyberpunk 2077", cdProjektRed);
@@ -1287,6 +1306,13 @@ public class DataInitializer implements CommandLineRunner {
                 "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/gallery/2.jpg",
                 "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/gallery/3.jpg",
                 "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-v/gallery/4.jpg"));
+
+        assignBanner("Grand Theft Auto VI", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-vi/banner/d7725c1e-3b05-46d4-aede-d099232ad58d.webp");
+        seedGallery("Grand Theft Auto VI", List.of(
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-vi/gallery/49f7e808-d18f-4c36-9f37-1200a8df2a48.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-vi/gallery/67d0cab6-c340-4a2b-8e69-d3be7ca112f1.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-vi/gallery/4148a433-8f60-40e0-b59e-5c4d08c49e83.webp",
+                "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/grand-theft-auto-vi/gallery/f460589e-126d-402c-a7c5-e67984043998.webp"));
 
         assignBanner("Battlefield 1", "https://pub-58f3bb038ab8451e96fb292f7cb1dc15.r2.dev/battlefield-1/banner/banner.jpg");
         seedGallery("Battlefield 1", List.of(
