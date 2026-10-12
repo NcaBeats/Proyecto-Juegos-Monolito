@@ -30,7 +30,7 @@ public class ManageGameController {
     private final UserService userService;
     private final SecurityContext securityContext;
 
-    @Operation(summary = "Staff game list", description = "ADMIN sees all games; VENDEDOR sees only their own catalog, optionally filtered by name and state")
+    @Operation(summary = "Staff game list", description = "ADMIN sees all games; VENDEDOR sees only their own catalog, optionally filtered by name and state. Supports ?sort=price,asc|desc for effective-price ordering.")
     @ApiResponse(responseCode = "200", description = "List of games retrieved successfully")
     @GetMapping
     public ResponseEntity<Page<GameResponse>> findAll(

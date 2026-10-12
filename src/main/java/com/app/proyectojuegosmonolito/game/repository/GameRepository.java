@@ -77,4 +77,66 @@ public interface GameRepository extends JpaRepository<Game, Long> {
                       @Param("min") BigDecimal min,
                       @Param("max") BigDecimal max,
                       Pageable pageable);
+
+    /**
+     * Variante de {@link #search} con orden fijo por precio efectivo
+     * (post-descuento) y desempate por id: el {@code Pageable} debe viajar
+     * sin sort (el ORDER BY ya va en la query) y la propiedad virtual
+     * {@code price} (@Transient) se resuelve en el servicio. El
+     * {@code sellerId} nulable permite reusarla en catalogo, ADMIN y
+     * VENDEDOR sin duplicar queries.
+     */
+    @Query(value = """
+            SELECT DISTINCT g FROM Game g LEFT JOIN g.categories c
+            WHERE (:sellerId IS NULL OR g.seller.id = :sellerId)
+              AND LOWER(g.name) LIKE :pattern
+              AND (:category IS NULL OR c.name = CAST(:category AS String))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
+              AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
+              AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
+            ORDER BY (g.originalPrice * (100 - g.discountPercent) / 100) ASC, g.id ASC
+            """,
+            countQuery = """
+            SELECT COUNT(DISTINCT g) FROM Game g LEFT JOIN g.categories c
+            WHERE (:sellerId IS NULL OR g.seller.id = :sellerId)
+              AND LOWER(g.name) LIKE :pattern
+              AND (:category IS NULL OR c.name = CAST(:category AS String))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
+              AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
+              AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
+            """)
+    Page<Game> searchOrderByEffectivePriceAsc(@Param("pattern") String pattern,
+                                              @Param("category") String category,
+                                              @Param("state") String state,
+                                              @Param("min") BigDecimal min,
+                                              @Param("max") BigDecimal max,
+                                              @Param("sellerId") Long sellerId,
+                                              Pageable pageable);
+
+    @Query(value = """
+            SELECT DISTINCT g FROM Game g LEFT JOIN g.categories c
+            WHERE (:sellerId IS NULL OR g.seller.id = :sellerId)
+              AND LOWER(g.name) LIKE :pattern
+              AND (:category IS NULL OR c.name = CAST(:category AS String))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
+              AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
+              AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
+            ORDER BY (g.originalPrice * (100 - g.discountPercent) / 100) DESC, g.id ASC
+            """,
+            countQuery = """
+            SELECT COUNT(DISTINCT g) FROM Game g LEFT JOIN g.categories c
+            WHERE (:sellerId IS NULL OR g.seller.id = :sellerId)
+              AND LOWER(g.name) LIKE :pattern
+              AND (:category IS NULL OR c.name = CAST(:category AS String))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
+              AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
+              AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
+            """)
+    Page<Game> searchOrderByEffectivePriceDesc(@Param("pattern") String pattern,
+                                               @Param("category") String category,
+                                               @Param("state") String state,
+                                               @Param("min") BigDecimal min,
+                                               @Param("max") BigDecimal max,
+                                               @Param("sellerId") Long sellerId,
+                                               Pageable pageable);
 }

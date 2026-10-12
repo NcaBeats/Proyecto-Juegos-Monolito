@@ -52,7 +52,7 @@ public class GameController {
     private final UserService userService;
     private final SecurityContext securityContext;
 
-    @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category, name, state or effective price range (post-discount)")
+    @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category, name, state or effective price range (post-discount). Supports ?sort=price,asc|desc for effective-price ordering.")
     @ApiResponse(responseCode = "200", description = "List of games retrieved successfully")
     @GetMapping
     public ResponseEntity<Page<GameResponse>> findAll(
