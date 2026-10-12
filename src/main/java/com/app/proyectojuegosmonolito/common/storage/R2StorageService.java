@@ -201,7 +201,7 @@ public class R2StorageService {
 
     /**
      * Borra una imagen de R2 a partir de su URL. Las URLs que no pertenecen a este
-     * bucket (p.ej. Cloudinary legacy durante la transicion) se ignoran.
+     * bucket se ignoran.
      *
      * @return {@code true} si el objeto pertenecia al bucket y existia.
      */

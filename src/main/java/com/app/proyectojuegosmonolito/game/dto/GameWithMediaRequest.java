@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Variante JSON de {@link GameRequest}: el cliente subio la media por su cuenta
- * (directo a Cloudinary y R2) y solo manda las URLs resultantes.
+ * (directo a R2) y solo manda las URLs resultantes.
  * El videoUrl viaja en {@link GameRequest}, igual que en el flujo multipart.
  */
 public record GameWithMediaRequest(
