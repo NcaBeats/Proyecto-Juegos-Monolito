@@ -19,6 +19,8 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     Optional<Game> findByName(String name);
     Page<Game> findBySeller_Id(Long sellerId, Pageable pageable);
     Page<Game> findBySeller_IdAndNameContainingIgnoreCase(Long sellerId, String name, Pageable pageable);
+    Page<Game> findBySeller_IdAndState(Long sellerId, GameState state, Pageable pageable);
+    Page<Game> findBySeller_IdAndNameContainingIgnoreCaseAndState(Long sellerId, String name, GameState state, Pageable pageable);
     boolean existsByIdAndSeller_Id(Long id, Long sellerId);
     long countByState(GameState state);
 

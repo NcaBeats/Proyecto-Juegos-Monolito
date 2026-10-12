@@ -40,6 +40,7 @@ public class Purchase {
     private String idempotencyKey;
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     @Builder.Default
     private List<PurchaseItem> items = new ArrayList<>();
 }

@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface LibraryRepository extends JpaRepository<Library, Long> {
     Page<Library> findByUser_Id(Long userId, Pageable pageable);
+    Page<Library> findByUser_IdOrderByAcquiredAtDesc(Long userId, Pageable pageable);
     boolean existsByUser_IdAndGame_Id(Long userId, Long gameId);
     Optional<Library> findByUser_IdAndGame_Id(Long userId, Long gameId);
     @Transactional

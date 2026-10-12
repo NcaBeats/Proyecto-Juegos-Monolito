@@ -176,10 +176,19 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Game> findBySeller(Long sellerId, String name, Pageable pageable) {
-        if (name != null && !name.isBlank()) {
+    public Page<Game> findBySeller(Long sellerId, String name, GameState state, Pageable pageable) {
+        boolean hasName = name != null && !name.isBlank();
+        if (hasName && state != null) {
+            log.info("Fetching games of seller {} by name '{}' and state {} with pageable: {}", sellerId, name, state, pageable);
+            return gameRepository.findBySeller_IdAndNameContainingIgnoreCaseAndState(sellerId, name, state, pageable);
+        }
+        if (hasName) {
             log.info("Fetching games of seller {} by name '{}' with pageable: {}", sellerId, name, pageable);
             return gameRepository.findBySeller_IdAndNameContainingIgnoreCase(sellerId, name, pageable);
+        }
+        if (state != null) {
+            log.info("Fetching games of seller {} by state {} with pageable: {}", sellerId, state, pageable);
+            return gameRepository.findBySeller_IdAndState(sellerId, state, pageable);
         }
         log.info("Fetching games of seller {} with pageable: {}", sellerId, pageable);
         return gameRepository.findBySeller_Id(sellerId, pageable);
@@ -335,7 +344,7 @@ public class GameService {
     }
 
     /**
-     * Registra las URLs de media que el navegador ya subio directo a Cloudinary / R2.
+     * Registra las URLs de media que el navegador ya subio directo a R2.
      * Los campos ausentes o vacios se dejan intactos, de modo que una edicion parcial
      * no borra la portada ni la galeria que ya tenia el juego.
      */

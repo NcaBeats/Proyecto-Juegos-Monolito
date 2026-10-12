@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +30,7 @@ public class CategoryController {
     @Operation(summary = "Get all categories", description = "Returns a paginated list of all categories")
     @ApiResponse(responseCode = "200", description = "List of categories retrieved successfully")
     @GetMapping
-    public ResponseEntity<Page<CategoryResponse>> findAll(@ParameterObject Pageable pageable) {
+    public ResponseEntity<Page<CategoryResponse>> findAll(@ParameterObject @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.ok(categoryService.findAll(pageable).map(categoryMapper::toResponse));
     }
 

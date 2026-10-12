@@ -47,7 +47,7 @@ public class LibraryService {
 
     public Page<Library> findByUserId(Long userId, Pageable pageable) {
         log.info("Fetching library for user {} with pageable: {}", userId, pageable);
-        return libraryRepository.findByUser_Id(userId, pageable);
+        return libraryRepository.findByUser_IdOrderByAcquiredAtDesc(userId, pageable);
     }
 
     public boolean isGameOwned(Long userId, Long gameId) {
