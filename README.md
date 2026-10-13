@@ -93,6 +93,7 @@ proveedor externo.
 | `R2_ACCESS_KEY_ID` | Access Key de R2 |
 | `R2_SECRET_ACCESS_KEY` | Secret Key de R2 |
 | `R2_BUCKET` | Bucket de R2 (default `trailers`) |
+| `APP_MEDIA_NORMALIZE_ENABLED` | Runner one-shot que reescribe URLs legacy a absolutas (default `false`) |
 | `APP_CORS_ALLOWED_ORIGINS` | Orígenes del navegador permitidos: separados por comas y **sin barra final** |
 
 Tres variables **no** van en `.env` porque no son configuración sino banderas de arranque:
@@ -114,7 +115,7 @@ APP_CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://192.
 
 **Importante:** cambia `APP_CORS_ALLOWED_ORIGINS` requiere **restart** del backend (se lee al arrancar). Si ves error `CORS` / `Access-Control-Allow-Origin` en consola del navegador, falta el origin exacto que muestra el error — cópialo tal cual a la lista.
 
-### Producción — panel de Render (14 variables)
+### Producción — panel de Render (13 variables)
 
 El panel de Render **es** el almacén de secretos: los valores de producción no van en ningún
 archivo del repo. De las 11 de `.env`, solo 2 conservan el mismo valor
@@ -135,6 +136,7 @@ archivo del repo. De las 11 de `.env`, solo 2 conservan el mismo valor
 | `R2_ACCESS_KEY_ID` | Dashboard de Cloudflare. Nuevo junto con el secret |
 | `R2_SECRET_ACCESS_KEY` | Dashboard de Cloudflare. **No reutilizar la de local** |
 | `R2_BUCKET` | `trailers` (tiene default en el código) |
+| `CLOUDINARY_URL` | Obsoleta: se puede borrar (toda la media vive en R2) |
 
 Las cuatro marcadas son secretos: **no pueden reutilizar el valor de local**. Si se filtran
 las claves de esta máquina, quien las tenga puede firmar tokens de ADMIN, entrar a la base o
@@ -143,8 +145,8 @@ borrar la media de producción.
 `R2_PUBLIC_BASE_URL` **no hace falta declararla**: el default de `application.yaml` ya apunta al
 bucket de producción, así que las URLs públicas se resuelven solas.
 
-Una variable del panel quedó obsoleta y se puede borrar: `APP_MIGRATE_IMAGES` (su runner ya
-no existe; lo reemplaza `APP_MEDIA_NORMALIZE_ENABLED`).
+Dos variables del panel quedaron obsoletas y se pueden borrar: `APP_MIGRATE_IMAGES` (su runner ya
+no existe; lo reemplaza `APP_MEDIA_NORMALIZE_ENABLED`) y `CLOUDINARY_URL` (toda la media vive en R2).
 
 `application-prod.yaml` declara el datasource, el JWT y el CORS **sin default**, así que una
 variable faltante hace fallar el arranque con un mensaje que la nombra. En cambio
@@ -231,7 +233,7 @@ la forma nueva, y **reportar** cuántas filas encontró y reescribió.
    ```text
    MediaUrlNormalizer: found=0 rewritten=0 (video=0 image=0 banner=0 gallery=0)
    ```
-   Si `found` y `rewritten` son 0, la base ya estaba consistente (lo esperable: el 44 juegos del
+   Si `found` y `rewritten` son 0, la base ya estaba consistente (lo esperable: los 45 juegos del
    seed guardan URLs absolutas). Un número mayor indica datos viejos que se acaba de corregir.
 4. **Quitá la variable** del panel y re-deployá para que no vuelva a correr en cada reinicio.
 5. Para confirmar de forma independiente:
@@ -306,7 +308,7 @@ hacen un *soft delete* (marcan `deleted_at` y revocan los tokens del usuario).
 
 ## Datos de prueba
 
-El sistema carga automáticamente **44 juegos, 9 categorías, 3 usuarios base y 24 estudios (`VENDEDOR`)**
+El sistema carga automáticamente **45 juegos, 9 categorías, 3 usuarios base y 24 estudios (`VENDEDOR`)**
 al primer arranque con la base vacía.
 
 ### Usuarios
@@ -364,7 +366,7 @@ Cada juego incluye una **descripción detallada** y **especificaciones de PC** (
 - `POST /api/v1/auth/logout` — Cerrar sesión
 
 ### Games
-- `GET /api/v1/games` — Listar juegos (paginado). Filtros opcionales y combinables: `?category=<nombre>`, `?minPrice=<número>`, `?maxPrice=<número>`, `?state=AVAILABLE|COMING_SOON|DISCONTINUED`, `?name=<texto>`. El filtrado por precio usa el **precio vigente** (post-descuento), no el original
+- `GET /api/v1/games` — Listar juegos (paginado). Filtros opcionales y combinables: `?category=<nombre>`, `?minPrice=<número>`, `?maxPrice=<número>`, `?state=AVAILABLE|COMING_SOON|DISCONTINUED`, `?name=<texto>`. El filtrado por precio usa el **precio vigente** (post-descuento), no el original. Orden con `?sort=<prop>,<asc|desc>` (`price` = precio efectivo post-descuento, `name`, `originalPrice`, `discountPercent`, `createdAt`, `launchDate`, `state`, `id`); sin `sort`, `createdAt DESC`
 - `GET /api/v1/games/{id}` — Detalle de un juego
 - `GET /api/v1/games/discounted` — Juegos en descuento
 - `GET /api/v1/games/banners` — Juegos con banner
@@ -385,14 +387,14 @@ curl "http://localhost:9090/api/v1/games?category=Action&minPrice=10&maxPrice=50
 ```
 
 ### Categories
-- `GET /api/v1/categories` — Listar categorías
+- `GET /api/v1/categories` — Listar categorías (default `name ASC`)
 - `GET /api/v1/categories/{id}` — Detalle de una categoría
 - `POST /api/v1/categories` — Crear categoría (ADMIN)
 - `PUT /api/v1/categories/{id}` — Actualizar categoría (ADMIN)
 - `DELETE /api/v1/categories/{id}` — Eliminar categoría (ADMIN)
 
 ### Manage (ADMIN / VENDEDOR)
-- `GET /api/v1/manage/games` — Listar juegos gestionables
+- `GET /api/v1/manage/games` — Listar juegos gestionables. Filtros opcionales y combinables `?name=<texto>`, `?state=AVAILABLE|COMING_SOON|DISCONTINUED`, y orden `?sort=price,asc|desc` (precio efectivo)
 - `GET /api/v1/manage/games/{id}` — Detalle gestionable de un juego
 - `GET /api/v1/manage/orders` — Listar órdenes
 - `GET /api/v1/manage/orders/{id}` — Detalle de una orden
@@ -427,10 +429,10 @@ curl "http://localhost:9090/api/v1/games?category=Action&minPrice=10&maxPrice=50
 ### Purchases
 - `POST /api/v1/purchases` — Comprar juegos (requiere `Idempotency-Key` header)
 - `GET /api/v1/purchases` — Ver mi historial de compras
-- `GET /api/v1/purchases/{id}` — Detalle de una compra
+- `GET /api/v1/purchases/{id}` — Detalle de una compra (ítems ordenados por `id`)
 
 ### Library
-- `GET /api/v1/library` — Ver mi biblioteca de juegos comprados
+- `GET /api/v1/library` — Ver mi biblioteca de juegos comprados (default `acquiredAt DESC`: lo último adquirido primero)
 - `POST /api/v1/library` — Agregar un juego a la biblioteca
 - `DELETE /api/v1/library/game/{gameId}` — Quitar un juego de la biblioteca
 - `DELETE /api/v1/library` — Vaciar la biblioteca
