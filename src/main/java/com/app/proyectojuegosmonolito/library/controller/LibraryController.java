@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +32,7 @@ public class LibraryController {
     @Operation(summary = "Get my library", description = "Returns a paginated list of games in the authenticated user's library")
     @ApiResponse(responseCode = "200", description = "Library retrieved successfully")
     @GetMapping
-    public ResponseEntity<Page<LibraryResponse>> findMyLibrary(@ParameterObject Pageable pageable) {
+    public ResponseEntity<Page<LibraryResponse>> findMyLibrary(@ParameterObject @PageableDefault(sort = "acquiredAt", direction = Sort.Direction.DESC) Pageable pageable) {
         var userId = securityContext.getCurrentUserId();
         return ResponseEntity.ok(libraryService.findByUserId(userId, pageable).map(libraryMapper::toResponse));
     }

@@ -6,6 +6,7 @@ import com.app.proyectojuegosmonolito.game.dto.GameResponse;
 import com.app.proyectojuegosmonolito.game.dto.CategoryResponse;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -28,6 +29,7 @@ public class GameMapper {
     public GameResponse toResponse(Game game) {
         var categoryResponses = game.getCategories().stream()
                 .map(c -> new CategoryResponse(c.getId(), c.getName(), c.getCreatedAt()))
+                .sorted(Comparator.comparing(CategoryResponse::name, Comparator.nullsLast(String::compareToIgnoreCase)))
                 .toList();
         var galleryUrls = game.getGallery() != null
                 ? game.getGallery().stream().map(img -> img.getUrl()).toList()

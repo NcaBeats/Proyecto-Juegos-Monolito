@@ -26,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +52,7 @@ public class GameController {
     private final UserService userService;
     private final SecurityContext securityContext;
 
-    @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category, name, state or effective price range (post-discount)")
+    @Operation(summary = "Get all games", description = "Returns a paginated list of all games, optionally filtered by category, name, state or effective price range (post-discount). Supports ?sort=price,asc|desc for effective-price ordering.")
     @ApiResponse(responseCode = "200", description = "List of games retrieved successfully")
     @GetMapping
     public ResponseEntity<Page<GameResponse>> findAll(
@@ -59,7 +61,7 @@ public class GameController {
             @RequestParam(required = false) GameState state,
             @RequestParam(required = false) java.math.BigDecimal minPrice,
             @RequestParam(required = false) java.math.BigDecimal maxPrice,
-            @ParameterObject Pageable pageable) {
+            @ParameterObject @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         if ((name != null && !name.isBlank())
                 || (category != null && !category.isBlank())
                 || state != null

@@ -19,6 +19,8 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     Optional<Game> findByName(String name);
     Page<Game> findBySeller_Id(Long sellerId, Pageable pageable);
     Page<Game> findBySeller_IdAndNameContainingIgnoreCase(Long sellerId, String name, Pageable pageable);
+    Page<Game> findBySeller_IdAndState(Long sellerId, GameState state, Pageable pageable);
+    Page<Game> findBySeller_IdAndNameContainingIgnoreCaseAndState(Long sellerId, String name, GameState state, Pageable pageable);
     boolean existsByIdAndSeller_Id(Long id, Long sellerId);
     long countByState(GameState state);
 
@@ -75,4 +77,76 @@ public interface GameRepository extends JpaRepository<Game, Long> {
                       @Param("min") BigDecimal min,
                       @Param("max") BigDecimal max,
                       Pageable pageable);
+
+    /**
+     * Variante de {@link #search} con orden fijo por precio efectivo
+     * (post-descuento) y desempate por id: el {@code Pageable} debe viajar
+     * sin sort (el ORDER BY ya va en la query) y la propiedad virtual
+     * {@code price} (@Transient) se resuelve en el servicio. El
+     * {@code sellerId} nulable permite reusarla en catalogo, ADMIN y
+     * VENDEDOR sin duplicar queries.
+     *
+     * <p>El filtro por categoria usa EXISTS en vez del JOIN de
+     * {@link #search}: con SELECT DISTINCT Postgres prohibe ordenar por
+     * expresiones que no estan en el select list, y el precio efectivo es
+     * una expresion calculada. Sin JOIN no hay fan-out, no hace falta
+     * DISTINCT y el ORDER BY por la expresion es legal.
+     */
+    @Query(value = """
+            SELECT g FROM Game g
+            WHERE (:sellerId IS NULL OR g.seller.id = :sellerId)
+              AND LOWER(g.name) LIKE :pattern
+              AND (:category IS NULL OR EXISTS (
+                    SELECT 1 FROM g.categories c WHERE c.name = CAST(:category AS String)))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
+              AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
+              AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
+            ORDER BY (g.originalPrice * (100 - g.discountPercent) / 100) ASC, g.id ASC
+            """,
+            countQuery = """
+            SELECT COUNT(g) FROM Game g
+            WHERE (:sellerId IS NULL OR g.seller.id = :sellerId)
+              AND LOWER(g.name) LIKE :pattern
+              AND (:category IS NULL OR EXISTS (
+                    SELECT 1 FROM g.categories c WHERE c.name = CAST(:category AS String)))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
+              AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
+              AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
+            """)
+    Page<Game> searchOrderByEffectivePriceAsc(@Param("pattern") String pattern,
+                                              @Param("category") String category,
+                                              @Param("state") String state,
+                                              @Param("min") BigDecimal min,
+                                              @Param("max") BigDecimal max,
+                                              @Param("sellerId") Long sellerId,
+                                              Pageable pageable);
+
+    @Query(value = """
+            SELECT g FROM Game g
+            WHERE (:sellerId IS NULL OR g.seller.id = :sellerId)
+              AND LOWER(g.name) LIKE :pattern
+              AND (:category IS NULL OR EXISTS (
+                    SELECT 1 FROM g.categories c WHERE c.name = CAST(:category AS String)))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
+              AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
+              AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
+            ORDER BY (g.originalPrice * (100 - g.discountPercent) / 100) DESC, g.id ASC
+            """,
+            countQuery = """
+            SELECT COUNT(g) FROM Game g
+            WHERE (:sellerId IS NULL OR g.seller.id = :sellerId)
+              AND LOWER(g.name) LIKE :pattern
+              AND (:category IS NULL OR EXISTS (
+                    SELECT 1 FROM g.categories c WHERE c.name = CAST(:category AS String)))
+              AND (:state IS NULL OR g.state = CAST(:state AS String))
+              AND (:min IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 >= :min)
+              AND (:max IS NULL OR g.originalPrice * (100 - g.discountPercent) / 100 <= :max)
+            """)
+    Page<Game> searchOrderByEffectivePriceDesc(@Param("pattern") String pattern,
+                                               @Param("category") String category,
+                                               @Param("state") String state,
+                                               @Param("min") BigDecimal min,
+                                               @Param("max") BigDecimal max,
+                                               @Param("sellerId") Long sellerId,
+                                               Pageable pageable);
 }

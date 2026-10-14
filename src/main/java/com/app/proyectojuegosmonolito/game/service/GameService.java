@@ -92,6 +92,11 @@ public class GameService {
 
     @Transactional(readOnly = true)
     public Page<Game> findAll(Pageable pageable) {
+        if (EffectivePriceSort.hasPriceSort(pageable)) {
+            log.info("Fetching all games ordered by effective price {} with pageable: {}",
+                    EffectivePriceSort.priceDirection(pageable), pageable);
+            return searchOrderByEffectivePrice(null, null, null, null, null, null, pageable);
+        }
         log.info("Fetching all games with pageable: {}", pageable);
         return gameRepository.findAll(pageable);
     }
@@ -166,7 +171,35 @@ public class GameService {
         var pattern = effectiveName == null ? "%%" : "%" + effectiveName + "%";
         log.info("Searching games by name='{}' category='{}' state={} min={} max={} with pageable: {}",
                 effectiveName, effectiveCategory, state, min, max, pageable);
+        if (EffectivePriceSort.hasPriceSort(pageable)) {
+            return searchOrderByEffectivePrice(name, category, state, min, max, null, pageable);
+        }
         return gameRepository.search(pattern, effectiveCategory, effectiveState, min, max, pageable);
+    }
+
+    /**
+     * Rutea a las queries con ORDER BY por precio efectivo. Recalcula los
+     * parametros efectivos igual que {@link #search} y viaja con Pageable
+     * sin sort (el orden ya va fijo en la query con desempate por id).
+     */
+    @Transactional(readOnly = true)
+    Page<Game> searchOrderByEffectivePrice(String name, String category, GameState state,
+                                           java.math.BigDecimal min, java.math.BigDecimal max,
+                                           Long sellerId, Pageable pageable) {
+        var effectiveName = (name == null || name.isBlank()) ? null : name.toLowerCase(Locale.ROOT);
+        var effectiveCategory = (category == null || category.isBlank()) ? null : category;
+        var effectiveState = state == null ? null : state.name();
+        var pattern = effectiveName == null ? "%%" : "%" + effectiveName + "%";
+        var direction = EffectivePriceSort.priceDirection(pageable);
+        if (pageable.getSort().stream().anyMatch(o -> !o.getProperty().equals(EffectivePriceSort.PRICE_PROPERTY))) {
+            log.warn("Sorts other than 'price' are ignored when sorting by effective price: {}", pageable.getSort());
+        }
+        var unsorted = EffectivePriceSort.stripSort(pageable);
+        log.info("Searching games ordered by effective price {} with pageable: {}", direction, unsorted);
+        if (direction.isAscending()) {
+            return gameRepository.searchOrderByEffectivePriceAsc(pattern, effectiveCategory, effectiveState, min, max, sellerId, unsorted);
+        }
+        return gameRepository.searchOrderByEffectivePriceDesc(pattern, effectiveCategory, effectiveState, min, max, sellerId, unsorted);
     }
 
     @Transactional(readOnly = true)
@@ -176,10 +209,24 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Game> findBySeller(Long sellerId, String name, Pageable pageable) {
-        if (name != null && !name.isBlank()) {
+    public Page<Game> findBySeller(Long sellerId, String name, GameState state, Pageable pageable) {
+        boolean hasName = name != null && !name.isBlank();
+        if (EffectivePriceSort.hasPriceSort(pageable)) {
+            log.info("Fetching games of seller {} ordered by effective price {} with pageable: {}", sellerId,
+                    EffectivePriceSort.priceDirection(pageable), pageable);
+            return searchOrderByEffectivePrice(hasName ? name : null, null, state, null, null, sellerId, pageable);
+        }
+        if (hasName && state != null) {
+            log.info("Fetching games of seller {} by name '{}' and state {} with pageable: {}", sellerId, name, state, pageable);
+            return gameRepository.findBySeller_IdAndNameContainingIgnoreCaseAndState(sellerId, name, state, pageable);
+        }
+        if (hasName) {
             log.info("Fetching games of seller {} by name '{}' with pageable: {}", sellerId, name, pageable);
             return gameRepository.findBySeller_IdAndNameContainingIgnoreCase(sellerId, name, pageable);
+        }
+        if (state != null) {
+            log.info("Fetching games of seller {} by state {} with pageable: {}", sellerId, state, pageable);
+            return gameRepository.findBySeller_IdAndState(sellerId, state, pageable);
         }
         log.info("Fetching games of seller {} with pageable: {}", sellerId, pageable);
         return gameRepository.findBySeller_Id(sellerId, pageable);
@@ -335,7 +382,7 @@ public class GameService {
     }
 
     /**
-     * Registra las URLs de media que el navegador ya subio directo a Cloudinary / R2.
+     * Registra las URLs de media que el navegador ya subio directo a R2.
      * Los campos ausentes o vacios se dejan intactos, de modo que una edicion parcial
      * no borra la portada ni la galeria que ya tenia el juego.
      */
